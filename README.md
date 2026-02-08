@@ -164,6 +164,6 @@ Bu proje MIT Lisansı altında lisanslanmıştır.
 
 ## 📞 İletişim
 
-Proje Sahibi - [GitHub Profiliniz]
+Proje Sahibi - https://github.com/alitumer0
 
 Proje Linki: [https://github.com/alitumer0/SalesManagement](https://github.com/alitumer0/SalesManagement)
