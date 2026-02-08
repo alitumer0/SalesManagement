@@ -1,0 +1,37 @@
+﻿@model BaSalesManagementApp.MVC.Models.CategoryVMs.CategoryDetailsVM
+
+@{
+    ViewData["Title"] = localizer["Details"];
+}
+
+<div class="content-wrapper">
+    <div class="container-xxl flex-grow-1 container-p-y">
+        <h4 class="py-3 mb-4">
+            <span class="text-muted fw-light">@localizer["Category"] /</span> @localizer["Details"]
+        </h4>
+        <div class="row">
+
+            <div class="col-lg-6 col-md-8 col-sm-12">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <dl class="row">
+                            <dt class="col-4 mb-4">
+                                @localizer["CategoryName"]
+                            </dt>
+                            <dd class="col-8">
+                                @Html.DisplayFor(model => model.Name)
+                            </dd>
+
+                        </dl>
+                    </div>
+                    <div class="card-footer" style="margin-top:-50px">
+                        <a href="@Url.Action("Update", new { categoryId = Model.Id })" class="btn btn-primary">@localizer["Update"]</a>
+                        <a asp-action="Index" class="btn btn-secondary">@localizer["BackToList"]</a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>

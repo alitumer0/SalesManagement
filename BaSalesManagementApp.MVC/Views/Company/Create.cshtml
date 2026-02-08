@@ -1,0 +1,459 @@
+﻿@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<Resource> localizer
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+@{
+    var culture = HttpContextAccessor.HttpContext.Request.Cookies[".AspNetCore.Culture"];
+    var currentCulture = culture?.Split('|').FirstOrDefault()?.Split('=')[1] ?? "en";
+}
+
+@model BaSalesManagementApp.MVC.Models.CompanyVMs.CompanyCreateVM
+
+@{
+    ViewData["Title"] = localizer["Create"];
+}
+
+<link href="~/assets/flags/flags.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.min.css" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
+
+<style>
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        background-color: white;
+    }
+</style>
+
+<div class="content-wrapper">
+    <div class="container-xxl flex-grow-1 container-p-y">
+        <h4 class="py-3 mb-4">
+            <span class="text-muted fw-light">@Html.Raw(localizer["Company"]) /</span> @Html.Raw(localizer["Create"])
+        </h4>
+
+        <div class="row">
+
+            <div class="col-md-12 col-lg-12">
+                <!-- Formu genişliğe göre ayarlıyoruz -->
+                <div class="card mb-4" style="background-color: transparent;box-shadow: none;">
+                    <div class="card-body">
+                        <form asp-action="Create" enctype="multipart/form-data">
+                            <!-- enctype özelliği dosya yüklemesi için gereklidir -->
+                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                            <div class="mb-3">
+                                <label asp-for="Name" class="form-label">
+                                    @Html.Raw(localizer["CompanyName"]).ToString().ToUpper(new System.Globalization.CultureInfo(System.Threading.Thread.CurrentThread.CurrentCulture.Name))
+                                </label>
+                                <input asp-for="Name" id="Name" class="form-control" data-val="true"
+                                       data-val-required="@localizer["Please enter the company name."]"
+                                       data-val-length="@localizer["The company name must be between 2 and 100 characters."]"
+                                       data-val-length-min="2" data-val-length-max="100" />
+                                <span asp-validation-for="Name" id="companyNameError" class="text-danger"></span> <!-- Hata mesajı için span -->
+                            </div>
+
+                            @* <div class="mb-3">
+                            <label class="form-label">@Html.Raw(localizer["Country"])</label>
+                            <select class="form-control" id="CountryId" style="width: 100%;" data-val="true" data-val-required="@localizer["Please select a country."]">
+                            @if (Model != null && Model.Countries != null && Model.Countries.Any())
+                            {
+                            <option value="">@Html.Raw(localizer["SelectCountry"])</option>
+                            foreach (var country in Model.Countries)
+                            {
+                            <option value="@country.Id">@country.Name</option>
+                            }
+                            }
+                            else
+                            {
+                            <option value="" disabled selected>@Html.Raw(localizer["NoCountryFound"])</option>
+                            }
+                            </select>
+                            <span class="text-danger"></span>
+                            </div> *@
+
+
+                            <div class="mb-3">
+                                <label class="form-label">@Html.Raw(localizer["Country"])</label>
+                                <select class="form-control" id="CountryId" style="width: 100%;" data-val="true" data-val-required="@localizer["Please select a country."]">
+                                    @if (Model != null && Model.Countries != null && Model.Countries.Any())
+                                    {
+                                        <option value="">@Html.Raw(localizer["SelectCountry"])</option>
+                                        foreach (var country in Model.Countries)
+                                        {
+                                            <option value="@country.Id">@(currentCulture.StartsWith("tr") ? country.NameTr : country.NameEn)</option>
+                                           
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <option value="" disabled selected>@Html.Raw(localizer["NoCountryFound"])</option>
+                                    }
+                                </select>
+                                <span id="countryError" class="text-danger"></span> <!-- Hata mesajı için span -->
+                            </div>
+
+
+                            <div class="mb-3">
+                                <label asp-for="CityID" class="form-label">@Html.Raw(localizer["City"])</label>
+                                <select asp-for="CityID" class="form-control" id="CityId" style="width: 100%;" disabled>
+                                    <option value="">@Html.Raw(localizer["SelectCity"])</option>
+                                </select>
+                                <span asp-validation-for="CityID" class="text-danger" id="cityError"></span> <!-- Şehir hata mesajı için span eklendi -->
+                            </div>
+
+
+                            <div class="mb-3">
+                                <label asp-for="Address" class="form-label">@Html.Raw(localizer["Address"])</label>
+                                <input asp-for="Address" id="Address" class="form-control" data-val="true"
+                                       data-val-required="@localizer["Please enter the address."]"
+                                       data-val-length="@localizer["The address must be between 5 and 200 characters."]"
+                                       data-val-length-min="5" data-val-length-max="200" />
+                                <span asp-validation-for="Address" id="addressError" class="text-danger"></span> <!-- Hata mesajı için span -->
+                            </div>
+
+
+                            <div class="mb-3">
+                                <label asp-for="Phone" class="form-label">@Html.Raw(localizer["Phone"])</label>
+                                <br />
+                                <input asp-for="Phone" type="tel" class="form-control" id="phoneInput" autocomplete="tel" />
+                                <span asp-validation-for="Phone" class="text-danger"></span>
+                                <input type="hidden" id="fullPhoneNumber" name="fullPhoneNumber" />
+                                <input type="hidden" id="selectedCountryIso2" name="selectedCountryIso2" />
+                                <input type="hidden" id="countryDialCode" asp-for="CountryCode" name="CountryCode" />
+                            </div>
+
+                            <!-- Fotoğraf Yükleme Alanı -->
+                            <div class="mb-3">
+                                <label class="form-label">@Html.Raw(localizer["Logo"])</label>
+                                <!--Seçilen logonun sayfada görünmesi-->
+                                <img id="photoPreview" src="#" alt="Seçilen Resim Görüntüsü" style="max-width: 200px; max-height: 200px; display: none; border: 1px solid #ccc; border-radius: 8px;" />
+                                <input type="file" asp-for="CompanyPhoto" class="form-control mt-3" accept=".jpg,.jpeg,.png,.gif" /> <!-- accept ile sadece resim dosyalarını kabul et -->
+                                <span asp-validation-for="CompanyPhoto" class="text-danger"></span>
+                                <!-- Hata mesajı için span -->
+                            </div>
+
+                                <div>
+                                <input type="submit" value="@Html.Raw(localizer["Create"])" class="btn btn-primary" />
+                                <a asp-action="Index" class="btn btn-secondary">@Html.Raw(localizer["BackToList"])</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+
+<!-- Toastr JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+<!-- intl-tel-input JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+
+
+
+<script>
+
+    $(document).ready(function () {
+
+        // Boşluktan sonra gelen Türkçe harfleri büyük yapma fonksiyonu
+        function capitalizeFirstLetterTurkish(text) {
+            var turkishMap = {
+                "i": "İ",
+                "ı": "I",
+                "ş": "Ş",
+                "ç": "Ç",
+                "ğ": "Ğ",
+                "ü": "Ü",
+                "ö": "Ö"
+            };
+            return text.replace(/(^|\s)([a-zA-Zğüşıöç])/g, function (match, space, letter) {
+                return space + (turkishMap[letter] || letter.toUpperCase());
+            });
+        }
+
+        // Şirket adı alanına anlık doğrulama ekliyoruz
+        $('#Name').on('input', function () {
+            var nameValue = $(this).val();
+            nameValue = capitalizeFirstLetterTurkish(nameValue); // İlk harfleri büyük yapma ve Türkçe harfler için
+            $(this).val(nameValue);
+
+            var errorMessage = $('#companyNameError');
+            var requiredMessage = $('#Name').data('val-required');
+            var lengthMessage = $('#Name').data('val-length');
+
+            if (nameValue.length === 0) {
+                errorMessage.text(requiredMessage);
+                errorMessage.css('display', 'block');
+            } else if (nameValue.length < 2 || nameValue.length > 100) {
+                errorMessage.text(lengthMessage);
+                errorMessage.css('display', 'block');
+            } else {
+                errorMessage.text('');
+                errorMessage.css('display', 'none');
+            }
+        });
+
+        // Adres alanı için anlık doğrulama ekliyoruz
+        $('#Address').on('input', function () {
+            var addressValue = $(this).val();
+            addressValue = capitalizeFirstLetterTurkish(addressValue); // İlk harfleri büyük yapma ve Türkçe harfler için
+            $(this).val(addressValue);
+
+            var addressErrorMessage = $('#addressError');
+            var addressRequiredMessage = $('#Address').data('val-required');
+            var addressLengthMessage = $('#Address').data('val-length');
+
+            if (addressValue.length === 0) {
+                addressErrorMessage.text(addressRequiredMessage);
+                addressErrorMessage.css('display', 'block');
+            } else if (addressValue.length < 5 || addressValue.length > 200) {
+                addressErrorMessage.text(addressLengthMessage);
+                addressErrorMessage.css('display', 'block');
+            } else {
+                addressErrorMessage.text('');
+                addressErrorMessage.css('display', 'none');
+            }
+        });
+
+        // Şehir ve ülke seçimi gibi diğer işlemler bozulmadan bırakıldı.
+    });
+
+
+    $(document).ready(function () {
+        // Şehir seçildiğinde hata mesajını temizleme
+        $('#CityId').change(function () {
+            var selectedCity = $(this).val(); // Seçilen şehrin değeri
+            var cityErrorMessage = $('#cityError'); // Şehir hata mesajı
+
+            if (selectedCity && selectedCity !== "") {
+                cityErrorMessage.text('').hide(); // Geçerli bir şehir seçildiğinde hata mesajını gizle
+            }
+        });
+
+        // Form gönderme sırasında şehir validasyonu
+        $('form').on('submit', function (e) {
+            var selectedCity = $('#CityId').val();
+            var cityErrorMessage = $('#cityError'); // Hata mesajı span'ı
+
+            // Yerelleştirilmiş "Lütfen şehir seçiniz" mesajını Razor'dan alıyoruz
+            var cityRequiredMessage = '@Html.Raw(localizer["Please select a city."])';
+
+            if (!selectedCity || selectedCity === "") {
+                e.preventDefault(); // Formun gönderilmesini engelle
+                cityErrorMessage.text(cityRequiredMessage).show(); // Uyarı mesajını göster
+            } else {
+                cityErrorMessage.text('').hide(); // Seçim yapıldıysa mesajı gizle
+            }
+        });
+    });
+
+    $(document).ready(function () {
+
+        // Sadece başlangıç harflerini eşleştiren özel matcher fonksiyonu
+        function matchStart(term, text) {
+            if ($.trim(term) === '') {
+                return text;
+            }
+            // Terim metnin başında yer alıyorsa eşleşme yap
+            if (text.toLowerCase().startsWith(term.toLowerCase())) {
+                return text;
+            }
+            return null;
+        }
+
+
+
+
+        var phoneInput = $('#phoneInput');
+        var iti = intlTelInput(phoneInput[0], {
+            separateDialCode: true,
+            initialCountry: 'auto',
+            utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js"
+        });
+
+        toastr.options = {
+            "closeButton": true,
+            "debug": false,
+            "newestOnTop": true,
+            "progressBar": true,
+            "positionClass": "toast-bottom-right",
+            "preventDuplicates": true,
+            "onclick": null,
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": "5000",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        };
+
+        var countryPhoneData;
+
+        $.getJSON('/data/NewCountries.json', function (data) {
+            countryPhoneData = data.CountryCodes;
+        });
+
+
+
+        // Ülke seçildiğinde hata mesajını gizleme
+        $('#CountryId').change(function () {
+            var selectedCountryId = $(this).val();
+            var errorMessage = $('#countryError');
+
+            if (selectedCountryId) {
+                errorMessage.text('').hide(); // Seçim yapıldıysa mesajı gizle
+            }
+
+            // Ülke değiştiğinde şehir seçimi temizle ve hata mesajı göster
+            $('#CityId').val("").prop('disabled', true);
+            $('#cityError').text('@Html.Raw(localizer["Please select a city."])').show(); // Şehir seçilmediği için hata mesajı göster
+        });
+
+        $('#CountryId').change(function () {
+            var selectedCountryId = $(this).val();
+            var selectedCountryName = $(this).find('option:selected').text();
+            var selectedCountryPhoneCode = null;
+
+            $.each(countryPhoneData, function (index, country) {
+                if (country.name.toLowerCase() === selectedCountryName.toLowerCase() || country.turkish_name.toLowerCase() === selectedCountryName.toLowerCase()) {
+                    selectedCountryPhoneCode = country.dialcode;
+                    return false;
+                }
+            });
+
+            if (selectedCountryPhoneCode) {
+                iti.setNumber(selectedCountryPhoneCode);
+            } else {
+                toastr.error('@localizer["Phone code not found"]', '@localizer["Error"]');
+            }
+
+            if (selectedCountryId) {
+                $.ajax({
+                    url: '@Url.Action("GetCitiesByCountryId", "Company")',
+                    type: 'GET',
+                    data: { countryId: selectedCountryId },
+                    success: function (data) {
+                        var citySelect = $('#CityId');
+                        citySelect.empty();
+                        citySelect.append('<option value="">@Html.Raw(localizer["SelectCity"])</option>');
+                        $.each(data, function (index, city) {
+                            citySelect.append('<option value="' + city.id + '">' + city.name + '</option>');
+                        });
+                        $('#CityId').prop('disabled', false);
+                    },
+                    error: function () {
+                        toastr.error('@localizer["Error fetching cities."]', '@localizer["Error"]');
+                    }
+                });
+            } else {
+                $('#CityId').prop('disabled', true).empty().append('<option value="">@Html.Raw(localizer["SelectCity"])</option>');
+            }
+        });
+
+        $('form').on('submit', function (e) {
+            var isValid = iti.isValidNumber();
+            const countryData = iti.getSelectedCountryData();
+            let phoneNumber = iti.getNumber();
+
+            if (!isValid) {
+                e.preventDefault();
+                toastr.error('@localizer["Please enter a valid phone number."]', '@localizer["Error"]');
+                return;
+            }
+
+            // JSON verisinden seçili ülkenin dialcode değerini bul
+            let selectedCountryDialCode = null;
+            $.each(countryPhoneData, function (index, country) {
+                if (country.code === countryData.iso2.toUpperCase()) {
+                    selectedCountryDialCode = country.dialcode; // dialcode değerini al
+                    return false; // Döngüyü durdur
+                }
+            });
+
+            $('#fullPhoneNumber').val(phoneNumber);
+            $('#selectedCountryIso2').val(countryData.iso2);
+            $('#countryDialCode').val(selectedCountryDialCode);
+        });
+
+        $('#CityId').select2({
+            placeholder: '@Html.Raw(localizer["SelectCity"])',
+            allowClear: true,
+            matcher: function (params, data) {
+                if ($.trim(params.term) === '') {
+                    return data;
+                }
+                if (matchStart(params.term, data.text)) {
+                    return data;
+                }
+                return null;
+            }
+        });
+
+        $('#CountryId').select2({
+            placeholder: '@Html.Raw(localizer["SelectCountry"])',
+            allowClear: true,
+            matcher: function (params, data) {
+                if ($.trim(params.term) === '') {
+                    return data;
+                }
+                if (matchStart(params.term, data.text)) {
+                    return data;
+                }
+                return null;
+            },
+            width: 'resolve'
+        });
+
+        $(document).ready(function () {
+            $('form').on('submit', function (e) {
+                var selectedCountry = $('#CountryId').val();
+                var errorMessage = $('#countryError');
+
+                // Yerelleştirilmiş "Lütfen ülke seçiniz" mesajını Razor'dan doğru şekilde alıyoruz
+                var countryRequiredMessage = '@Html.Raw(localizer["Please select a country."])';
+
+                if (!selectedCountry) {
+                    e.preventDefault(); // Formun gönderilmesini engelle
+                    errorMessage.text(countryRequiredMessage).show(); // Uyarı mesajını göster
+                } else {
+                    errorMessage.text('').hide(); // Seçim yapıldıysa mesajı gizle
+                }
+            });
+        });
+    });
+
+
+    document.getElementById("CompanyPhoto").addEventListener("change", function (event) {
+        const file = event.target.files[0]; // Seçilen dosyayı al
+        const previewImage = document.getElementById("photoPreview"); // Resim gösterilecek element
+
+        if (file) {
+            const reader = new FileReader();
+
+            // Resmi okuma işlemi tamamlanınca src'yi güncelle
+            reader.onload = function (e) {
+                previewImage.src = e.target.result; // Base64 URL'sini atama
+                previewImage.style.display = "block"; // Resmi görünür yap
+            };
+
+            reader.readAsDataURL(file); // Resmi oku
+        } else {
+            // Eğer dosya seçimi iptal edilirse resmi gizle
+            previewImage.style.display = "none";
+        }
+    });
+
+
+</script>

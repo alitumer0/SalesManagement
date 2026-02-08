@@ -1,0 +1,432 @@
+﻿@model IPagedList<BaSalesManagementApp.MVC.Models.CompanyVMs.CompanyListVM>
+@using Microsoft.Extensions.Localization
+@using X.PagedList.Mvc.Common
+@using X.PagedList.Mvc.Core
+@using X.PagedList
+@using X.PagedList.Mvc.Core.Common
+@inject IStringLocalizer<Resource> localizer
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@localizer["CompanyIndex"]</title>
+    <style>
+        .passive-row {
+            background-color: #f8d7da;
+        }
+
+        .position-relative {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip-text {
+            visibility: hidden;
+            background-color: #555; /* Tooltip arka plan rengi */
+            color: #fff;
+            text-align: center;
+            border-radius: 6px; /* Daha yuvarlak köşeler */
+            padding: 10px 15px; /* Tooltip'in içindeki metnin etrafındaki boşluk */
+            position: absolute;
+            bottom: 125%; /* Resmin biraz üzerinde gösterir */
+            right: 0; /* Resmin sağında konumlandırır */
+            transform: translateX(100%); /* Tam sağa kaydırır */
+            z-index: 1;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 14px; /* Daha büyük yazı */
+            white-space: nowrap;
+            border: 2px solid #333; /* Çerçeve rengi */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); /* Tooltip'e gölge ekler */
+        }
+
+        .position-relative:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .form-select {
+            width: auto;
+            min-width: 80px;
+        }
+
+        .table thead tr {
+            border-bottom: 1px solid #dee2e6;
+        }
+            
+    </style>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
+</head>
+
+<body>
+    <div class="content-wrapper">
+        <div class="container-xxl flex-grow-1 container-p-y">
+            <h4 class="py-3 mb-4">
+                <span class="text-muted fw-light">@localizer["Company"] /</span> @localizer["List"]
+            </h4>
+            <!-- Bu kısımda dropdown ve filtre butonlarını sağ ve sol tarafa taşıyoruz -->
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                     @if (!User.IsInRole("Employee"))
+                     {
+                        <a asp-action="Create" class="btn btn-primary">@localizer["Create_New"]</a>
+                     }
+                </div>
+
+                <div class="d-flex">
+                    <!--Show Entries DropDown Butonu Kod Bloğu-->
+                    <form method="get" asp-action="Index" class="d-inline-block me-3">
+                        <label>@localizer["Show"]</label>
+                        <select id="pageSizeSelect" name="pageSize" onchange="this.form.submit()" class="form-select d-inline-block w-auto ms-2">
+                            @{
+                                var pageSizes = new[] { 5, 10, 20, 50 };
+                                var currentPageSize = ViewBag.CurrentPageSize;
+                            }
+                            @foreach (var size in pageSizes)
+                            {
+                                <option value="@size" selected="@(ViewBag.CurrentPageSize == size)">@size</option>
+                            }
+                        </select>
+                        <label>@localizer["Entries"]</label>
+                    </form>
+                    <!--/Show Entries DropDown Butonu Kod Bloğu-->
+
+                    <!--Sort Order Dropdown Button Kod Bloğu-->
+                    <div id="sortOrderCompany" class="dropdown d-inline-block">
+
+                        <button id="CompanyDropdownMenuButton" type="button" class="btn btn-primary" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="bi bi-filter" style="font-size: 1rem;"></i>
+                        </button>
+
+
+                        <div class="dropdown-menu" aria-labelledby="CompanyDropdownMenuButton">
+
+                            <a asp-action="Index" asp-route-sortOrder="name_asc"
+                               class="dropdown-item @(ViewBag.CurrentSort == "name_asc" ? "active" : "")">
+                                A-Z
+                            </a>
+                            <a asp-action="Index" asp-route-sortOrder="name_desc"
+                               class="dropdown-item @(ViewBag.CurrentSort == "name_desc" ? "active" : "")">
+                                Z-A
+                            </a>
+                            <a asp-action="Index" asp-route-sortOrder="date_desc"
+                               class="dropdown-item @(ViewBag.CurrentSort == "date_desc" ? "active" : "")">
+                                @localizer["Newest_First"]
+                            </a>
+                            <a asp-action="Index" asp-route-sortOrder="date_asc"
+                               class="dropdown-item @(ViewBag.CurrentSort == "date_asc" ? "active" : "")">
+                                @localizer["Oldest_First"]
+                            </a> 
+                            <a asp-action="Index" asp-route-filterStatus="Active"
+                               class="dropdown-item @(ViewBag.FilterStatus == "Active" ? "active" : "")">
+                                @localizer["Active"]
+                            </a>
+                            <a asp-action="Index" asp-route-filterStatus="Passive"
+                               class="dropdown-item @(ViewBag.FilterStatus == "Passive" ? "active" : "")">
+                                @localizer["Passive"]
+                            </a>
+
+                            @if (!User.IsInRole("Manager"))
+                            {
+                                <div class="dropdown-divider"></div>
+
+                                <form method="get" asp-action="Index" class="d-inline-block w-100">
+                                    <label>@localizer["FilterByCountry"]</label>
+                                    <select name="countryId" onchange="this.form.submit()" class="form-select" style="width: 100%;">
+                                        <option value="">
+                                            @localizer["AllCountries"]
+                                        </option>
+
+                                        @if (ViewBag.Countries != null)
+                                        {
+                                            foreach (var country in ViewBag.Countries)
+                                            {
+
+                                                var currentCulture = Thread.CurrentThread.CurrentCulture.Name;
+                                                string countryName = currentCulture == "tr-TR" ? country.NameTr : country.NameEn;
+
+                                                <option value="@country.Id"
+                                                        selected="@(country.Id.ToString() == Convert.ToString(ViewData["SelectedCountryId"]) ? "selected" : null)">
+                                                    @countryName
+                                                </option>
+                                            }
+                                        }
+                                    </select>
+                                </form>
+                            }
+
+                        </div>
+                    </div>
+                    <!--/Sort Order Dropdown Button Kod Bloğu-->
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="table-responsive text-nowrap">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>@localizer["Logo"]</th>
+                                <th>@localizer["ColumnName"].ToString().ToUpper(new System.Globalization.CultureInfo("tr-TR"))</th>
+                                <th>@localizer["Phone"]</th>
+                                <th>@localizer["Country"]</th>
+                                <th>@localizer["CreatedDate"].ToString().ToUpper(new System.Globalization.CultureInfo("tr-TR"))</th>
+                                @if (!User.IsInRole("Employee"))
+                                {
+                                    <th class="text-center">@localizer["Status"]</th>
+                                }
+                                <th class="text-end">@localizer["Actions"]</th> 
+                            </tr>
+                        </thead>
+                        <tbody class="table-border-bottom-0">
+                            @foreach (var item in Model)
+                            {
+                                <tr id="company-row-@item.Id" class="@(item.Status == BaSalesManagementApp.Core.Enums.Status.Passive ? "passive-row" : "")">
+                                    <!-- Logo Kolonu -->
+                                    <td>
+                                        @if (item.CompanyPhoto != null && item.CompanyPhoto.Length > 0)
+                                        {
+                                            <div class="position-relative">
+                                                <img src="data:image/png;base64,@item.CompanyPhotoBase64" alt="@item.Name"
+                                                     class="logo-tooltip"
+                                                     style="width: 32px; height: 32px; object-fit: cover; border-radius: 10%;" />
+                                                <span class="tooltip-text">@item.Name</span>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="position-relative">
+                                                <img src="/img/CompanyDefault.png" alt="@item.Name"
+                                                     class="logo-tooltip"
+                                                     style="width: 32px; height: 32px; object-fit: cover; border-radius: 10%;" />
+                                                <span class="tooltip-text">@item.Name</span>
+                                            </div>
+
+                                        }
+                                    </td>
+
+                                    <td class="fw-medium">@Html.DisplayFor(modelItem => item.Name)</td>
+                                    <td class="fw-medium">@Html.DisplayFor(modelItem => item.Phone)</td>
+                                    <td class="fw-medium">@item.CountryName</td>        
+                                    <td class="fw-medium">@item.CreatedDate.ToString("dd.MM.yyyy")</td>  
+                                    @if (!User.IsInRole("Employee"))
+                                    {
+                                    <td class="text-center">
+                                        <input type="checkbox" class="form-check-input" data-company-id="@item.Id"
+                                        @(item.Status == BaSalesManagementApp.Core.Enums.Status.Passive ? "" : "checked")
+                                               onchange="toggleStatus(this)" />
+                                        <span id="status-@item.Id">
+                                            @(item.Status == BaSalesManagementApp.Core.Enums.Status.Passive ? @localizer["Passive"] : @localizer["Active"])
+                                        </span>
+                                    </td>
+                                    }
+                                    @if (!User.IsInRole("Employee"))
+                                    {
+                                    <td class="text-end">
+                                        <div class="dropdown">
+                                            <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown"
+                                                    style="margin-right: 28px;">
+                                                <i class="bx bx-dots-vertical-rounded"></i>
+                                            </button>
+                                            <div class="dropdown-menu">
+                                                <a asp-action="GetOrdersByCompany" asp-route-companyId="@item.Id" class="dropdown-item">
+                                                    <i class="bx bx-info-circle me-1"></i> @localizer["OrderHistory"]
+                                                </a>
+                                                <a asp-action="Details" asp-route-companyId="@item.Id" class="dropdown-item">
+                                                    <i class="bx bx-info-circle me-1"></i> @localizer["Details"]
+                                                </a>
+                                                <a asp-action="Update" asp-route-companyId="@item.Id" class="dropdown-item">
+                                                    <i class="bx bx-edit-alt me-1"></i> @localizer["Update"]
+                                                </a>
+                                                <a href="javascript:;" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#deleteModal"
+                                                   data-company-id="@item.Id">
+                                                    <i class="bx bx-trash me-1"></i>@localizer["Delete"]
+                                                </a>
+                                                <a href="javascript:;" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#deleteAllEmployeesModal"
+                                                   data-company-id="@item.Id">
+                                                    <i class="bx bx-user-x me-1"></i>@localizer["DELETE_ALL_EMPLOYEES"]
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    }
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="d-flex justify-content-center mt-3">
+                    @Html.PagedListPager(Model, page => Url.Action("Index", new { page, filterStatus = ViewBag.FilterStatus, sortOrder = ViewBag.CurrentSort, pageSize = ViewBag.CurrentPageSize }), new PagedListRenderOptions
+               {
+                   Display = PagedListDisplayMode.Always,
+                   UlElementClasses = new[] { "pagination", "justify-content-center" },
+                   LiElementClasses = new[] { "page-item" },
+                   PageClasses = new[] { "page-link" },
+                   LinkToPreviousPageFormat = @localizer["Previous"],
+                   LinkToNextPageFormat = @localizer["Next"],
+                   LinkToFirstPageFormat = @localizer["First"],
+                   LinkToLastPageFormat = @localizer["Last"],
+                   ContainerDivClasses = new[] { "d-flex", "justify-content-center" }
+               })
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel">@localizer["DELETE_CONFIRM_TITLE_COMPANY"]</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="deleteModalMessage">@localizer["DELETE_CONFIRM_COMPANY"]</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@localizer["CANCEL_COMPANY"]</button>
+                    <a id="confirmDeleteButton" href="#" class="btn btn-danger">@localizer["DELETE_COMPANY"]</a>
+                    <a id="confirmPassiveButton" href="#" class="btn btn-warning" style="display:none;">@localizer["PASSIVE_COMPANY"]</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete All Employees Confirmation Modal -->
+    <div class="modal fade" id="deleteAllEmployeesModal" tabindex="-1" aria-labelledby="deleteAllEmployeesModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteAllEmployeesModalLabel">@localizer["DELETE_ALL_EMPLOYEES_CONFIRM_TITLE"]</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="deleteAllEmployeesModalMessage">@localizer["DELETE_ALL_EMPLOYEES_CONFIRM_MESSAGE"]</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@localizer["CANCEL_EMPLOYEE"]</button>
+                    <a id="confirmDeleteAllEmployeesButton" href="#" class="btn btn-danger">@localizer["DELETE_ALL_EMPLOYEES"]</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @section Scripts {
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+        @* <script src="~/assets/vendor/js/company-list-handler.js"></script> *@
+        <script>
+            toastr.options = {
+                "closeButton": true,
+                "debug": false,
+                "newestOnTop": false,
+                "progressBar": true,
+                "positionClass": "toast-bottom-right",
+                "preventDuplicates": true,
+                "onclick": null,
+                "showDuration": "300",
+                "hideDuration": "1000",
+                "timeOut": "5000",
+                "extendedTimeOut": "1000",
+                "showEasing": "swing",
+                "hideEasing": "linear",
+                "showMethod": "fadeIn",
+                "hideMethod": "fadeOut"
+            };
+
+            function toggleStatus(checkbox) {
+                var companyId = checkbox.getAttribute("data-company-id");
+                var newStatus = checkbox.checked ? "Active" : "Passive";
+
+                fetch('/Company/ChangeStatus', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '@Antiforgery.GetTokens(HttpContextAccessor.HttpContext).RequestToken'
+                    },
+                    body: JSON.stringify({
+                        companyId: companyId,
+                        status: newStatus
+                    })
+                }).then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            var statusLabel = document.getElementById("status-" + companyId);
+                            statusLabel.innerText = newStatus === "Active" ? "@localizer["Active"]" : "@localizer["Passive"]";
+
+                            var row = document.getElementById("company-row-" + companyId);
+                            if (newStatus === "Passive") {
+                                row.classList.add("passive-row");
+                            } else {
+                                row.classList.remove("passive-row");
+                            }
+
+                            var successMessage = newStatus === "Active"
+                                ? "@localizer["CompanyActive"]"
+                                : "@localizer["COMPANY_PASSIVED_SUCCESS"]";
+
+                            notifySuccess(successMessage);
+                        } else {
+                            notifyError(data.message || "@localizer["Status update failed."]");
+                        }
+                    }).catch(error => {
+                        console.error('Error:', error);
+                        notifyError('@localizer["Status update failed."]');
+                    });
+            }
+
+            function notifySuccess(message) {
+                toastr.success(message);
+            }
+
+            function notifyError(message) {
+                toastr.error(message);
+            }
+
+            document.addEventListener('DOMContentLoaded', function () {
+                var deleteModal = document.getElementById('deleteModal');
+                deleteModal.addEventListener('show.bs.modal', async function (event) {
+                    var button = event.relatedTarget;
+                    var companyId = button.getAttribute('data-company-id');
+                    var confirmDeleteButton = deleteModal.querySelector('#confirmDeleteButton');
+                    var confirmPassiveButton = deleteModal.querySelector('#confirmPassiveButton');
+                    var deleteModalMessage = deleteModal.querySelector('#deleteModalMessage');
+
+                    var companyCannotDeleteMessage = decodeURIComponent("@Uri.EscapeDataString(localizer["COMPANY_CANNOT_DELETE_IS_IN_ORDER"])");
+                    var deleteConfirmMessage = decodeURIComponent("@Uri.EscapeDataString(localizer["DELETE_CONFIRM_COMPANY"])");
+
+                    const response = await fetch('/Company/CheckCompanyInOrder?companyId=' + companyId);
+                    const data = await response.json();
+
+                    if (data.isInOrder) {
+                        deleteModalMessage.textContent = companyCannotDeleteMessage;
+                        confirmDeleteButton.style.display = 'none';
+                        confirmPassiveButton.style.display = 'inline-block';
+                        confirmPassiveButton.href = '/Company/Delete?companyId=' + companyId;
+                    } else {
+                        deleteModalMessage.textContent = deleteConfirmMessage;
+                        confirmDeleteButton.style.display = 'inline-block';
+                        confirmPassiveButton.style.display = 'none';
+                        confirmDeleteButton.href = '/Company/Delete?companyId=' + companyId;
+                    }
+                });
+
+                // Delete All Employees Modal event listener
+                var deleteAllEmployeesModal = document.getElementById('deleteAllEmployeesModal');
+                deleteAllEmployeesModal.addEventListener('show.bs.modal', function (event) {
+                    var button = event.relatedTarget;
+                    var companyId = button.getAttribute('data-company-id');
+                    var confirmDeleteAllEmployeesButton = deleteAllEmployeesModal.querySelector('#confirmDeleteAllEmployeesButton');
+                    confirmDeleteAllEmployeesButton.href = '/Company/DeleteAllEmployees?companyId=' + companyId;
+                });
+            });
+        </script>
+    }
+</body>
+</html>

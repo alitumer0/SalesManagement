@@ -1,0 +1,391 @@
+﻿@using BaSalesManagementApp.Core.Enums
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<Resource> localizer
+@inject IHttpContextAccessor HttpContextAccessor
+@model OrderDetailsVM
+
+@{
+	ViewData["Title"] = localizer["OrderDetails"];
+}
+
+<head>
+	<style>
+		/* Menü öğeleri için stil */
+		.menu-itemm {
+			border-bottom: 1px solid #ddd;
+			border-radius: 15px;
+			margin: 5px 10px 0 10px;
+			list-style-type: none; /* Yuvarlak noktaları kaldır */
+			padding-left: 0; /* Sol boşluğu kaldır */
+		}
+
+		/* Alt menüler */
+		.submenu {
+			list-style-type: none; /* Yuvarlak noktaları kaldır */
+			padding-left: 0; /* Sol boşluğu kaldır */
+			margin-bottom: 0;
+		}
+
+		/* Alt menü öğeleri */
+		.submenu-item {
+			display: flex;
+			align-items: center;
+			font-size: 14px; /* Alt menü yazı boyutu */
+			color: #405D72;
+			text-decoration: none;
+			margin: 0px 0px 5px 30px;
+			padding-left: 10px;
+			width: 180px; /* Sabit genişlik */
+			height: 35px; /* Sabit yükseklik */
+			transition: background-color 0.5s ease, color 0.5s ease; /* Geçiş süresi 0.5 saniyeye çıkarıldı */
+		}
+
+		/* Menü öğesi aktifken açılma efekti */
+		.menu-itemm .submenu {
+			transition: max-height 0.5s ease; /* Menü açılma efekti için geçiş süresi 0.5 saniyeye çıkarıldı */
+			overflow: hidden; /* İçeriğin taşmasını engelle */
+			max-height: 0; /* Başlangıçta kapalı tutmak için maksimum yüksekliği 0 yap */
+		}
+
+		/* Menü öğesi aktifken alt menüyü açma */
+		.menu-itemm.active .submenu {
+			max-height: 10000px;
+		}
+
+		.menu-itemm.active {
+			border: none;
+		}
+
+		/* Ok simgesi için geçiş efekti */
+		.arrow {
+			transition: transform 0.3s ease;
+			margin-left: auto;
+		}
+
+		/* Hover ve aktif durum için stil değişiklikleri */
+		.submenu-item:hover, .submenu-item.active-menu-itemm {
+			background-color: #f0f0f0; /* Hover ve aktif durum için arka plan rengi */
+			color: #696cff;
+			border-radius: 10px;
+		}
+
+		/* Menü açıldığında metin rengini değiştir */
+		.menu-itemm.active > .menu-linkk {
+			color: #696cff; /* Açık mavi renk örneği */
+		}
+
+
+		/* Menü öğesi aktifken ok simgesini döndürme */
+		.menu-itemm.active .arrow {
+			transform: rotate(90deg);
+		}
+
+
+		#detail-sidebar {
+			width: 60%;
+			/sidebar genişliği için özelleştirme yapıldı/
+		}
+
+
+
+		/* Menü bağlantısında hover efekti */
+		.menu-linkk:hover {
+			color: #696cff; /* Hover durumunda metin rengi */
+			border-radius: 30px;
+			background-color: rgba(105, 108, 255, 0.1);
+		}
+
+		.card {
+			transition: background-color 0.5s ease, border-radius 0.5s ease, color 0.5s ease; /* Geçiş süresi 0.5 saniyeye çıkarıldı */
+		}
+
+		.row {
+			margin-bottom: 0;
+		}
+
+		.menu-itemm-order-detail dt {
+			font-weight: bold; /* Kalın yazı stili */
+		}
+
+		.col-8.total-price {
+			color: green; /* Sadece bu öğeyi yeşil yapar */
+		}
+
+
+		#submenu-item-one .card.mb-4 {
+			margin-bottom: 50%; /* Varsayılan boşluğu küçült */
+		}
+
+		#submenu-item-one dt {
+			width: 20%;
+			padding-right: 5px; /* Sağdaki boşluğu küçült */
+			text-align: left; /* Sağ tarafa hizala (isteğe bağlı) */
+		}
+
+		#submenu-item-one dd {
+			width: 20%;
+			padding-right: 5px; /* Sağdaki boşluğu küçült */
+		}
+
+		#submenu-item-one .card {
+			width: 100%; /* Genişliği %70 olarak ayarla (ihtiyaca göre artır/azalt) */
+		}
+
+			#submenu-item-one .card dd {
+				width: 70%;
+			}
+
+		.menu-itemm-order-detail .col-6 {
+			width: 45%; /* Her iki .col-6 için genişliği %45 yap */
+			height: auto; /* Yükseklik otomatik */
+		}
+	</style>
+
+</head>
+
+<body>
+	<div class="content-wrapper">
+		<div class="container-xxl flex-grow-1 container-p-y">
+			<h4 class="py-3 mb-4"><span class="text-muted fw-light">@localizer["Order"] /</span> @localizer["Details"]</h4>
+			<div class="sidebar" id="detail-sidebar">
+				<li class="menu-itemm menu-itemm-order-detail" id="menu-item-one">
+					<a href="#" class="menu-linkk menu-linkk-order-detail">
+						<h5 class="card-title">@localizer["OrderSummary"]</h5>
+						<i class="arrow fas fa-chevron-right"></i>
+					</a>
+					<ul class="submenu collapse submenu-order-detail" id="submenu-item-one">
+						<div class="card mb-4">
+							<div class="card-body">
+								<dl class="row">
+									<dt class="col-4 mb-4">@localizer["OrderCreatedBy"]:</dt>
+									@* <dd class="col-8">@Html.DisplayFor(model => model.Admin.FirstName) @Html.DisplayFor(model => model.Admin.LastName)</dd> *@
+									<dd class="col-8">
+										@if (Model.Admin != null)
+										{
+											@Html.DisplayFor(model => model.Admin.FirstName) @Html.DisplayFor(model => model.Admin.LastName)
+										}
+										else
+										{
+											@Html.DisplayFor(@model => model.AdminName)
+										}
+									</dd>
+
+
+									<dt class="col-4 mb-4">@localizer["CustomerName"]:</dt>
+									<dd class="col-8">@Html.DisplayFor(model => model.CustomerName)</dd>
+
+
+									<dt class="col-4 mb-4">@localizer["Email"]:</dt>
+
+									@if (Model.Admin != null)
+									{
+										<dd class="col-8">@Html.DisplayFor(model => model.Admin.Email)</dd>
+									}
+									else
+									{
+										<dd class="col-8">@Html.DisplayFor(model => model.Email)</dd>
+									}
+
+									<dt class="col-4 mb-4">
+										@Html.Raw((HttpContextAccessor.HttpContext.Request.Cookies[".AspNetCore.Culture"]?.Contains("tr") ?? false)
+																						? localizer["OrderDate"].ToString().Replace("Şipariş", "Sipariş")
+																						: localizer["OrderDate"].ToString())
+									</dt>
+									<dd class="col-8">@Html.DisplayFor(model => model.OrderDate)</dd>
+
+									<dt class="col-4 mb-4">@localizer["OrderStatus"]:</dt>
+									<dd class="col-sm-8">
+										@if (Model.IsActive)
+										{
+											<i class="fas fa-check text-primary"></i>
+										}
+										else
+										{
+											<i class="fas fa-times text-danger"></i>
+										}
+									</dd>
+
+									<dt class="col-4 mb-4" style="color:black">@localizer["TotalPrice"]:</dt>
+									<dd class="col-8" style="color:green">
+										@Html.DisplayFor(model => model.TotalPrice)
+										<td>
+											@if (Model.CurrencyType != null)
+											{
+												@Enum.GetName(typeof(CurrencyType), Model.CurrencyType)
+											}
+										</td>
+
+									</dd>
+								</dl>
+							</div>
+						</div>
+					</ul>
+				</li>
+
+				<li class="menu-itemm menu-itemm-order-detail">
+					<a href="#" class="menu-linkk menu-linkk-order-detail">
+						<h5 class="card-title">@localizer["OrderDetails"]</h5>
+						<i class="arrow fas fa-chevron-right"></i>
+					</a>
+					<ul class="submenu collapse submenu-order-detail">
+						@foreach (var orderDetail in Model.OrderDetails)
+						{
+							<div class="card mb-4">
+								<div class="card-body">
+									<div class="row">
+										<div class="col-6">
+											<dl class="row">
+												<h5 style="color:#696cff">@localizer["Products"]</h5>
+												<dt class="col-4 mb-4">@localizer["Product"]:</dt>
+												<dd class="col-8">@orderDetail.ProductName</dd>
+
+												<dt class="col-4 mb-4">@localizer["Quantity"]:</dt>
+												<dd class="col-8">@orderDetail.Quantity</dd>
+
+												<dt class="col-4 mb-4">@localizer["UnitPrice"]:</dt>
+												<dd class="col-8">
+													@orderDetail.UnitPrice
+													<td>
+														@if (Model.CurrencyType != null)
+														{
+															@Enum.GetName(typeof(CurrencyType), Model.CurrencyType)
+														}
+													</td>
+												</dd>
+
+												<dt class="col-4 mb-4">@localizer["Discount(%)"]:</dt>
+												<dd class="col-8">@orderDetail.Discount</dd>
+
+												<dt class="col-4 mb-4" style="color:black">@localizer["TotalPrice"]:</dt>
+												<dd class="col-8" style="color:darkgreen">
+													@orderDetail.TotalPrice
+													<td>
+														@if (Model.CurrencyType != null)
+														{
+															@Enum.GetName(typeof(CurrencyType), Model.CurrencyType)
+														}
+													</td>
+
+												</dd>
+											</dl>
+										</div>
+										<div class="col-6">
+											<dl class="row">
+												<h5 style="color:#696cff">@localizer["Company Details"]</h5>
+												<dt class="col-4 mb-4">@localizer["Company"]:</dt>
+												<dd class="col-8">@orderDetail.CompanyDTO.Name</dd>
+
+												<dt class="col-4 mb-4">@localizer["Address"]:</dt>
+												<dd class="col-8">@orderDetail.CompanyDTO.Address</dd>
+
+												<dt class="col-4 mb-4">@localizer["Phone"]:</dt>
+												<dd class="col-8">@orderDetail.CompanyDTO.Phone</dd>
+
+												<dt class="col-4 mb-4">@localizer["Status"]:</dt>
+												<dd class="col-8">
+													@if (@orderDetail.CompanyDTO.Status != Status.Passive)
+													{
+														<i class="fas fa-check text-primary"></i>
+													}
+													else
+													{
+														<i class="fas fa-times text-danger"></i>
+													}
+												</dd>
+											</dl>
+										</div>
+									</div>
+								</div>
+							</div>
+						}
+					</ul>
+				</li>
+
+				<div class="card-footer mt-4" style="margin-left: 11px;">
+					<a href="@Url.Action("Update", new { orderId = Model.Id })" class="btn btn-primary">@localizer["Update"]</a>
+					<a asp-action="Index" class="btn btn-secondary">@localizer["BackToList"]</a>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</body>
+
+@section Scripts {
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+	<script>
+		document.addEventListener("DOMContentLoaded", function () {
+			// setTimeout fonksiyonu sayfanın tam olarak yüklenmesini bekler
+			setTimeout(function () {
+				// Öğeler, layout ile karışmaması için id ile seçilmelidir
+				var firstAccordion = document.getElementById('menu-item-one');
+				console.log(firstAccordion);
+
+				if (firstAccordion) {
+					// ilk akordeonun sayfa açıldığında açık gelmesi için 'active' sınıfını ekle
+					firstAccordion.classList.add('active');
+					console.log("active sınıfı eklendi");
+
+					// İlk submenu'yi açık hale getir
+					var firstSubmenu = document.getElementById('submenu-item-one');
+					if (firstSubmenu) {
+						firstSubmenu.style.display = 'block'; // Alt menüyü aç
+						firstSubmenu.style.maxHeight = '10000px'; // Açık hale getir
+					}
+				}
+			}, 0);
+		});
+	</script>
+
+	<script>
+		$(document).ready(function () {
+
+			$('.menu-itemm-order-detail').each(function () {
+				var menuId = $(this).index();
+				var menuState = sessionStorage.getItem('menu-order-detail' + menuId);
+
+
+				if (menuState === 'open') {
+					$(this).addClass('active');
+					$(this).find('.submenu-order-detail').show();
+				} else {
+					$(this).removeClass('active');
+					$(this).find('.submenu-order-detail').hide();
+				}
+			});
+
+
+			$('.menu-linkk-order-detail').click(function (e) {
+				e.preventDefault();
+
+				var parent = $(this).parent('.menu-itemm-order-detail');
+				var menuId = parent.index();
+
+
+				if (parent.hasClass('active')) {
+					parent.removeClass('active');
+					parent.find('.submenu-order-detail').slideUp();
+					sessionStorage.setItem('menu-order-detail' + menuId, 'closed');
+				} else {
+
+					$('.menu-itemm-order-detail.active').each(function () {
+						$(this).removeClass('active');
+						$(this).find('.submenu-order-detail').slideUp();
+						var otherMenuId = $(this).index();
+						sessionStorage.setItem('menu-order-detail' + otherMenuId, 'closed');
+					});
+
+
+					parent.addClass('active');
+					parent.find('.submenu-order-detail').slideDown();
+					sessionStorage.setItem('menu-order-detail' + menuId, 'open');
+				}
+			});
+
+			$('.dropdown-item').click(function () {
+				sessionStorage.clear();
+			});
+		});
+	</script>
+}

@@ -1,0 +1,154 @@
+﻿@model BaSalesManagementApp.MVC.Models.WarehouseVMs.WarehouseUpdateVM
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<Resource> localizer
+
+@{
+    ViewData["Title"] = localizer["Update"];
+}
+
+<div class="content-wrapper">
+    <div class="container-xxl flex-grow-1 container-p-y">
+        <h4 class="py-3 mb-4">
+            <span class="text-muted fw-light">@localizer["Warehouse"] /</span>
+            @localizer["Update"]
+        </h4>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <form id="warehouseForm" asp-action="Update" method="post" novalidate>
+                            <input hidden asp-for="Id" class="form-control" />
+                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                            <div class="mb-3">
+                                <label asp-for="Name" class="form-label">@localizer["Warehouse_Name"]</label>
+                                <input asp-for="Name" class="form-control" />
+                                <span asp-validation-for="Name" class="text-danger"></span>
+                                <span class="text-danger" id="nameError"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="Address" class="form-label">@localizer["Address"]</label>
+                                <input asp-for="Address" class="form-control" />
+                                <span asp-validation-for="Address" class="text-danger"></span>
+                                <span class="text-danger" id="addressError"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="BranchId" class="form-label">@localizer["Branch"]</label>
+                                <select asp-for="BranchId" class="form-control" id="branchSelect" style="width: 100%;">
+                                    <option value="">@localizer["Select_Branch"]</option>
+                                    @foreach (var branch in Model.Branches.OrderBy(b => b.Name))
+                                    {
+                                        <option value="@branch.Id">@branch.Name</option>
+                                    }
+                                </select>
+                                <span class="text-danger" id="branchError"></span>
+                            </div>
+
+                            <div>
+                                <input type="submit" value="@localizer["Update"]" class="btn btn-primary" />
+                                <a asp-action="Index" class="btn btn-secondary">@localizer["BackToList"]</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+
+    <script>
+        
+        var nameNotEmptyMessage = @Json.Serialize(localizer[Messages.Warehouse_NOT_EMPTY].Value);
+        var nameMaxLengthMessage = @Json.Serialize(localizer[Messages.Warehouse_MAX_LENGTH].Value);
+        var nameMinLengthMessage = @Json.Serialize(localizer[Messages.Warehouse_MIN_LENGTH].Value);
+
+        var addressNotEmptyMessage = @Json.Serialize(localizer[Messages.Warehouse_DESCRIPTION_NOT_EMPTY].Value);
+        var addressMinLengthMessage = @Json.Serialize(localizer[Messages.Warehouse_DESCRIPTION_MIN_LENGTH].Value);
+
+        var branchRequiredMessage = @Json.Serialize(localizer["BranchRequired"].Value);
+
+        $(document).ready(function () {
+
+            $('#branchSelect').select2({
+                placeholder: "@localizer["Select a Branch"]",
+                allowClear: true,
+                width: 'resolve',
+                language: {
+                    noResults: function () {
+                        return '@Html.Raw(localizer["No matching results"])';
+                    }
+                },
+                matcher: function (params, data) {
+                    
+                    if ($.trim(params.term) === '') {
+                        return data;
+                    }
+
+                    
+                    if (data.text.toLowerCase().startsWith(params.term.toLowerCase())) {
+                        return data;
+                    }
+
+                    
+                    return null;
+                }
+            }).on('change', function () {
+                validateBranch();
+            });
+
+            
+            function validateName() {
+                var name = $('#Name').val().trim();  
+                if (name.length === 0) {
+                    $('#nameError').text(nameNotEmptyMessage);
+                } else if (name.length < 2) {
+                    $('#nameError').text(nameMinLengthMessage);
+                } else if (name.length > 128) {
+                    $('#nameError').text(nameMaxLengthMessage);
+                } else {
+                    $('#nameError').text('');
+                }
+            }
+
+            function validateAddress() {
+                var address = $('#Address').val().trim();  
+                if (address.length === 0) {
+                    $('#addressError').text(addressNotEmptyMessage);
+                } else if (address.length < 2) {
+                    $('#addressError').text(addressMinLengthMessage);
+                } else {
+                    $('#addressError').text('');
+                }
+            }
+
+            function validateBranch() {
+                var branchId = $('#branchSelect').val();
+                if (!branchId) {
+                    $('#branchError').text(branchRequiredMessage);
+                } else {
+                    $('#branchError').text('');
+                }
+            }
+
+            
+            $('#Name').on('keyup blur', validateName);
+            $('#Address').on('keyup blur', validateAddress);
+
+            
+            $('#warehouseForm').submit(function (event) {
+                validateName();
+                validateAddress();
+                validateBranch();
+
+                if ($('#nameError').text() || $('#addressError').text() || $('#branchError').text()) {
+                    event.preventDefault();
+                }
+            });
+        });
+    </script>
+}

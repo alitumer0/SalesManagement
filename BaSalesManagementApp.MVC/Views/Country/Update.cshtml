@@ -1,0 +1,101 @@
+﻿@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<Resource> localizer
+
+@model CountryUpdateVM
+
+@{
+    ViewData["Title"] = localizer["Update"];
+}
+
+<div class="content-wrapper">
+    <div class="container-xxl flex-grow-1 container-p-y">
+        <h4 class="py-3 mb-4">
+            <span class="text-muted fw-light">@localizer["Country"] /</span>  @localizer["Update"]
+        </h4>
+        <div class="row">
+            <div class="content-wrapper">
+                <div class="col-md-6">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <form id="countryForm" asp-action="Update" asp-controller="Country" method="post">
+                                <input type="hidden" asp-for="Id" class="form-control" />
+                                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                                <div class="mb-3">
+                                    <label asp-for="NameTr" class="form-label">@localizer["Country Name Tr"]</label>
+                                    <input asp-for="NameTr" class="form-control" />
+                                    <span asp-validation-for="NameTr" class="text-danger"></span>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="NameEn" class="form-label">@localizer["Country Name En"]</label>
+                                    <input asp-for="NameEn" class="form-control" />
+                                    <span asp-validation-for="NameEn" class="text-danger"></span>
+                                </div>
+
+
+
+                                <div>
+                                    <input type="submit" value="@localizer["Update"]" class="btn btn-primary" />
+                                    <a asp-action="Index" class="btn btn-secondary">@localizer["BackToList"]</a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            
+            // Ülke adı doğrulama fonksiyonu
+            function validateCountryName() {
+                const countryName = $("#CountryName").val().trim();
+
+                if (countryName.length === 0) {
+                    $("#countryNameError").text(countryNameRequiredMessage);
+                } else if (/\d/.test(countryName)) {
+                    $("#countryNameError").text(countryNameNumericForbiddenMessage);
+                } else if (countryName.length < 2) {
+                    $("#countryNameError").text(countryNameMinLengthMessage);
+                } else if (countryName.length > 40) {
+                    $("#countryNameError").text(countryNameMaxLengthMessage);
+                }  else {
+                    $("#countryNameError").text(""); // Hata yok
+
+                }
+            }
+
+            
+            // Doğrulamayı giriş alanı olaylarına bağlayın
+            $("#CountryName").on('keyup blur', validateCountryName);
+
+            // Form gönderim doğrulaması
+            $("#countryForm").submit(function (event) {
+                validateCountryName();
+                let isValid = true;
+
+                if ($("#countryNameError").text()) {
+                    isValid = false;
+                }
+
+                if (!isValid) {
+                    event.preventDefault();
+                }
+            });
+        });
+    </script>
+
+    <script>
+        // Yerelleştirilmiş doğrulama mesajları
+        var countryNameRequiredMessage = @Json.Serialize(localizer[Messages.COUNTRY_NAME_NOT_EMPTY].Value);
+        var countryNameMaxLengthMessage = @Json.Serialize(localizer[Messages.COUNTRY_NAME_MAXIMUM_LENGTH].Value);
+        var countryNameMinLengthMessage = @Json.Serialize(localizer[Messages.COUNTRY_NAME_MINIMUM_LENGTH].Value);
+        var countryNameNumericForbiddenMessage = @Json.Serialize(localizer[Messages.COUNTRY_NAME_SHOULD_BE_STRING].Value);
+    </script>
+}

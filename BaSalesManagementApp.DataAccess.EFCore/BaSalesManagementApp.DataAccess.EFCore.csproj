@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="Seeds\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BaSalesManagementApp.DataAccess.Interfaces\BaSalesManagementApp.DataAccess.Interfaces.csproj" />
+    <ProjectReference Include="..\BaSalesManagementApp.Dtos\BaSalesManagementApp.Dtos.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,84 @@
+﻿@model BaSalesManagementApp.MVC.Models.BadgeVMs.BadgeDetailsVM
+@using BaSalesManagementApp.Core.Enums
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<Resource> localizer
+
+@{
+    ViewData["Title"] = localizer["Badge_Details"];
+}
+@{
+    var isManager = User.IsInRole("Manager"); // Kullanıcının rolünü kontrol et
+
+}
+
+<div class="content-wrapper">
+    <div class="container-xxl flex-grow-1 container-p-y">
+        <h4 class="py-3 mb-4">
+            <span class="text-muted fw-light">@localizer["Badge"] /</span> @localizer["Details"]
+        </h4>
+        <div class="row">
+            <div class="content-wrapper">
+                <div class="col-md-6">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <dl class="row">
+                                <dt class="col-sm-3 mb-4">
+                                    @localizer["BadgeName"]
+                                </dt>
+                                <dd class="col-sm-9">
+                                    @Html.DisplayFor(model => model.Name)
+                                </dd>
+
+                                @if (isManager)
+                                {
+                                    <input type="hidden" class="form-control" value="@Model.CompanyName" />
+                                }
+                                else
+                                {
+                                    <dt class="col-sm-3 mb-4">
+                                        @localizer["CompanyName"]
+                                    </dt>
+                                    <dd class="col-sm-9">
+                                        @Html.DisplayFor(model => model.CompanyName)
+                                    </dd>
+                                }
+
+                                @if (Model.Status == Status.Modified)
+                                {
+                                    <dt class="col-sm-3 mb-4">
+                                        @localizer["ModifiedDate"]
+                                    </dt>
+                                    <dd class="col-sm-9">
+                                        @((Model.ModifiedDate.HasValue ? Model.ModifiedDate.Value.ToString("dd.MM.yyyy") : ""))
+                                    </dd>
+                                }
+                                else
+                                {
+                                    <dt class="col-sm-3 mb-4">
+                                        @localizer["CreatedDate"]
+                                    </dt>
+                                    <dd class="col-sm-9">
+                                        @Model.CreatedDate.ToString("dd.MM.yyyy")
+                                    </dd>
+                                }
+                               
+                                
+                                
+
+                         
+                            </dl>
+                        </div>
+                        <div class="card-footer" style="margin-top:-50px">
+                            <a href="@Url.Action("Update", new { badgeId = Model.Id })" class="btn btn-primary">
+                                @localizer["Update"]
+                            </a>
+                            <a asp-action="Index" class="btn btn-secondary">
+                                @localizer["BackToList"]
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

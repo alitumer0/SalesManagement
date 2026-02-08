@@ -1,0 +1,138 @@
+﻿@model BaSalesManagementApp.MVC.Models.StockVMs.StockCreateVM
+
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<Resource> localizer
+
+@{
+    ViewData["Title"] = localizer["Create"];
+}
+
+<div class="content-wrapper">
+    <div class="container-fluid flex-grow-1 container-p-y">
+        <!-- Güncellendi: container-xxl => container-fluid -->
+        <h4 class="py-3 mb-4">
+            <span class="text-muted fw-light">@localizer["Stock"] /</span>
+            @localizer["Create"]
+        </h4>
+        <div class="row">
+            <div class="col-12">
+                <div class="card mb-4" style="background-color: transparent; box-shadow: none;">
+                    <!-- Arka plan kaldırıldı -->
+                    <div class="card-body">
+                        <form id="stockForm" asp-action="Create" method="post" novalidate>
+                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                            <!-- Ürün Seçimi -->
+                            <div class="mb-3">
+                                <label asp-for="ProductId" class="form-label">@localizer["Product_Name"]</label>
+                                <select asp-for="ProductId" class="form-control" id="productSelect" style="width: 100%; background-color: transparent;">
+                                    <!-- background kaldırıldı -->
+                                    <option value="">@localizer["Select_Product"]</option>
+                                    @foreach (var product in Model.Products)
+                                    {
+                                        <option value="@product.Id">@product.Name</option>
+                                    }
+                                </select>
+                                <span class="text-danger" id="productError"></span>
+                            </div>
+
+                            <!-- Adet Girişi -->
+                            <div class="mb-3">
+                                <label asp-for="Count" class="form-label">@localizer["Count"]</label>
+                                <input asp-for="Count" class="form-control" id="Count" style="background-color: transparent;" />
+                                <span class="text-danger" id="countError"></span>
+                            </div>
+
+                            <!-- Depo Seçimi -->
+                            <div class="mb-3">
+                                <label asp-for="WarehouseId" class="form-label">@localizer["Warehouse"]</label>
+                                <select asp-for="WarehouseId" class="form-control" id="warehouseSelect" style="width: 100%; background-color: transparent;">
+                                    <option value="">@localizer["Select_Warehouse"]</option>
+                                    @foreach (var warehouse in Model.Warehouses)
+                                    {
+                                        <option value="@warehouse.Id">@warehouse.Name</option>
+                                    }
+                                </select>
+                                <span class="text-danger" id="warehouseError"></span>
+                            </div>
+
+                            <!-- Butonlar -->
+                            <div class="d-flex gap-2">
+                                <input type="submit" value="@localizer["Create"]" class="btn btn-primary" />
+                                <a asp-action="Index" class="btn btn-secondary">@localizer["BackToList"]</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+
+    <script>
+        var countRequiredMessage = @Json.Serialize(localizer[Messages.STOCK_EMPTY_VALIDATION].Value);
+        var countPositiveMessage = @Json.Serialize(localizer[Messages.STOCK_POSITIVE_VALIDATION].Value);
+        var countWholeNumberMessage = @Json.Serialize(localizer[Messages.STOCK_WHOLENUMBER_VALIDATION].Value);
+        var productRequiredMessage = @Json.Serialize(localizer[Messages.STOCK_PRODUCT_RELATION].Value);
+        var warehouseRequiredMessage = @Json.Serialize(localizer["Warehouse must be selected"].Value);
+
+        $(document).ready(function () {
+            $('#productSelect').select2({
+                placeholder: "@Html.Raw(localizer["Select_a_Product"])",
+                allowClear: true,
+                width: '100%'
+            });
+
+            $('#warehouseSelect').select2({
+                placeholder: "@Html.Raw(localizer["Select_a_Warehouse"])",
+                allowClear: true,
+                width: '100%'
+            });
+
+            function validateProduct() {
+                const productId = $("#productSelect").val();
+                $("#productError").text(productId ? "" : productRequiredMessage);
+            }
+
+            function validateWarehouse() {
+                const warehouseId = $("#warehouseSelect").val();
+                $("#warehouseError").text(warehouseId ? "" : warehouseRequiredMessage);
+            }
+
+            const maxCount = 999999999;
+            function validateCount() {
+                const count = $("#Count").val().trim();
+                if (count.length === 0) {
+                    $("#countError").text("Stok sayısı zorunludur.");
+                } else if (parseFloat(count) <= 0) {
+                    $("#countError").text("Stok sayısı pozitif olmalıdır.");
+                } else if (!Number.isInteger(Number(count))) {
+                    $("#countError").text("Stok sayısı tam sayı olmalıdır.");
+                } else if (parseFloat(count) > maxCount) {
+                    $("#countError").text("Stok sayısı 9 haneden fazla olamaz.");
+                } else {
+                    $("#countError").text("");
+                }
+            }
+
+            $("#productSelect").on('change', validateProduct);
+            $("#warehouseSelect").on('change', validateWarehouse);
+            $("#Count").on('keyup blur', validateCount);
+
+            $("#stockForm").submit(function (event) {
+                validateProduct();
+                validateWarehouse();
+                validateCount();
+
+                if ($("#productError").text().trim() !== "" ||
+                    $("#warehouseError").text().trim() !== "" ||
+                    $("#countError").text().trim() !== "") {
+                    event.preventDefault();
+                }
+            });
+        });
+    </script>
+}

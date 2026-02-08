@@ -1,0 +1,66 @@
+﻿@using BaSalesManagementApp.MVC.Models.CustomerVMs
+@model CustomerOrdersHistoryVM
+@inject IStringLocalizer<Resource> localizer
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>@localizer["OrderHistory"]</h2>
+    </div>
+
+    @if (Model?.Orders != null && Model.Orders.Any())
+    {
+        <div class="card mb-4 shadow-sm">
+            <div class="card-header">
+                <strong>@localizer["CustomerName"]:</strong> @Model.CustomerName
+            </div>
+        </div>
+
+        @foreach (var order in Model.Orders.OrderByDescending(o => o.OrderDate))
+        {
+            <div class="card mb-3 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        @localizer["OrderDate"]: @order.OrderDate.ToString("dd.MM.yyyy")
+                    </h5>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>@localizer["Product_Name"]</th>
+                                <th>@localizer["Quantity"]</th>
+                                <th>@localizer["UnitPrice"]</th>
+                                <th>@localizer["Discount"]</th>
+                                <th>@localizer["Discounted Total Price"]</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var orderDetail in order.OrderDetails)
+                            {
+                                <tr>
+                                    <td>@orderDetail.ProductName</td>
+                                    <td>@orderDetail.Quantity</td>
+                                    <td>@orderDetail.UnitPrice.ToString("C2", new System.Globalization.CultureInfo("tr-TR"))</td>
+                                    <td>%@orderDetail.Discount</td>
+                                    <td>@((orderDetail.UnitPrice * (1 - (orderDetail.Discount / 100)) * orderDetail.Quantity).ToString("C2", new System.Globalization.CultureInfo("tr-TR")))</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card-footer text-end">
+                    <strong>@localizer["TotalPrice"]:</strong>
+                    @order.OrderDetails.Sum(od => od.UnitPrice * od.Quantity * (1 - od.Discount / 100)).ToString("C2", new System.Globalization.CultureInfo("tr-TR"))
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="alert alert-warning" role="alert">
+            @localizer["NoOrdersFound"]
+        </div>
+    }
+    <div class="mt-4 mb-5">
+        <a asp-action="Index" class="btn btn-secondary">
+            @localizer["BackToList"]
+        </a>
+    </div>
+</div>

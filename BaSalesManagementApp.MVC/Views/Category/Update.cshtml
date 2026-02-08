@@ -1,0 +1,106 @@
+﻿@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<Resource> localizer
+@model BaSalesManagementApp.MVC.Models.CategoryVMs.CategoryUpdateVM
+
+@{
+    ViewData["Title"] = @localizer["Update"];
+}
+
+<div class="content-wrapper">
+    <div class="container-xxl flex-grow-1 container-p-y">
+        <h4 class="py-3 mb-4">
+            <span class="text-muted fw-light">@localizer["Category"] /</span>
+            @localizer["Update"]
+        </h4>
+        <div class="row">
+            <div class="content-wrapper">
+                <div class="col-md-6">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <form asp-action="Update" onsubmit="return validateForm()">
+                                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                <input type="hidden" asp-for="Id" class="form-control" />
+
+                                <div class="mb-3">
+                                    <label asp-for="Name" class="form-label">@localizer["CategoryName"].ToString().ToUpper(new System.Globalization.CultureInfo("tr-TR"))</label>
+                                    <input asp-for="Name" id="CategoryName" class="form-control"
+                                           data-val="true"
+                                           data-val-required="@localizer[Messages.CATEGORY_NAMESPACE_IS_REQUIRED]"
+                                           data-val-minlength="@localizer[Messages.CATEGORY_MIN_LENGTH]"
+                                           data-val-maxlength="@localizer[Messages.CATEGORY_MAX_LENGTH]" />
+                                    <span asp-validation-for="Name" id="categoryNameError" class="text-danger"></span>
+                                </div>
+
+                                <div class="mb-3">
+                                    <input type="submit" value="@localizer["Save"]" class="btn btn-primary" />
+                                    <a asp-action="Index" class="btn btn-secondary">
+                                        @localizer["BackToList"]
+                                    </a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function validateForm() {
+            var categoryNameError = $('#categoryNameError').text();
+
+            if (categoryNameError) {
+                return false;  // Form gönderimini engelle
+            }
+            return true;  // Formu gönder
+        }
+
+        $(document).ready(function () {
+            // Türkçe karakterler
+            var turkishCharacters = ['ç', 'ğ', 'ı', 'ö', 'ş', 'ü', 'Ç', 'Ğ', 'İ', 'Ö', 'Ş', 'Ü'];
+
+            // Category name validation
+            $('#CategoryName').on('input', function () {
+                var categoryNameValue = $(this).val();
+                var errorMessage = $('#categoryNameError');
+
+                // Razor'daki data-val-* özelliklerinden gerekli hata mesajlarını alıyoruz
+                var requiredMessage = $(this).data('val-required');
+                var minLengthMessage = $(this).data('val-minlength');
+                var maxLengthMessage = $(this).data('val-maxlength');
+
+                // Eğer input boşsa required mesajını göster
+                if (categoryNameValue.length === 0) {
+                    errorMessage.text(requiredMessage).show();
+                }
+                // Eğer input değeri minimum karakter uzunluğunun altındaysa minLength mesajını göster
+                else if (categoryNameValue.length < 2) {
+                    errorMessage.text(minLengthMessage).show();
+                }
+                // Eğer input değeri maksimum karakter uzunluğunu aşarsa maxLength mesajını göster
+                else if (categoryNameValue.length > 128) {
+                    errorMessage.text(maxLengthMessage).show();
+                }
+                else {
+                    errorMessage.text('').hide(); // Hata yoksa mesajı gizle
+                }
+
+                // Her kelimenin ilk harfini büyük yap, Türkçe karakterlerden sonraki harfi küçük bırak
+                var capitalizedValue = categoryNameValue.replace(/\b\w/g, function (c, index) {
+                    // Sadece boşluktan sonra veya ilk harfi büyük yap
+                    if (index === 0 || categoryNameValue[index - 1] === ' ') {
+                        return c.toUpperCase();
+                    }
+                    // Eğer Türkçe bir karakterden sonra geliyorsa, büyük yapma
+                    if (turkishCharacters.includes(categoryNameValue[index - 1])) {
+                        return c;
+                    }
+                    return c.toLowerCase(); // Diğer tüm harfleri küçük yap
+                });
+                $(this).val(capitalizedValue); // Değeri inputa geri set et
+            });
+        });
+    </script>
+}

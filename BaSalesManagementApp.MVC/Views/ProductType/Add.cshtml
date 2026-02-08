@@ -1,0 +1,242 @@
+﻿@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<Resource> localizer
+@model ProductTypeAddVM
+
+@{
+    ViewData["Title"] = localizer["Add"];
+}
+
+
+<div class="content-wrapper">
+    <div class="container-fluid py-4">
+        <h4 class="py-3 mb-4">
+            <span class="text-muted fw-light">@localizer["ProductType"] /</span>
+            @localizer["Create"]
+        </h4>       
+            <div class="content-wrapper">
+
+            <div class="mb-4 bg-body border-0 shadow-none">
+                        <div class="card-body">
+                            <form id="productTypeForm" asp-action="Add" method="post">
+                                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                                <div class="mb-3">
+                                    <label asp-for="Name" class="form-label">@localizer["ProductTypeName"].ToString().ToUpper(new System.Globalization.CultureInfo("tr-TR"))</label>
+                            <input asp-for="Name" class="form-control bg-body border border-secondary" />
+                                    <span class="text-danger" id="nameError"></span>
+                                </div>
+
+
+                                <div class="mb-3">
+                            <label asp-for="Description" class="form-label  ">@localizer["Description"]</label>
+                            <input asp-for="Description" class="form-control bg-body border border-secondary" />
+                                    <span class="text-danger" id="descriptionError"></span>
+                                </div>
+
+                                <div class="mb-3">
+                            <label asp-for="CategoryId" class="form-label ">@localizer["Category"].ToString().ToUpper(new System.Globalization.CultureInfo("tr-TR"))</label>
+                                <select asp-for="CategoryId" class="form-select border border-secondary" id="categorySelect" style="width: 100%; background-color: var(--bs-body-bg); color: var(--bs-body-color);">
+                                        <option value="">@localizer["Select_Category"]</option>
+                                        @foreach (var category in Model.Categories)
+                                        {
+                                            <option value="@category.Id">@category.Name</option>
+                                        }
+                                    </select>
+                                    <span class="text-danger" id="CategoryIdError"></span>
+                                </div>
+                                <div>
+                                    <input type="submit" value="@localizer["Create"]" class="btn btn-primary" />
+                                    <a asp-action="Index" class="btn btn-secondary">@localizer["BackToList"]</a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>              
+            </div>       
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+    <script>
+        var nameRequiredMessage = @Json.Serialize(localizer[Messages.PRODUCTTYPE_NAME_NOT_EMPTY].Value);
+        var nameMaxLengthMessage = @Json.Serialize(localizer[Messages.PRODUCTTYPE_NAME_MAXIMUM_LENGTH].Value);
+        var nameMinLengthMessage = @Json.Serialize(localizer[Messages.PRODUCTTYPE_NAME_MINIMUM_LENGTH].Value);
+
+        var descriptionRequiredMessage = @Json.Serialize(localizer[Messages.PRODUCTTYPE_DESCRIPTION_NOT_EMPTY].Value);
+        var descriptionMaxLengthMessage = @Json.Serialize(localizer[Messages.PRODUCTTYPE_DESCRIPTION_MAXIMUM_LENGTH].Value);
+        var descriptionMinLengthMessage = @Json.Serialize(localizer[Messages.PRODUCTTYPE_DESCRIPTION_MINIMUM_LENGTH].Value);
+
+        var categoryRequiredMessage = @Json.Serialize(localizer[Messages.PRODUCTTYPE_CATEGORIES_NOT_EMPTY].Value);
+
+        $(document).ready(function () {
+
+            // Category Select
+            $('#categorySelect').select2(
+                {
+                placeholder: "@localizer["Select_Category"]",
+                allowClear: true,
+                matcher: function (params, data) 
+                {
+                    // Arama terimi yoksa, mevcut seçenekleri göster
+                    if ($.trim(params.term) === '') 
+                    {
+                        return data;
+                    }
+
+                    // Veri boşsa, eşleşme yok demektir
+                    if (typeof data.text === 'undefined') 
+                    {
+                        return null;
+                    }
+
+                    // Arama terimini küçük harflere çevir ve baştan eşleşme kontrolü yap
+                    var searchTerm = params.term.toLowerCase();
+                    var optionText = data.text.toLowerCase();
+
+                    // Eğer seçenek, arama terimiyle başlıyorsa, sonucu döndür
+                    if (optionText.indexOf(searchTerm) === 0) 
+                    {
+                        return data;
+                    }
+
+                    // Aksi takdirde eşleşme yok
+                    return null;
+                },
+                sorter: function (data) 
+                {
+                    // Alfabetik sıralama
+                    return data.sort(function (a, b) 
+                    {
+                        return a.text.localeCompare(b.text);
+                    });
+                }
+            });
+            $('#categorySelect').select2({
+            theme: 'bootstrap-5',
+            width: '100%'
+            dropdownCssClass: 'select2-dropdown-custom'
+        });
+
+            function validateName() {
+                const name = $("#Name").val().trim();
+               
+                if (name.length === 0) {
+                    $("#nameError").text(nameRequiredMessage);
+                } else if (name.length < 2) {
+                    $("#nameError").text(nameMinLengthMessage);
+                } else if (name.length > 128) {
+                    $("#nameError").text(nameMaxLengthMessage);
+                } else {
+                    $("#nameError").text("");
+                }
+            }
+
+            function validateDescription() {
+                const description = $("#Description").val().trim();
+                if (description.length === 0) {
+                    $("#descriptionError").text(descriptionRequiredMessage);
+                } else if (description.length < 2) {
+                    $("#descriptionError").text(descriptionMinLengthMessage);
+                } else if (description.length > 128) {
+                    $("#descriptionError").text(descriptionMaxLengthMessage);
+                } else {
+                    $("#descriptionError").text("");
+                }
+            }
+
+            function validateCategory() {
+                const category = $("#categorySelect").val().trim();
+
+                if (category.length === 0) 
+                {
+                    $("#CategoryIdError").text(categoryRequiredMessage);
+                } 
+                else {
+                    $("#CategoryIdError").text("");
+                }
+            }
+
+            $("#Name").on('keyup blur', validateName);
+            $("#Description").on('keyup blur', validateDescription);
+            $("#categorySelect").on('change', validateCategory);
+
+            $("#productTypeForm").submit(function (event) {
+                validateName();
+                validateDescription();
+                validateCategory();
+
+                if ($("#nameError").text() || $("#descriptionError").text() || $("#CategoryIdError").text()) {
+                    event.preventDefault();
+                }
+            });
+        });
+    </script>
+
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+
+@* <div class="container-xxl flex-grow1 container-p-y px-5">
+    <div class="row mb-5">
+        <div class="card h-100">
+            <div class="card-body" style="font-family:'Comic Sans MS'">
+                <h1 class="card-title text-center py-5" style="color: indigo">Add New Product Type</h1>
+
+                <br />
+
+                <div class="row justify-content-center">
+                    <div class="mb-3">
+                        <div class="card">
+                            <div class="card-body p-3">
+                                <div class="row">
+                                    <div class="col-md-1"></div>
+
+                                    <div class="col-md-10">
+                                        <form asp-action="Add" asp-controller="ProductType" asp-area="" method="post" class="text-center" style="font-family:'Comic Sans MS';">
+                                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                            <span class="text-danger">(* required field)</span>
+                                            <br />
+                                            <br />
+                                            <div class="form-group">
+                                                <div class="col-12">
+                                                    <label asp-for="Name" class="control-label" style="font-weight:bold; color:indigo">Name <span class="text-danger">*</span></label>
+                                                    <br />
+                                                    <input asp-for="Name" class="btn btn-outline-secondary btn-block col-12" style="cursor:text" type="text" />
+                                                    <span asp-validation-for="Name" class="text-danger"></span>
+                                                </div>
+                                            </div>
+                                            <br />
+                                            <div class="form-group">
+                                                <div class="col-12">
+                                                    <label asp-for="Description" class="control-label" style="font-weight:bold; color:indigo">Description <span class="text-danger">*</span></label>
+                                                    <br />
+                                                    <input asp-for="Description" class="btn btn-outline-secondary btn-block col-12" style="cursor:text" type="text" required />
+                                                    <span asp-validation-for="Description" class="text-danger"></span>
+                                                </div>
+                                            </div>
+                                            <br />
+                                            <div class="form-group row">
+                                                <div class="col-12 col-lg-6">
+                                                    <input type="submit" value="Add" class="btn btn-outline-success btn-block col-12" style="cursor:text" required />
+                                                </div>
+                                                <div class="col-12 col-lg-6">
+                                                    <a asp-action="Index" asp-controller="ProductType" asp-area="" class="btn btn-outline-warning btn-block col-12" title="Go to product types">Cancel</a>
+                                                </div>
+                                            </div>
+                                        </form>
+                                        <br />
+                                    </div>
+
+                                    <div class="col-md-1"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div> *@

@@ -1,0 +1,249 @@
+﻿    @model IPagedList<BaSalesManagementApp.MVC.Models.ProductTypeVMs.ProductTypeListVM>
+@using Microsoft.Extensions.Localization
+@using X.PagedList.Mvc.Common
+@using X.PagedList.Mvc.Core
+@using X.PagedList
+@using X.PagedList.Mvc.Core.Common
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<Resource> localizer
+
+@{
+    ViewData["Title"] = localizer["ProductTypeList"];
+}
+
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.5.0/font/bootstrap-icons.min.css">
+
+    <style>
+
+
+        .table thead tr {
+            border-bottom: 1px solid #dee2e6;
+        }
+    </style>
+
+</head>
+
+<div class="content-wrapper">
+    <div class="container-xxl flex-grow-1 container-p-y">
+        <h4 class="py-3 mb-4">
+            <span class="text-muted fw-light"> @localizer["ProductType"] /</span>  @localizer["List"]
+        </h4>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <a asp-action="Add" class="btn btn-primary"> @localizer["Create_New"]</a>
+
+            <!-- Sayfa başına gösterilecek kayıt sayısı dropdown -->
+            <div class="d-flex">
+                <form method="get" asp-action="Index" class="d-inline-block me-3">
+                    <label>@localizer["Show"]</label>
+                    <select name="pageSize" onchange="this.form.submit()" class="form-select d-inline-block w-auto ms-2">
+                        @if (ViewData["CurrentPageSize"]?.ToString() == "5")
+                        {
+                            <option value="5" selected>5</option>
+                        }
+                        else
+                        {
+                            <option value="5">5</option>
+                        }
+
+                        @if (ViewData["CurrentPageSize"]?.ToString() == "10")
+                        {
+                            <option value="10" selected>10</option>
+                        }
+                        else
+                        {
+                            <option value="10">10</option>
+                        }
+
+                        @if (ViewData["CurrentPageSize"]?.ToString() == "20")
+                        {
+                            <option value="20" selected>20</option>
+                        }
+                        else
+                        {
+                            <option value="20">20</option>
+                        }
+
+                        @if (ViewData["CurrentPageSize"]?.ToString() == "50")
+                        {
+                            <option value="50" selected>50</option>
+                        }
+                        else
+                        {
+                            <option value="50">50</option>
+                        }
+                    </select>
+                    <label>@localizer["Entries"]</label>
+                </form>
+                <div id="sortOrder" class="dropdown">
+                    <button class="btn btn-primary" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="bi bi-filter" style="font-size:1rem"></i>
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <li><a class="dropdown-item" data-value="alphabetical" href="#">A-Z</a></li>
+                        <li><a class="dropdown-item" data-value="alphabeticaldesc" href="#">Z-A</a></li>
+                        <li><a class="dropdown-item" data-value="date" href="#">@localizer["Newest_First"]</a></li>
+                        <li><a class="dropdown-item" data-value="datedesc" href="#">@localizer["Oldest_First"]</a></li>
+
+
+                        <li><hr class="dropdown-divider"></li>
+
+
+                        <li>
+                            <div class="px-3 pb-3">
+                                <form method="get" asp-action="Index">
+                                    <label class="form-label">
+                                        @localizer["Kategoriye Göre"]
+                                    </label>
+                                    <select name="categoryId" class="form-select form-select-sm border rounded-2 shadow-none" asp-items="ViewBag.Categories" onchange="this.form.submit()">
+                                        <option value="">@localizer["Tüm Kategoriler"]</option>
+                                    </select>
+                                </form>
+                            </div>
+                        </li>
+
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="table-responsive text-nowrap">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>
+                                @localizer["ColumnName"].ToString().ToUpper(new System.Globalization.CultureInfo("tr-TR"))
+                            </th>
+                            
+                            <th>
+                                <a asp-action="Index"
+                                   asp-route-sortOrder="@((ViewData["CurrentSortOrder"]?.ToString() == "category") ? "categorydesc" : "category")"
+                                   asp-route-categoryId="@ViewData["CurrentCategoryId"]"
+                                   asp-route-pageSize="@ViewData["CurrentPageSize"]"
+                                   style="text-decoration:none; color:inherit;">
+                                        @localizer["ColumnCategory"].ToString().ToUpper(new System.Globalization.CultureInfo("tr-TR"))
+                                </a>
+                            
+
+                            </th>
+                            <th class="text-end">@localizer["Actions"]</th> 
+                        </tr>
+                    </thead>
+                    <tbody class="table-border-bottom-0">
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td class="fw-medium">@Html.DisplayFor(modelItem => item.Name)</td>
+                                <td class="fw-medium">@Html.DisplayFor(modelItem => item.CategoryName)</td>
+                                <td class="text-end">
+                                    <div class="dropdown">
+                                        <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown" style="margin-right: 28px;">
+                                            <i class="bx bx-dots-vertical-rounded"></i>
+                                        </button>
+                                        <div class="dropdown-menu">
+                                            <a asp-action="Detail" asp-route-productTypeId="@item.Id" class="dropdown-item">
+                                                <i class="bx bx-info-circle me-1"></i> @localizer["Details"]
+                                            </a>
+                                            <a asp-action="Update" asp-route-productTypeId="@item.Id" class="dropdown-item">
+                                                <i class="bx bx-edit-alt me-1"></i> @localizer["Update"]
+                                            </a>
+                                            <a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal-@item.Id">
+                                                <i class="bx bx-trash me-1"></i> @localizer["Delete"]
+                                            </a>
+                                        </div>
+                                    </div>
+
+                                    <!-- Silme Onayı Modalı -->
+                                    <div class="modal fade" id="confirmDeleteModal-@item.Id" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="confirmDeleteModalLabel">@localizer["DELETE_CONFIRM_TITLE_PRODUCT_TYPE"]</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="@localizer["CLOSE"]"></button>
+                                                </div>
+                                                <div class="modal-body text-start">
+                                                    @localizer["DELETE_CONFIRM_PRODUCT_TYPE"]
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@localizer["CANCEL_PRODUCT_TYPE"]</button>
+                                                    <a asp-action="Delete" asp-route-productTypeId="@item.Id" class="btn btn-danger">@localizer["DELETE_PRODUCT_TYPE"]</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Sayfalama -->
+            <div class="d-flex justify-content-center mt-3">
+                @Html.PagedListPager(Model, page => Url.Action("Index", new { page, pageSize = ViewData["CurrentPageSize"], sortOrder = ViewData["CurrentSortOrder"], searchQuery = ViewData["CurrentSearchQuery"] }), new PagedListRenderOptions
+           {
+               Display = PagedListDisplayMode.Always,
+               UlElementClasses = new[] { "pagination", "justify-content-center" },
+               LiElementClasses = new[] { "page-item" },
+               PageClasses = new[] { "page-link" },
+               LinkToPreviousPageFormat = @localizer["Previous"],
+               LinkToNextPageFormat = @localizer["Next"],
+               LinkToFirstPageFormat = @localizer["First"],
+               LinkToLastPageFormat = @localizer["Last"],
+               ContainerDivClasses = new[] { "d-flex", "justify-content-center" }
+           })
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var sortOrderLinks = document.querySelectorAll('#sortOrder .dropdown-item[data-value]');
+            var entriesPerPageSelect = document.getElementById('entriesPerPage');
+
+            // Sıralama işlemi
+            sortOrderLinks.forEach(function (link) {
+                link.addEventListener('click', function(event) {
+                    var sortOrder = event.target.getAttribute('data-value');
+                    var urlParams = new URLSearchParams(window.location.search);
+                    urlParams.set('sortOrder', sortOrder);
+                    urlParams.set('page', 1); // sayfayı başa al
+                    window.location.search = urlParams.toString();
+                });
+            });
+
+            // Sayfa başına gösterilecek öğe sayısını değiştirme
+            entriesPerPageSelect.addEventListener('change', function () {
+                var selectedPageSize = entriesPerPageSelect.value;
+                var urlParams = new URLSearchParams(window.location.search);
+                urlParams.set('pageSize', selectedPageSize);
+                urlParams.set('page', 1); // Sayfayı başa al
+                window.location.search = urlParams.toString();
+            });
+
+            // URL parametrelerinden sıralama ve öğe sayısı değerlerini alıp güncelleme
+            function updatePageSettingsFromUrl() {
+                var urlParams = new URLSearchParams(window.location.search);
+
+                var sortOrder = urlParams.get('sortOrder') || 'alphabetical';
+                sortOrderLinks.forEach(function (link) {
+                    if (link.getAttribute('data-value') === sortOrder) {
+                        link.classList.add('active');
+                    } else {
+                        link.classList.remove('active');
+                    }
+                });
+
+                var entriesPerPage = urlParams.get('pageSize') || '10';
+                entriesPerPageSelect.value = entriesPerPage;
+            }
+
+            updatePageSettingsFromUrl();
+        });
+    </script>
+
+}

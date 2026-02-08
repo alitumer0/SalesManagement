@@ -1,0 +1,1715 @@
+﻿@model BaSalesManagementApp.MVC.Models.SearchVM.SearchVM
+
+@{
+    var localizedRoles = new Dictionary<string, string>
+    {
+        { "Manager", localizer["Manager"] },
+        { "Employee", localizer["Employee"] }
+    };
+}
+
+<div class="container">
+    <h2 class="mt-5">@localizer["Search_Results"]</h2>
+
+    <div class="content-wrapper">
+        <div class="container-xxl flex-grow-1 container-p-y">
+            @if (Model.AdminListVM != null && Model.AdminListVM.Any())
+            {
+                <h4 class="py-3 mb-4">
+                    <span class="text-muted fw-light">@localizer["Admin"] /</span> @localizer["List"]
+                </h4>
+                <div class="card mb-3">
+                    <div class="table-responsive text-nowrap">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>@localizer["FirstName"]</th>
+                                    <th>@localizer["LastName"]</th>
+                                    <th>@localizer["Email"]</th>
+                                    <th>@localizer["CreatedDate"]</th>
+@*                                     <th class="text-end">@localizer["Actions"]</th> *@
+                                </tr>
+                            </thead>
+                            <tbody class="table-border-bottom-0">
+                                @foreach (var admin in Model.AdminListVM)
+                                {
+                                    <tr>
+                                        <td class="fw-medium">@admin.FirstName</td>
+                                        <td class="fw-medium">@admin.LastName</td>
+                                        <td class="fw-medium">@admin.Email</td>
+                                        <td class="fw-medium">@admin.CreatedDate</td>
+                                        <td class="text-end">
+                                            <div class="dropdown">
+                                                <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown" style="margin-right: 28px;">
+                                                    <i class="bx bx-dots-vertical-rounded"></i>
+                                                </button>
+                                                <div class="dropdown-menu">
+                                                    <a asp-controller="Admin" asp-action="Details" asp-route-adminId="@admin.Id" class="dropdown-item"><i class="bx bx-info-circle me-1"></i>  @localizer["Details"]</a>
+                                                    <a asp-controller="Admin" asp-action="Update" asp-route-adminId="@admin.Id" class="dropdown-item"><i class="bx bx-edit-alt me-1"></i>@localizer["Update"]</a>
+                                                    <a href="javascript:;" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#deleteModal" data-admin-id="@admin.Id">
+                                                        <i class="bx bx-trash me-1"></i>  @localizer["Delete"]
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Delete Confirmation Modal-->
+                <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="deleteModalLabel">@localizer["DELETE_CONFIRM_TITLE_ADMIN"]</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                @localizer["DELETE_CONFIRM_ADMIN"]
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@localizer["CANCEL_ADMIN"]</button>
+                                <a id="confirmDeleteButton" href="#" class="btn btn-danger">@localizer["DELETE_ADMIN"]</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            }
+            @if (Model.EmployeeListVM != null && Model.EmployeeListVM.Any())
+            {
+                <h4 class="py-3 mb-4">
+                    <span class="text-muted fw-light">@localizer["Employee"] /</span>
+                    @localizer["List"]
+                </h4>
+                <div class="card mb-3">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>@localizer["Profile"].ToString().ToUpper(new System.Globalization.CultureInfo(System.Threading.Thread.CurrentThread.CurrentCulture.Name))</th>
+                                    <th>@localizer["FirstName"]</th>
+                                    <th>@localizer["LastName"]</th>
+                                    <th>@localizer["Email"].ToString().ToUpper(new System.Globalization.CultureInfo(System.Threading.Thread.CurrentThread.CurrentCulture.Name))</th>
+                                    <th>@localizer["Title"]</th>
+                                    <th>@localizer["CompanyName"].ToString().ToUpper(new System.Globalization.CultureInfo(System.Threading.Thread.CurrentThread.CurrentCulture.Name))</th>
+                                    <th>@localizer["Actions"]</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var employee in Model.EmployeeListVM)
+                                {
+                                    <tr>
+                                        <td>
+                                            @if (employee.PhotoData != null)
+                                            {
+                                                <img src="data:image/jpeg;base64,@Convert.ToBase64String(employee.PhotoData)" alt="Profile Picture" class="rounded-circle" style="width: 40px; height: 40px;" />
+                                            }
+                                            else
+                                            {
+                                                <div class="rounded-circle" style="width: 40px; height: 40px; background-color: #e7e7ff; color: #696cff; display: flex; justify-content: center; align-items: center; font-weight:500">
+                                                    @employee.FirstName.Substring(0, 1)@employee.LastName.Substring(0, 1)
+                                                </div>
+                                            }
+                                        </td>
+                                        <td>@employee.FirstName</td>
+                                        <td>@employee.LastName</td>
+                                        <td>@employee.Email</td>
+                                        <td>@(localizedRoles.ContainsKey(employee.Title) ? localizedRoles[employee.Title] : employee.Title)</td>
+                                        <td>@employee.CompanyName</td>
+                                        <td>
+                                            <div class="d-flex">
+                                                <a asp-controller="Employee" asp-action="Details" asp-route-employeeId="@employee.Id" class="btn btn-sm btn-outline-primary me-1" title="@localizer["Details"]">
+                                                    <i class="bx bx-info-circle"></i>
+                                                </a>
+                                                <a asp-controller="Employee" asp-action="Update" asp-route-employeeId="@employee.Id" class="btn btn-sm btn-outline-warning me-1" title="@localizer["Update"]">
+                                                    <i class="bx bx-edit-alt"></i>
+                                                </a>
+                                                <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal2" data-employee-id="@employee.Id" title="@localizer["Delete"]">
+                                                    <i class="bx bx-trash"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            }
+
+                <!-- Delete Confirmation Modal -->
+                <div class="modal fade" id="deleteModal2" tabindex="-1" aria-labelledby="deleteModal2Label" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="deleteModal2Label">@localizer["DELETE_CONFIRM_TITLE_EMPLOYEE"]</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                @localizer["DELETE_CONFIRM_EMPLOYEE"]
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@localizer["CANCEL_EMPLOYEE"]</button>
+                                <a id="confirmDeleteButton2" href="#" class="btn btn-danger">@localizer["DELETE_EMPLOYEE"]</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            
+            @if (Model.CompanyListVM != null && Model.CompanyListVM.Any())
+            {
+                <h4 class="py-3 mb-4"><span class="text-muted fw-light">@localizer["Company"] /</span> @localizer["List"]</h4>
+                <div class="card mb-3">
+                    <div class="table-responsive text-nowrap">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        @localizer["Name"]
+                                    </th>
+                                    <th>
+                                        @localizer["Address"]
+                                    </th>
+                                    <th>
+                                        @localizer["Phone"]
+                                    </th>
+                                    <th>
+                                        @localizer["CreatedDate"]
+                                    </th>
+                                    <th class="text-end">@localizer["Actions"]</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var company in Model.CompanyListVM)
+                                {
+                                    <tr>
+                                        <td>@company.Name</td>
+                                        <td>@company.Address</td>
+                                        <td>@company.Phone</td>
+                                        <td>@company.CreatedDate</td>
+                                        <td class="text-end">
+                                            <div class="dropdown">
+                                                <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown" style="margin-right: 28px;">
+                                                    <i class="bx bx-dots-vertical-rounded"></i>
+                                                </button>
+                                                <div class="dropdown-menu">
+                                                    <a asp-controller="Company" asp-action="Details" asp-route-companyId="@company.Id" class="dropdown-item">
+                                                        <i class="bx bx-info-circle me-1"></i> @localizer["Details"]
+                                                    </a>
+                                                    <a asp-controller="Company" asp-action="Update" asp-route-companyId="@company.Id" class="dropdown-item">
+                                                        <i class="bx bx-edit-alt me-1"></i> @localizer["Update"]
+                                                    </a>
+                                                    <a href="javascript:;" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#deleteModal3" data-company-id="@company.Id"><i class="bx bx-trash me-1"></i>@localizer["Delete"]</a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <!-- Delete Confirmation Modal -->
+                <div class="modal fade" id="deleteModal3" tabindex="-1" aria-labelledby="deleteModal3Label" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="deleteModal3Label">@localizer["DELETE_CONFIRM_TITLE_COMPANY"]</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p id="deleteModal3Message">@localizer["DELETE_CONFIRM_COMPANY"]</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@localizer["CANCEL_COMPANY"]</button>
+                                <a id="confirmDeleteButton3" href="#" class="btn btn-danger">@localizer["DELETE_COMPANY"]</a>
+                                <a id="confirmPassiveButton3" href="#" class="btn btn-warning" style="display:none;">@localizer["PASSIVE_COMPANY"]</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            @if (Model.BranchListVM != null && Model.BranchListVM.Any())
+            {
+                <h4 class="py-3 mb-4"><span class="text-muted fw-light">@localizer["Branch"] /</span> @localizer["List"]</h4>
+                <div class="card mb-3">
+                    <div class="table-responsive text-nowrap">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>@localizer["Name"]</th>
+                                    <th>@localizer["Address"]</th>
+                                    <th>@localizer["CreatedDate"]</th>
+                                    <th class="text-end">@localizer["Actions"]</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var branch in Model.BranchListVM)
+                                {
+                                    <tr>
+                                        <td>@branch.Name</td>
+                                        <td>@branch.Address</td>
+                                        <td>@branch.CreatedDate</td>
+                                        <td class="text-end">
+                                            <div class="dropdown">
+                                                <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown" style="margin-right: 28px;">
+                                                    <i class="bx bx-dots-vertical-rounded"></i>
+                                                </button>
+                                                <div class="dropdown-menu">
+                                                    <a asp-controller="Branch" asp-action="Details" asp-route-branchId="@branch.Id" class="dropdown-item">
+                                                        <i class="bx bx-info-circle me-1"></i> @localizer["Details"]
+                                                    </a>
+                                                    <a asp-controller="Branch" asp-action="Update" asp-route-branchId="@branch.Id" class="dropdown-item">
+                                                        <i class="bx bx-edit-alt me-1"></i> @localizer["Update"]
+                                                    </a>
+                                                    <a href="javascript:;" class="dropdown-item " data-bs-toggle="modal" data-bs-target="#deleteModal4" data-branch-id="@branch.Id">
+                                                        <i class="bx bx-trash me-1"></i> @localizer["Delete"]
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Delete Confirmation Modal -->
+                <div class="modal fade" id="deleteModal4" tabindex="-1" aria-labelledby="deleteModal4Label" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="deleteModal4Label">@localizer["DELETE_CONFIRM_TITLE_BRANCH"]</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                @localizer["DELETE_CONFIRM_BRANCH"]
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@localizer["CANCEL_BRANCH"]</button>
+                                <a id="confirmDeleteButton4" href="#" class="btn btn-danger">@localizer["DELETE_BRANCH"]</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            @if (Model.CategoryListVM != null && Model.CategoryListVM.Any())
+            {
+                <h4 class="py-3 mb-4"><span class="text-muted fw-light">@localizer["Category"] /</span>@localizer["List"] </h4>
+                <div class="card mb-3">
+                    <div class="table-responsive text-nowrap">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        @localizer["Name"]
+                                    </th>
+                                    <th>
+                                        @localizer["CreatedDate"]
+                                    </th>
+                                    <th class="text-end">
+                                        @localizer["Actions"]
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var category in Model.CategoryListVM)
+                                {
+                                    <tr>
+                                        <td>@category.Name</td>
+                                        <td>@category.CreatedDate</td>
+                                        <td class="text-end">
+                                            <div class="dropdown">
+                                                <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown" style="margin-right: 28px;">
+                                                    <i class="bx bx-dots-vertical-rounded"></i>
+                                                </button>
+                                                <div class="dropdown-menu">
+                                                    <a asp-controller="Category" asp-action="Details" asp-route-categoryId="@category.Id" class="dropdown-item"><i class="bx bx-info-circle me-1"></i> @localizer["Details"]</a>
+                                                    <a asp-controller="Category" asp-action="Update" asp-route-categoryId="@category.Id" class="dropdown-item"><i class="bx bx-edit-alt me-1"></i>@localizer["Update"]</a>
+                                                    <a href="javascript:;" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#deleteModal5" data-category-id="@category.Id">
+                                                        <i class="bx bx-trash me-1"></i> @localizer["Delete"]
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Delete Confirmation Modal -->
+                <div class="modal fade" id="deleteModal5" tabindex="-1" aria-labelledby="deleteModal5Label" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="deleteModal5Label">@localizer["DELETE_CONFIRM_TITLE_CATEGORY"]</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                @localizer["DELETE_CONFIRM_CATEGORY"]
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@localizer["CANCEL_CATEGORY"]</button>
+                                <a id="confirmDeleteButton5" href="#" class="btn btn-danger">@localizer["DELETE_CATEGORY"]</a>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            }
+
+            @if (Model.ProductListVM != null && Model.ProductListVM.Any())
+            {
+                <h4 class="py-3 mb-4"><span class="text-muted fw-light">@localizer["Product"] /</span>@localizer["List"] </h4>
+                <div class="card mb-3">
+                    <div class="table-responsive text-nowrap">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>@localizer["Product_Name"]</th>
+                                    <th>@localizer["Price"]</th>
+                                    <th>@localizer["CategoryName"]</th>
+                                    <th>@localizer["CompanyName"]</th>
+                                    <th class="text-end">@localizer["Actions"]</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var product in Model.ProductListVM)
+                                {
+                                    <tr>
+                                        <td>@product.Name</td>
+                                        <td>@product.Price</td>
+                                        <td>@product.CategoryName</td>
+                                        <td>@product.CompanyName</td>
+                                        <td class="text-end">
+                                            <div class="dropdown">
+                                                <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown" style="margin-right: 28px;">
+                                                    <i class="bx bx-dots-vertical-rounded"></i>
+                                                </button>
+                                                <div class="dropdown-menu">
+                                                    <a asp-controller="Product" asp-action="Details" asp-route-productId="@product.Id" class="dropdown-item"><i class="bx bx-info-circle me-1"></i>@localizer["Details"]</a>
+                                                    <a asp-controller="Product" asp-action="Update" asp-route-productId="@product.Id" class="dropdown-item"><i class="bx bx-edit-alt me-1"></i>@localizer["Update"]</a>
+                                                    <a href="javascript:;" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#deleteModal6" data-product-id="@product.Id"><i class="bx bx-trash me-1"></i>@localizer["Delete"]</a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Delete Confirmation Modal -->
+                <div class="modal fade" id="deleteModal6" tabindex="-1" aria-labelledby="deleteModal6Label" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="deleteModal6Label">@localizer["DELETE_CONFIRM_TITLE_PRODUCT"]</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p id="deleteModal6Message">@localizer["DELETE_CONFIRM_PRODUCT"]</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@localizer["CANCEL_PRODUCT"]</button>
+                                <a id="confirmDeleteButton6" href="#" class="btn btn-danger">@localizer["DELETE_PRODUCT"]</a>
+                                <a id="confirmPassiveButton6" href="#" class="btn btn-warning" style="display:none;">@localizer["PASSIVE_PRODUCT"]</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            @if (Model.productTypeListVM != null && Model.productTypeListVM.Any())
+            {
+                <h4 class="py-3 mb-4">
+                    <span class="text-muted fw-light"> @localizer["ProductType"] /</span>  @localizer["List"]
+                </h4>
+                <div class="card mb-3">
+                    <div class="table-responsive text-nowrap">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                            <th>
+                                    @localizer["Name"]
+                            </th>
+                                    <th class="text-end">@localizer["Actions"]</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var productType in Model.productTypeListVM)
+                                {
+                                    <tr>
+                                        <td>@productType.Name</td>
+                                        <td class="text-end">
+                                            <div class="dropdown">
+                                                <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown" style="margin-right: 28px;">
+                                                    <i class="bx bx-dots-vertical-rounded"></i>
+                                                </button>
+                                                <div class="dropdown-menu">
+                                                    <a asp-controller="ProductType" asp-action="Detail" asp-route-productTypeId="@productType.Id" class="dropdown-item">
+                                                        <i class="bx bx-info-circle me-1"></i> @localizer["Details"]
+                                                    </a>
+                                                    <a asp-controller="ProductType" asp-action="Update" asp-route-productTypeId="@productType.Id" class="dropdown-item">
+                                                        <i class="bx bx-edit-alt me-1"></i> @localizer["Update"]
+                                                    </a>
+                                                    <a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal7-@productType.Id">
+                                                        <i class="bx bx-trash me-1"></i> @localizer["Delete"]
+                                                    </a>
+                                                </div>
+                                            </div>
+
+                                            <!-- Silme Onayı Modalı -->
+                                            <div class="modal fade" id="confirmDeleteModal7-@productType.Id" tabindex="-1" aria-labelledby="confirmDeleteModal7Label" aria-hidden="true">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="confirmDeleteModal7Label">@localizer["DELETE_CONFIRM_TITLE_PRODUCT_TYPE"]</h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="@localizer["CLOSE"]"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            @localizer["DELETE_CONFIRM_PRODUCT_TYPE"]
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@localizer["CANCEL_PRODUCT_TYPE"]</button>
+                                                            <a asp-controller="ProductType" asp-action="Delete" asp-route-productTypeId="@productType.Id" class="btn btn-danger">@localizer["DELETE_PRODUCT_TYPE"]</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            }
+
+            @if (Model.StockListVM != null && Model.StockListVM.Any())
+            {
+                <h4 class="py-3 mb-4">
+                    <span class="text-muted fw-light">@localizer["Stock"] /</span>
+                    @localizer["List"]
+                </h4>
+                <div class="card mb-3">
+                    <div class="table-responsive text-nowrap">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        @localizer["ProductName"]
+                                    </th>
+                                    <th>
+                                        @localizer["Count"]
+                                    </th>
+                                    <th>
+                                        @localizer["CreatedDate"]
+                                    </th>
+                                    <th class="text-end">
+                                        @localizer["Actions"]
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var stock in Model.StockListVM)
+                                {
+                                    <tr>
+                                        <td>@stock.ProductName</td>
+                                        <td>@stock.Count</td>
+                                        <td>@stock.CreatedDate</td>
+                                        <td class="text-end">
+                                            <div class="dropdown">
+                                                <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown" style="margin-right: 28px;">
+                                                    <i class="bx bx-dots-vertical-rounded"></i>
+                                                </button>
+                                                <div class="dropdown-menu">
+                                                    <a asp-controller="Stock" asp-action="Details" asp-route-stockId="@stock.Id" class="dropdown-item"><i class="bx bx-info-circle me-1"></i>@localizer["Details"]</a>
+                                                    <a asp-controller="Stock" asp-action="Update" asp-route-stockId="@stock.Id" class="dropdown-item"><i class="bx bx-edit-alt me-1"></i> @localizer["Update"]</a>
+                                                    <a href="javascript:;" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#deleteModal8" data-stock-id="@stock.Id">
+                                                        <i class="bx bx-trash me-1"></i>  @localizer["Delete"]
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Delete Confirmation Modal -->
+                <div class="modal fade" id="deleteModal8" tabindex="-1" aria-labelledby="deleteModal8Label" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="deleteModal8Label">@localizer["DELETE_CONFIRM_TITLE_STOCK"]</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="@localizer["CLOSE"]"></button>
+                            </div>
+                            <div class="modal-body">
+                                @localizer["DELETE_CONFIRM_STOCK"]
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@localizer["CANCEL_STOCK"]</button>
+                                <a id="confirmDeleteButton7" href="#" class="btn btn-danger">@localizer["DELETE_STOCK"]</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            @if (Model.StockTypeSizeListVM != null && Model.StockTypeSizeListVM.Any())
+            {
+                <h4 class="py-3 mb-4">
+                    <span class="text-muted fw-light">@localizer["StockTypeSize"] /</span>
+                    @localizer["List"]
+                </h4>
+                <div class="card mb-3">
+                    <div class="table-responsive text-nowrap">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>@localizer["Size"]</th>
+                                    <th>@localizer["Description"]</th>
+                                    <th>@localizer["CreatedDate"]</th>
+                                    <th class="text-end">@localizer["Actions"]</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var stockTypeSize in Model.StockTypeSizeListVM)
+                                {
+                                    <tr>
+                                        <td>@stockTypeSize.Size</td>
+                                        <td>@stockTypeSize.Description</td>
+                                        <td>@stockTypeSize.CreatedDate</td>
+                                        <td class="text-end">
+                                            <div class="dropdown">
+                                                <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown" style="margin-right: 28px;">
+                                                    <i class="bx bx-dots-vertical-rounded"></i>
+                                                </button>
+                                                <div class="dropdown-menu">
+                                                    <a asp-controller="StockTypeSize" asp-action="Details" asp-route-stockTypeSizeId="@stockTypeSize.Id" class="dropdown-item"><i class="bx bx-info-circle me-1"></i> @localizer["Details"]</a>
+                                                    <a asp-controller="StockTypeSize" asp-action="Update" asp-route-stockTypeSizeId="@stockTypeSize.Id" class="dropdown-item"><i class="bx bx-edit-alt me-1"></i>  @localizer["Update"]</a>
+                                                    <a href="javascript:;" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#deleteModal9" data-stockTypeSize-id="@stockTypeSize.Id">
+                                                        <i class="bx bx-trash me-1"></i>  @localizer["Delete"]
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Delete Confirmation Modal -->
+                <div class="modal fade" id="deleteModal9" tabindex="-1" aria-labelledby="deleteModal9Label" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="deleteModal9Label">@localizer["DELETE_CONFIRM_TITLE_STOCK_TYPE_SIZE"]</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                @localizer["DELETE_CONFIRM_STOCK_TYPE_SIZE"]
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@localizer["CANCEL_STOCK_TYPE_SIZE"]</button>
+                                <a id="confirmDeleteButton8" href="#" class="btn btn-danger">@localizer["DELETE_STOCK_TYPE_SIZE"]</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            @if (Model.WarehouseListVM != null && Model.WarehouseListVM.Any())
+            {
+                <h4 class="py-3 mb-4">
+                    <span class="text-muted fw-light">@localizer["Warehouse"] /</span>
+                    @localizer["List"]
+                </h4>
+                <div class="card mb-3">
+                    <div class="table-responsive text-nowrap">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>@localizer["Name"]</th>
+                                    <th>@localizer["Address"]</th>
+                                    <th>@localizer["BranchName"]</th>
+                                    <th class="text-end">@localizer["Actions"]</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var warehouse in Model.WarehouseListVM)
+                                {
+                                    <tr>
+                                        <td>@warehouse.Name</td>
+                                        <td>@warehouse.Address</td>
+                                        <td>@warehouse.BranchName</td>
+                                        <td class="text-end">
+                                            <div class="dropdown">
+                                                <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown" style="margin-right: 28px;">
+                                                    <i class="bx bx-dots-vertical-rounded"></i>
+                                                </button>
+                                                <div class="dropdown-menu">
+                                                    <a asp-controller="Warehouse" asp-action="Details" asp-route-warehouseId="@warehouse.Id" class="dropdown-item"><i class="bx bx-info-circle me-1"></i> @localizer["Details"]</a>
+                                                    <a asp-controller="Warehouse" asp-action="Update" asp-route-warehouseId="@warehouse.Id" class="dropdown-item"><i class="bx bx-edit-alt me-1"></i>@localizer["Update"]</a>
+
+                                                    <a href="javascript:;" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#deleteModal10" data-warehouse-id="@warehouse.Id">
+                                                        <i class="bx bx-trash me-1"></i>  @localizer["Delete"]
+                                                    </a>
+
+
+
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <!-- Delete Confirmation Modal -->
+                <div class="modal fade" id="deleteModal10" tabindex="-1" aria-labelledby="deleteModal10Label" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="deleteModal10Label">@localizer["DELETE_CONFIRM_TITLE_WAREHOUSE"]</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                @localizer["DELETE_CONFIRM_WAREHOUSE"]
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@localizer["CANCEL_WAREHOUSE"]</button>
+                                <a id="confirmDeleteButton9" href="#" class="btn btn-danger">@localizer["DELETE_WAREHOUSE"]</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            @if (Model.OrderListVM != null && Model.OrderListVM.Any())
+            {
+                <h4 class="py-3 mb-4"><span class="text-muted fw-light">@localizer["Order"] /</span> @localizer["List"]</h4>
+                <div class="card mb-3">
+                    <div class="table-responsive text-nowrap">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        @localizer["CompanyName"]
+                                    </th>
+                                    <th>
+                                        @localizer["ProductName"]
+                                    </th>
+                                    <th>
+                                        @localizer["Quantity"]
+                                    </th>
+                                    <th>
+                                        @localizer["TotalPrice"]
+                                    </th>
+                                    <th>
+                                        @localizer["isCompanyActive"]
+                                    </th>
+                                    <th>
+                                        @localizer["IsActive"]
+                                    </th>
+                                    <th>
+                                        @localizer["OrderDate"]
+                                    </th>
+                                    <th>
+                                        @localizer["AdminName"]
+                                    </th>
+                                    <th class="text-end">
+                                        @localizer["Actions"]
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var order in Model.OrderListVM)
+                                {
+                                    <tr>
+                                        @* <td>@order.CompanyName</td>
+                                        <td>@order.ProductName</td>
+                                        <td>@order.Quantity</td>
+                                        <td>@order.TotalPrice</td>
+                                        <td class="fw-medium">
+                                            @if (order.isCompanyActive)
+                                            {
+                                                <i class="fas fa-check text-primary"></i>
+                                            }
+                                            else
+                                            {
+                                                <i class="fas fa-times text-danger"></i>
+                                            }
+                                        </td> *@
+                                        <td class="fw-medium">
+                                            @if (order.IsActive)
+                                            {
+                                                <i class="fas fa-check text-primary"></i>
+                                            }
+                                            else
+                                            {
+                                                <i class="fas fa-times text-danger"></i>
+                                            }
+                                        </td>
+                                        <td>@order.OrderDate</td>
+                                        <td>@order.AdminName</td>
+                                        <td class="text-end">
+                                            <div class="dropdown">
+                                                <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown" style="margin-right: 28px;">
+                                                    <i class="bx bx-dots-vertical-rounded"></i>
+                                                </button>
+                                                <div class="dropdown-menu">
+                                                    <a asp-controller="Order" asp-action="Details" asp-route-orderId="@order.Id" class="dropdown-item"><i class="bx bx-info-circle me-1"></i> @localizer["Details"]</a>
+                                                    <a asp-controller="Order" asp-action="Update" asp-route-orderId="@order.Id" class="dropdown-item"><i class="bx bx-edit-alt me-1"></i> @localizer["Update"]</a>
+                                                    <a href="javascript:;" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#deleteModal11" data-order-id="@order.Id">
+                                                        <i class="bx bx-trash me-1"></i> @localizer["Delete"]
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Delete Confirmation Modal -->
+                <div class="modal fade" id="deleteModal11" tabindex="-1" aria-labelledby="deleteModal11Label" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="deleteModal11Label">@localizer["DELETE_CONFIRM_TITLE_ORDER"]</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                @localizer["DELETE_CONFIRM_ORDER"]
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@localizer["CANCEL_ORDER"]</button>
+                                <a id="confirmDeleteButton10" href="#" class="btn btn-danger">@localizer["DELETE_ORDER"]</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            }
+
+            @if (Model.PromotionListVM != null && Model.PromotionListVM.Any())
+            {
+                <h4 class="py-3 mb-4"><span class="text-muted fw-light">@localizer["Promotion"] /</span> @localizer["List"]</h4>
+                <div class="card mb-3">
+                    <div class="table-responsive text-nowrap">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>@localizer["CompanyName"]</th>
+                                    <th>@localizer["ProductName"]</th>
+                                    <th>@localizer["Discount"]</th>
+                                    <th>@localizer["Price"]</th>
+                                    <th>@localizer["TotalPrice"]</th>
+                                    <th>@localizer["IsActive"]</th>
+                                    <th>@localizer["StartDate"]</th>
+                                    <th>@localizer["EndDate"]</th>
+                                    <th style="text-align:center;">
+                                        @localizer["CreatedDate"]
+                                    </th>
+                                    <th class="text-end">@localizer["Actions"]</th>
+
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var promotion in Model.PromotionListVM)
+                                {
+                                    <tr>
+                                        <td>@promotion.CompanyName</td>
+                                        <td>@promotion.ProductName</td>
+                                        <td>@promotion.Discount</td>
+                                        <td>@promotion.Price</td>
+                                        <td>@promotion.TotalPrice</td>
+                                        <td>
+                                            @if (promotion.IsActive)
+                                            {
+                                                <i class="fas fa-check text-primary"></i>
+                                            }
+                                            else
+                                            {
+                                                <i class="fas fa-times text-danger"></i>
+                                            }
+                                        </td>
+                                        <td>@promotion.StartDate</td>
+                                        <td>@promotion.EndDate</td>
+                                        <td>@promotion.CreatedDate</td>
+                                        <td class="text-end">
+                                            <div class="dropdown">
+                                                <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown" style="margin-right: 28px;">
+                                                    <i class="bx bx-dots-vertical-rounded"></i>
+                                                </button>
+                                                <div class="dropdown-menu">
+                                                    <a asp-controller="Promotion" asp-action="Details" asp-route-promotionId="@promotion.Id" class="dropdown-item"><i class="bx bx-info-circle me-1"></i> @localizer["Details"]</a>
+                                                    <a asp-controller="Promotion" asp-action="Update" asp-route-promotionId="@promotion.Id" class="dropdown-item"> <i class="bx bx-edit-alt me-1"></i> @localizer["Update"]</a>
+                                                    <a href="javascript:;" class="dropdown-item " data-bs-toggle="modal" data-bs-target="#deleteModal12" data-promotion-id="@promotion.Id">
+                                                        <i class="bx bx-trash me-1"></i> @localizer["Delete"]
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </td>
+
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal fade" id="deleteModal12" tabindex="-1" aria-labelledby="deleteModal12Label" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="deleteModal12Label">@localizer["DELETE_CONFIRM_TITLE_PROMOTION"]</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                @localizer["DELETE_CONFIRM_PROMOTION"]
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@localizer["CANCEL_PROMOTION"]</button>
+                                <a id="confirmDeleteButton11" href="#" class="btn btn-danger">@localizer["DELETE_PROMOTION"]</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            @if (Model.CustomerListVM != null && Model.CustomerListVM.Any())
+            {
+                <h4 class="py-3 mb-4"><span class="text-muted fw-light">@localizer["Customer"] /</span> @localizer["List"]</h4>
+                <div class="card mb-3">
+                    <div class="table-responsive text-nowrap">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>@localizer["Name"]</th>
+                                    <th>@localizer["Address"]</th>
+                                    <th>@localizer["Phone"]</th>
+                                    <th>@localizer["CompanyName"]</th>
+                                    <th>@localizer["CreatedDate"]</th>
+                                    <th class="text-end">@localizer["Actions"]</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var customer in Model.CustomerListVM)
+                                {
+                                    <tr>
+                                        <td>@customer.Name</td>
+                                        <td>@customer.Address</td>
+                                        <td>@customer.Phone</td>
+                                        <td>@customer.CompanyName</td>
+                                        <td>@customer.CreatedDate</td>
+                                        <td class="text-end">
+                                            <div class="dropdown">
+                                                <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown" style="margin-right: 28px;">
+                                                    <i class="bx bx-dots-vertical-rounded"></i>
+                                                </button>
+                                                <div class="dropdown-menu">
+                                                    <a asp-controller="Customer" asp-action="Details" asp-route-customerId="@customer.Id" class="dropdown-item">
+                                                        <i class="bx bx-info-circle me-1"></i> @localizer["Details"]
+                                                    </a>
+                                                    <a asp-controller="Customer" asp-action="Update" asp-route-customerId="@customer.Id" class="dropdown-item">
+                                                        <i class="bx bx-edit-alt me-1"></i>@localizer["Update"]
+                                                    </a>
+                                                    <a href="javascript:;" class="dropdown-item " data-bs-toggle="modal" data-bs-target="#deleteModal13" data-customer-id="@customer.Id">
+                                                        <i class="bx bx-trash me-1"></i>  @localizer["Delete"]
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+
+                <!-- Delete Confirmation Modal -->
+                <div class="modal fade" id="deleteModal13" tabindex="-1" aria-labelledby="deleteModal13Label" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="deleteModal13Label">@localizer["DELETE_CONFIRM_TITLE_CUSTOMER"]</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                @localizer["DELETE_CONFIRM_CUSTOMER"]
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@localizer["CANCEL_CUSTOMER"]</button>
+                                <a id="confirmDeleteButton12" href="#" class="btn btn-danger">@localizer["DELETE_CUSTOMER"]</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+            }
+
+            @if (Model.CountryListVM != null && Model.CountryListVM.Any())
+            {
+                <h4 class="py-3 mb-4">
+                    <span class="text-muted fw-light">@localizer["Country"]</span> / @localizer["List"]
+                </h4>
+                <div class="card mb-3">
+                    <div class="table-responsive text-nowrap">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>@localizer["Name"]</th>
+                                    <th>@localizer["CreatedDate"]</th>
+                                    <th class="text-end">@localizer["Actions"]</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var country in Model.CountryListVM)
+                                {
+                                    <tr>
+                                        <td>@country.Name</td>
+                                        <td>@country.CreatedDate</td>
+                                        <td class="text-end">
+                                            <div class="dropdown">
+                                                <button type="button" class="btn p-0 dropdown-toggle hide-arrow" style="margin-right: 28px;"
+                                                        data-bs-toggle="dropdown">
+                                                    <i class="bx bx-dots-vertical-rounded"></i>
+                                                </button>
+                                                <div class="dropdown-menu">
+                                                    <a asp-controller="Country" asp-action="Details" asp-route-countryId="@country.Id" class="dropdown-item">
+                                                        <i class="bx bx-info-circle me-1"></i> @localizer["Details"]
+                                                    </a>
+                                                    <a asp-controller="Country" asp-action="Update" asp-route-countryId="@country.Id" class="dropdown-item">
+                                                        <i class="bx bx-edit-alt me-1"></i> @localizer["Update"]
+                                                    </a>
+                                                    <a class="dropdown-item" data-bs-toggle="modal"
+                                                       data-bs-target="#confirmDeleteModal14-@country.Id">
+                                                        <i class="bx bx-trash me-1"></i> @localizer["Delete"]
+                                                    </a>
+                                                </div>
+                                            </div>
+
+
+                                            <!-- Confirm Delete Modal -->
+                                            <div class="modal fade" id="confirmDeleteModal14-@country.Id" tabindex="-1" aria-labelledby="confirmDeleteModal14Label" aria-hidden="true">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="confirmDeleteModal14Label">@localizer["DELETE_CONFIRM_TITLE_COUNTRY"]</h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            @localizer["DELETE_CONFIRM_COUNTRY"]
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@localizer["CANCEL_COUNTRY"]</button>
+                                                            <a asp-controller="Country" asp-action="Delete" asp-route-countryId="@country.Id" class="btn btn-danger">@localizer["DELETE_COUNTRY"]</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            }
+
+            @if (Model.CityListVM != null && Model.CityListVM.Any())
+            {
+                <h4 class="py-3 mb-4"><span class="text-muted fw-light">@localizer["City"] /</span> @localizer["List"]</h4>
+                <div class="card mb-3">
+                    <div class="table-responsive text-nowrap">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>@localizer["Name"]</th>
+                                    <th>@localizer["CountryName"]</th>
+                                    <th>@localizer["CreatedDate"]</th>
+                                    <th class="text-end">@localizer["Actions"]</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var city in Model.CityListVM)
+                                {
+                                    <tr>
+                                        <td>@city.Name</td>
+                                        <td>@city.CountryName</td>
+                                        <td>@city.CreatedDate</td>
+                                        <td class="text-end">
+                                            <div class="dropdown">
+                                                <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown" style="margin-right: 28px;">
+
+                                                    <i class="bx bx-dots-vertical-rounded"></i>
+                                                </button>
+                                                <div class="dropdown-menu">
+                                                    <a asp-controller="City" asp-action="Details" asp-route-cityId="@city.Id" class="dropdown-item"><i class="bx bx-info-circle me-1"></i>  @localizer["Details"]</a>
+                                                    <a asp-controller="City" asp-action="Update" asp-route-cityId="@city.Id" class="dropdown-item"><i class="bx bx-edit-alt me-1"></i> @localizer["Update"]</a>
+                                                    <a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal15-@city.Id"><i class="bx bx-trash me-1"></i>@localizer["Delete"]</a>
+
+                                                </div>
+                                            </div>
+
+                                            <!-- Confirm Delete Modal -->
+                                            <div class="modal fade" id="confirmDeleteModal15-@city.Id" tabindex="-1" aria-labelledby="confirmDeleteModal15Label-@city.Id" aria-hidden="true">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="confirmDeleteModal15Label-@city.Id">@localizer["DELETE_CONFIRM_TITLE_CITY"]</h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            @localizer["DELETE_CONFIRM_CITY"]
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@localizer["CANCEL_CITY"]</button>
+                                                            <a asp-controller="City" asp-action="Delete" asp-route-cityId="@city.Id" class="btn btn-danger">@localizer["DELETE_CITY"]</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+
+    <script src="~/assets/vendor/js/delete-admin-modal-handler.js"></script>
+    <script src="~/assets/vendor/js/admin-list-handler.js"></script>
+
+     <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var deleteModal4 = document.getElementById('deleteModal4');
+        deleteModal4.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            var branchId = button.getAttribute('data-branch-id');
+            var confirmDeleteButton4 = deleteModal4.querySelector('#confirmDeleteButton4');
+            confirmDeleteButton4.href = '/Branch/Delete?branchId=' + branchId;
+        });
+    });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var deleteModal3 = document.getElementById('deleteModal3');
+            deleteModal3.addEventListener('show.bs.modal', async function (event) {
+                var button = event.relatedTarget;
+                var companyId = button.getAttribute('data-company-id');
+                var confirmDeleteButton3 = deleteModal3querySelector('#confirmDeleteButton3');
+                var confirmPassiveButton3 = deleteModal3.querySelector('#confirmPassiveButton3');
+                var deleteModal3Message = deleteModal3.querySelector('#deleteModal3Message');
+
+                // Türkçe karakterlerin düzgün çalışması için escape yapıyoruz
+                var companyCannotDeleteMessage = decodeURIComponent("@Uri.EscapeDataString(localizer["COMPANY_CANNOT_DELETE_IS_IN_ORDER"])");
+                var deleteConfirmMessage = decodeURIComponent("@Uri.EscapeDataString(localizer["DELETE_CONFIRM_COMPANY"])");
+
+
+                const response = await fetch('/Company/CheckCompanyInOrder?companyId=' + companyId);
+                const data = await response.json();
+
+                if (data.isInOrder) {
+                    deleteModal3Message.textContent = companyCannotDeleteMessage;
+                    confirmDeleteButton3.style.display = 'none';
+                    confirmPassiveButton3.style.display = 'inline-block';
+                    confirmPassiveButton3.href = '/Company/Delete?companyId=' + companyId;
+                } else {
+                    deleteModal3Message.textContent = deleteConfirmMessage;
+                    confirmDeleteButton3.style.display = 'inline-block';
+                    confirmPassiveButton3.style.display = 'none';
+                    confirmDeleteButton3.href = '/Company/Delete?companyId=' + companyId;
+                }
+            });
+        });
+    </script>
+
+
+
+   <script>
+
+        document.addEventListener('DOMContentLoaded', function () {
+            var deleteModal5 = document.getElementById('deleteModal5');
+            deleteModal5.addEventListener('show.bs.modal', function (event) {
+                var button = event.relatedTarget;
+                var categoryId = button.getAttribute('data-category-id');
+                var confirmDeleteButton5 = deleteModal5.querySelector('#confirmDeleteButton5');
+                confirmDeleteButton5.href = '/Category/Delete?categoryId=' + categoryId;
+            });
+
+            var sortOrderSelect = document.getElementById('sortOrder');
+            var sortOrderLinks = sortOrderSelect.querySelectorAll('.dropdown-item');
+
+            function updateSortOrderFromUrl() {
+                var urlParams = new URLSearchParams(window.location.search);
+                var sortOrder = urlParams.get('sortOrder') || 'alphabetical';
+                sortOrderLinks.forEach(function (link) {
+                    if (link.getAttribute('data-value') === sortOrder) {
+                        link.classList.add('active');
+                    } else {
+                        link.classList.remove('active');
+                    }
+                });
+            }
+
+            function updatePageLinks() {
+                var selectedSortOrder = document.querySelector('.dropdown-item.active').getAttribute('data-value');
+
+                document.querySelectorAll('.pagination a').forEach(function (link) {
+                    var href = link.getAttribute('href');
+                    var url = new URL(href, window.location.href);
+                    var urlParams = new URLSearchParams(url.search);
+
+                    urlParams.set('sortOrder', selectedSortOrder);
+                    url.search = urlParams.toString();
+
+                    link.setAttribute('href', url.toString());
+                });
+            }
+
+            function handleSortOrderChange(event) {
+                var selectedSortOrder = event.target.getAttribute('data-value');
+                var urlParams = new URLSearchParams(window.location.search);
+                urlParams.set('sortOrder', selectedSortOrder);
+                urlParams.set('page', 1);
+                window.location.search = urlParams.toString();
+            }
+
+            sortOrderLinks.forEach(function (link) {
+                link.addEventListener('click', handleSortOrderChange);
+            });
+
+            updateSortOrderFromUrl();
+            updatePageLinks();
+        });
+
+        </script>
+
+
+    <script>
+        // Razor'dan yerelleştirilmiş stringleri URL encoded olarak JavaScript değişkenleri olarak tanımlıyoruz
+        var productCannotDeleteMessage = decodeURIComponent("@Uri.EscapeDataString(localizer["PRODUCT_CANNOT_DELETE_IS_IN_ORDER"])");
+        var deleteConfirmMessage = decodeURIComponent("@Uri.EscapeDataString(localizer["DELETE_CONFIRM_PRODUCT"])");
+
+        document.addEventListener('DOMContentLoaded', function () {
+            var deleteModal6 = document.getElementById('deleteModal6');
+            deleteModal6.addEventListener('show.bs.modal', async function (event) {
+                var button = event.relatedTarget;
+                var productId = button.getAttribute('data-product-id');
+                var confirmDeleteButton6 = deleteModal6.querySelector('#confirmDeleteButton6');
+                var confirmPassiveButton6 = deleteModal6.querySelector('#confirmPassiveButton6');
+                var deleteModal6Message = deleteModal6.querySelector('#deleteModal6Message');
+
+                // Ürünün siparişe bağlı olup olmadığını kontrol et
+                const response = await fetch('/Product/CheckProductInOrder?productId=' + productId);
+                const data = await response.json();
+
+                if (data.isInOrder) {
+                    deleteModal6Message.textContent = productCannotDeleteMessage;
+                    confirmDeleteButton6.style.display = 'none';
+                    confirmPassiveButton6.style.display = 'inline-block';
+                    confirmPassiveButton6.href = '/Product/Delete?productId=' + productId;
+                } else {
+                    deleteModal6Message.textContent = deleteConfirmMessage;
+                    confirmDeleteButton6.style.display = 'inline-block';
+                    confirmPassiveButton6.style.display = 'none';
+                    confirmDeleteButton6.href = '/Product/Delete?productId=' + productId;
+                }
+            });
+            var sortOrderSelect = document.getElementById('sortOrder');
+            var sortOrderLinks = sortOrderSelect.querySelectorAll('.dropdown-item');
+
+            function updateSortOrderFromUrl() {
+                var urlParams = new URLSearchParams(window.location.search);
+                var sortOrder = urlParams.get('sortOrder') || 'alphabetical';
+                sortOrderLinks.forEach(function (link) {
+                    if (link.getAttribute('data-value') === sortOrder) {
+                        link.classList.add('active');
+                    } else {
+                        link.classList.remove('active');
+                    }
+                });
+            }
+
+            function updatePageLinks() {
+                var selectedSortOrder = document.querySelector('.dropdown-item.active').getAttribute('data-value');
+
+                document.querySelectorAll('.pagination a').forEach(function (link) {
+                    var href = link.getAttribute('href');
+                    var url = new URL(href, window.location.href);
+                    var urlParams = new URLSearchParams(url.search);
+
+                    urlParams.set('sortOrder', selectedSortOrder);
+                    url.search = urlParams.toString();
+
+                    link.setAttribute('href', url.toString());
+                });
+            }
+
+            function handleSortOrderChange(event) {
+                var selectedSortOrder = event.target.getAttribute('data-value');
+                var urlParams = new URLSearchParams(window.location.search);
+                urlParams.set('sortOrder', selectedSortOrder);
+                urlParams.set('page', 1);
+                window.location.search = urlParams.toString();
+            }
+
+            sortOrderLinks.forEach(function (link) {
+                link.addEventListener('click', handleSortOrderChange);
+            });
+
+            updateSortOrderFromUrl();
+            updatePageLinks();
+        });
+    </script>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Sıralama işlevselliği
+            var sortOrderSelect = document.getElementById('sortOrder');
+            var sortOrderLinks = sortOrderSelect.querySelectorAll('.dropdown-item');
+
+            function updateSortOrderFromUrl() {
+                var urlParams = new URLSearchParams(window.location.search);
+                var sortOrder = urlParams.get('sortOrder') || 'alphabetical';
+                sortOrderLinks.forEach(function (link) {
+                    if (link.getAttribute('data-value') === sortOrder) {
+                        link.classList.add('active');
+                    } else {
+                        link.classList.remove('active');
+                    }
+                });
+            }
+
+            function updatePageLinks() {
+                var selectedSortOrder = document.querySelector('.dropdown-item.active').getAttribute('data-value');
+
+                document.querySelectorAll('.pagination a').forEach(function (link) {
+                    var href = link.getAttribute('href');
+                    var url = new URL(href, window.location.href);
+                    var urlParams = new URLSearchParams(url.search);
+
+                    urlParams.set('sortOrder', selectedSortOrder);
+                    url.search = urlParams.toString();
+
+                    link.setAttribute('href', url.toString());
+                });
+            }
+
+            function handleSortOrderChange(event) {
+                var selectedSortOrder = event.target.getAttribute('data-value');
+                var urlParams = new URLSearchParams(window.location.search);
+                urlParams.set('sortOrder', selectedSortOrder);
+                urlParams.set('page', 1);
+                window.location.search = urlParams.toString();
+            }
+
+            sortOrderLinks.forEach(function (link) {
+                link.addEventListener('click', handleSortOrderChange);
+            });
+
+            updateSortOrderFromUrl();
+            updatePageLinks();
+        });
+    </script>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var deleteModal8 = document.getElementById('deleteModal8');
+            deleteModal8.addEventListener('show.bs.modal', function (event) {
+                var button = event.relatedTarget;
+                var stockId = button.getAttribute('data-stock-id');
+                var confirmDeleteButton7 = deleteModal8.querySelector('#confirmDeleteButton7');
+                confirmDeleteButton7.href = '/Stock/Delete?stockId=' + stockId;
+            });
+
+            var sortOrderSelect = document.getElementById('sortOrder');
+            var sortOrderLinks = sortOrderSelect.querySelectorAll('.dropdown-item');
+
+            function updateSortOrderFromUrl() {
+                var urlParams = new URLSearchParams(window.location.search);
+                var sortOrder = urlParams.get('sortOrder') || 'alphabetical';
+                sortOrderLinks.forEach(function (link) {
+                    if (link.getAttribute('data-value') === sortOrder) {
+                        link.classList.add('active');
+                    } else {
+                        link.classList.remove('active');
+                    }
+                });
+            }
+
+            function updatePageLinks() {
+                var selectedSortOrder = document.querySelector('.dropdown-item.active').getAttribute('data-value');
+
+                document.querySelectorAll('.pagination a').forEach(function (link) {
+                    var href = link.getAttribute('href');
+                    var url = new URL(href, window.location.href);
+                    var urlParams = new URLSearchParams(url.search);
+
+                    urlParams.set('sortOrder', selectedSortOrder);
+                    url.search = urlParams.toString();
+
+                    link.setAttribute('href', url.toString());
+                });
+            }
+
+            function handleSortOrderChange(event) {
+                var selectedSortOrder = event.target.getAttribute('data-value');
+                var urlParams = new URLSearchParams(window.location.search);
+                urlParams.set('sortOrder', selectedSortOrder);
+                urlParams.set('page', 1);
+                window.location.search = urlParams.toString();
+            }
+
+            sortOrderLinks.forEach(function (link) {
+                link.addEventListener('click', handleSortOrderChange);
+            });
+
+            updateSortOrderFromUrl();
+            updatePageLinks();
+        });
+    </script>
+
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var deleteModal9 = document.getElementById('deleteModal9');
+            deleteModal9.addEventListener('show.bs.modal', function (event) {
+                var button = event.relatedTarget;
+                var stockTypeSizeId = button.getAttribute('data-stockTypeSize-id');
+                var confirmDeleteButton8 = deleteModal9.querySelector('#confirmDeleteButton8');
+                confirmDeleteButton8.href = '/StockTypeSize/Delete?stockTypeSizeId=' + stockTypeSizeId;
+            });
+        });
+    </script>
+
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var deleteModal10 = document.getElementById('deleteModal10');
+            deleteModal10.addEventListener('show.bs.modal', function (event) {
+                var button = event.relatedTarget;
+                var warehouseId = button.getAttribute('data-warehouse-id');
+                var confirmDeleteButton9 = deleteModal10.querySelector('#confirmDeleteButton9');
+                confirmDeleteButton9.href = '/Warehouse/Delete?warehouseId=' + warehouseId;
+            });
+            var sortOrderSelect = document.getElementById('sortOrder');
+            var sortOrderLinks = sortOrderSelect.querySelectorAll('.dropdown-item');
+
+            function updateSortOrderFromUrl() {
+                var urlParams = new URLSearchParams(window.location.search);
+                var sortOrder = urlParams.get('sortOrder') || 'alphabetical';
+                sortOrderLinks.forEach(function (link) {
+                    if (link.getAttribute('data-value') === sortOrder) {
+                        link.classList.add('active');
+                    } else {
+                        link.classList.remove('active');
+                    }
+                });
+            }
+
+            function updatePageLinks() {
+                var selectedSortOrder = document.querySelector('.dropdown-item.active').getAttribute('data-value');
+
+                document.querySelectorAll('.pagination a').forEach(function (link) {
+                    var href = link.getAttribute('href');
+                    var url = new URL(href, window.location.href);
+                    var urlParams = new URLSearchParams(url.search);
+
+                    urlParams.set('sortOrder', selectedSortOrder);
+                    url.search = urlParams.toString();
+
+                    link.setAttribute('href', url.toString());
+                });
+            }
+
+            function handleSortOrderChange(event) {
+                var selectedSortOrder = event.target.getAttribute('data-value');
+                var urlParams = new URLSearchParams(window.location.search);
+                urlParams.set('sortOrder', selectedSortOrder);
+                urlParams.set('page', 1);
+                window.location.search = urlParams.toString();
+            }
+
+            sortOrderLinks.forEach(function (link) {
+                link.addEventListener('click', handleSortOrderChange);
+            });
+
+            updateSortOrderFromUrl();
+            updatePageLinks();
+        });
+
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var deleteModal11 = document.getElementById('deleteModal11');
+            deleteModal11.addEventListener('show.bs.modal', function (event) {
+                var button = event.relatedTarget;
+                var orderId = button.getAttribute('data-order-id');
+                var confirmDeleteButton10 = deleteModal11.querySelector('#confirmDeleteButton10');
+                confirmDeleteButton10.href = '/Order/Delete?orderId=' + orderId;
+            });
+            var sortOrderSelect = document.getElementById('sortOrder');
+            var sortOrderLinks = sortOrderSelect.querySelectorAll('.dropdown-item');
+
+            function updateSortOrderFromUrl() {
+                var urlParams = new URLSearchParams(window.location.search);
+                var sortOrder = urlParams.get('sortOrder') || 'date';
+                sortOrderLinks.forEach(function (link) {
+                    if (link.getAttribute('data-value') === sortOrder) {
+                        link.classList.add('active');
+                    } else {
+                        link.classList.remove('active');
+                    }
+                });
+            }
+
+            function updatePageLinks() {
+                var selectedSortOrder = document.querySelector('.dropdown-item.active').getAttribute('data-value');
+
+                document.querySelectorAll('.pagination a').forEach(function (link) {
+                    var href = link.getAttribute('href');
+                    var url = new URL(href, window.location.href);
+                    var urlParams = new URLSearchParams(url.search);
+
+                    urlParams.set('sortOrder', selectedSortOrder);
+                    url.search = urlParams.toString();
+
+                    link.setAttribute('href', url.toString());
+                });
+            }
+
+            function handleSortOrderChange(event) {
+                var selectedSortOrder = event.target.getAttribute('data-value');
+                var urlParams = new URLSearchParams(window.location.search);
+                urlParams.set('sortOrder', selectedSortOrder);
+                urlParams.set('page', 1);
+                window.location.search = urlParams.toString();
+            }
+
+            sortOrderLinks.forEach(function (link) {
+                link.addEventListener('click', handleSortOrderChange);
+            });
+
+            updateSortOrderFromUrl();
+            updatePageLinks();
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var deleteModal12 = document.getElementById('deleteModal12');
+            deleteModal12.addEventListener('show.bs.modal', function (event) {
+                var button = event.relatedTarget;
+                var promotionId = button.getAttribute('data-promotion-id');
+                var confirmDeleteButton11 = deleteModal12.querySelector('#confirmDeleteButton11');
+                confirmDeleteButton11.href = '/Promotion/Delete?promotionId=' + promotionId;
+            });
+
+
+
+            var sortOrderSelect = document.getElementById('sortPromotion');
+            var sortOrderLinks = sortOrderSelect.querySelectorAll('.dropdown-item');
+
+            function handleSortOrderChange(event) {
+                var selectedSortOrder = event.target.getAttribute('data-value');
+                var urlParams = new URLSearchParams(window.location.search);
+                urlParams.set('sortOrder', selectedSortOrder);
+                urlParams.set('page', 1);
+                window.location.search = urlParams.toString();
+            }
+
+            sortOrderLinks.forEach(function (link) {
+                link.addEventListener('click', handleSortOrderChange);
+            });
+
+            function updateSortOrderFromUrl() {
+                var urlParams = new URLSearchParams(window.location.search);
+                var sortOrder = urlParams.get('sortOrder') || 'date';
+                sortOrderLinks.forEach(function (link) {
+                    if (link.getAttribute('data-value') === sortOrder) {
+                        link.classList.add('active');
+                    } else {
+                        link.classList.remove('active');
+                    }
+                });
+            }
+            function updatePageLinks() {
+                var selectedSortOrder = document.querySelector('.dropdown-item.active').getAttribute('data-value');
+
+                document.querySelectorAll('.pagination a').forEach(function (link) {
+                    var href = link.getAttribute('href');
+                    var url = new URL(href, window.location.href);
+                    var urlParams = new URLSearchParams(url.search);
+
+                    urlParams.set('sortOrder', selectedSortOrder);
+                    url.search = urlParams.toString();
+
+                    link.setAttribute('href', url.toString());
+                });
+            }
+
+            updateSortOrderFromUrl();
+            updatePageLinks();
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var deleteModal13 = document.getElementById('deleteModal13');
+            deleteModal13.addEventListener('show.bs.modal', function (event) {
+                var button = event.relatedTarget;
+                var customerId = button.getAttribute('data-customer-id');
+                var confirmDeleteButton12 = deleteModal13.querySelector('#confirmDeleteButton12');
+                confirmDeleteButton12.href = '/Customer/Delete?customerId=' + customerId;
+            });
+
+            var sortOrderSelect = document.getElementById('sortOrder');
+            var sortOrderLinks = sortOrderSelect.querySelectorAll('.dropdown-item');
+
+            function updateSortOrderFromUrl() {
+                var urlParams = new URLSearchParams(window.location.search);
+                var sortOrder = urlParams.get('sortOrder') || 'alphabetical';
+                sortOrderLinks.forEach(function (link) {
+                    if (link.getAttribute('data-value') === sortOrder) {
+                        link.classList.add('active');
+                    } else {
+                        link.classList.remove('active');
+                    }
+                });
+            }
+
+            function updatePageLinks() {
+                var selectedSortOrder = document.querySelector('.dropdown-item.active').getAttribute('data-value');
+
+                document.querySelectorAll('.pagination a').forEach(function (link) {
+                    var href = link.getAttribute('href');
+                    var url = new URL(href, window.location.href);
+                    var urlParams = new URLSearchParams(url.search);
+
+                    urlParams.set('sortOrder', selectedSortOrder);
+                    url.search = urlParams.toString();
+
+                    link.setAttribute('href', url.toString());
+                });
+            }
+
+            function handleSortOrderChange(event) {
+                var selectedSortOrder = event.target.getAttribute('data-value');
+                var urlParams = new URLSearchParams(window.location.search);
+                urlParams.set('sortOrder', selectedSortOrder);
+                urlParams.set('page', 1);
+                window.location.search = urlParams.toString();
+            }
+
+            sortOrderLinks.forEach(function (link) {
+                link.addEventListener('click', handleSortOrderChange);
+            });
+
+            updateSortOrderFromUrl();
+            updatePageLinks();
+        });
+
+    </script>
+
+    <script>
+        var deleteModals14 = document.querySelectorAll('.modal');
+        deleteModals14.forEach(modal => {
+            modal.addEventListener('shown.bs.modal', function () {
+                modal.querySelector('button[type="button"]').focus();
+            })
+        });
+    </script>
+
+    <script>
+        var deleteModals15 = document.querySelectorAll('.modal');
+        deleteModals15.forEach(modal => {
+            modal.addEventListener('shown.bs.modal', function () {
+                modal.querySelector('button[type="button"]').focus();
+            })
+        });
+        var sortOrderSelect = document.getElementById('sortOrder');
+        var sortOrderLinks = sortOrderSelect.querySelectorAll('.dropdown-item');
+
+        function updateSortOrderFromUrl() {
+            var urlParams = new URLSearchParams(window.location.search);
+            var sortOrder = urlParams.get('sortOrder') || 'alphabetical';
+            sortOrderLinks.forEach(function (link) {
+                if (link.getAttribute('data-value') === sortOrder) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            });
+        }
+
+        function updatePageLinks() {
+            var selectedSortOrder = document.querySelector('.dropdown-item.active').getAttribute('data-value');
+
+            document.querySelectorAll('.pagination a').forEach(function (link) {
+                var href = link.getAttribute('href');
+                var url = new URL(href, window.location.href);
+                var urlParams = new URLSearchParams(url.search);
+
+                urlParams.set('sortOrder', selectedSortOrder);
+                url.search = urlParams.toString();
+
+                link.setAttribute('href', url.toString());
+            });
+        }
+
+        function handleSortOrderChange(event) {
+            var selectedSortOrder = event.target.getAttribute('data-value');
+            var urlParams = new URLSearchParams(window.location.search);
+            urlParams.set('sortOrder', selectedSortOrder);
+            urlParams.set('page', 1);
+            window.location.search = urlParams.toString();
+        }
+
+        sortOrderLinks.forEach(function (link) {
+            link.addEventListener('click', handleSortOrderChange);
+        });
+
+        updateSortOrderFromUrl();
+        updatePageLinks();
+    </script>
+
+
+
+

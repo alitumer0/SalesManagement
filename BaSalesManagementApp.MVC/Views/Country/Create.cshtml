@@ -1,0 +1,44 @@
+﻿@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<Resource> localizer
+@model CountryCreateVM
+@{
+    ViewData["Title"] = @localizer["Create"];
+}
+
+<div class="content-wrapper">
+    <div class="container-xxl flex-grow-1 container-p-y">
+        <h4 class="py-3 mb-4">
+            <span class="text-muted fw-light">@localizer["Country"] /</span> @localizer["Create"]
+        </h4>
+        <div class="row">
+            <div class="content-wrapper">
+                <div class="col-12">
+                    <form asp-action="Create" asp-controller="Country" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="NameTr" class="form-label">@localizer["Country Name Tr"]</label>
+                            <input asp-for="NameTr" class="form-control" />
+                            <span asp-validation-for="NameTr" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="NameEn" class="form-label">@localizer["Country Name En"]</label>
+                            <input asp-for="NameEn" class="form-control" />
+                            <span asp-validation-for="NameEn" class="text-danger"></span>
+                        </div>
+
+                        <div>
+                            <input type="submit" value="@localizer["Create"]" class="btn btn-primary" />
+                            <a asp-action="Index" class="btn btn-secondary">@localizer["BackToList"]</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    @section Scripts {
+        @{
+            await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        }
+}

@@ -1,0 +1,40 @@
+﻿@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<Resource> localizer
+
+@{
+    Layout = "_ErrorLayout";
+    ViewData["Title"] = localizer["Server_Error_(500)"];
+}
+
+<div class="col-lg-12">
+    <div class="text-center mt-4">
+        <h1 class="display-1 fw-bolder">500</h1>
+        <h2 class="lead fw-bolder">@localizer["ServerErrorMessage"]</h2>
+        <button id="backToPreviousPage" class="fw-bolder">
+            <i class="fas fa-arrow-left me-1"></i>
+            @localizer["BackToPreviousPage"]
+        </button>
+    </div>
+
+    <div class="gears">
+        <div class="gear one">
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+        </div>
+        <div class="gear two">
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+        </div>
+        <div class="gear three">
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/errorpage/js/error-page-bg-animation.js"></script>
+}

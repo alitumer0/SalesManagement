@@ -1,0 +1,87 @@
+﻿@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<Resource> localizer
+@model BaSalesManagementApp.MVC.Models.CategoryVMs.CategoryCreateVM
+
+@{
+    ViewData["Title"] = localizer["Create"];
+}
+
+<div class="content-wrapper">
+    <div class="container-xxl flex-grow-1 container-p-y">
+        <h4 class="py-3 mb-4">
+            <span class="text-muted fw-light"> @localizer["Category"] /</span>
+            @localizer["Create"]
+        </h4>
+
+                           <form asp-action="Create">
+                                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                 <div class="mb-3"> 
+                                    <label asp-for="Name" class="form-label">@localizer["CategoryName"].ToString().ToUpper(new System.Globalization.CultureInfo("tr-TR"))</label>
+                                    <input asp-for="Name" id="CategoryName" class="form-control"
+                                           data-val="true"
+                                           data-val-required="@localizer["Please enter the category name."]"
+                                           data-val-length="@localizer["Category name must be between 2 and 128 characters."]"
+                                           data-val-length-min="2" data-val-length-max="128" />
+                                    <span asp-validation-for="Name" id="categoryNameError" class="text-danger"></span>
+                                </div>
+                                <div class="mb-3">
+                                    <input type="submit" value="@localizer["Create"]" class="btn btn-primary" />
+                                    <a asp-action="Index" class="btn btn-secondary"> @localizer["BackToList"]</a>
+                                </div>
+                            </form>
+
+    </div>
+</div>
+
+@section Scripts {
+    @Html.Partial("_ValidationScriptsPartial")
+
+  
+
+    <script>
+        $(document).ready(function () {
+            // Türkçe karakterler
+            var turkishCharacters = ['ç', 'ğ', 'ı', 'ö', 'ş', 'ü', 'Ç', 'Ğ', 'İ', 'Ö', 'Ş', 'Ü'];
+
+            $('#CategoryName').on('input', function () {
+                var categoryNameValue = $(this).val();
+                var errorMessage = $('#categoryNameError');
+
+                // Minimum ve maksimum uzunluk değerlerini al
+                var minLength = $(this).data('val-length-min');
+                var maxLength = $(this).data('val-length-max');
+                var requiredMessage = $(this).data('val-required');
+                var lengthMessage = $(this).data('val-length');
+
+                // Eğer boşsa gerekli mesajını göster
+                if (categoryNameValue.length === 0) {
+                    errorMessage.text(requiredMessage).show();
+                }
+                // Eğer uzunluk geçerli aralıkta değilse uzunluk mesajını göster
+                else if (categoryNameValue.length < minLength || categoryNameValue.length > maxLength) {
+                    errorMessage.text(lengthMessage).show();
+                } else {
+                    errorMessage.text('').hide(); // Hata yoksa mesajı gizle
+                }
+
+                // Her kelimenin ilk harfini büyük yap, Türkçe karakterlerden sonraki harfi küçük bırak
+                var capitalizedValue = categoryNameValue.replace(/\b\w/g, function (c, index) {
+                    // Sadece boşluktan sonra veya ilk harfi büyük yap
+                    if (index === 0 || categoryNameValue[index - 1] === ' ') {
+                        return c.toUpperCase();
+                    }
+                    // Eğer Türkçe bir karakterden sonra geliyorsa, büyük yapma
+                    if (turkishCharacters.includes(categoryNameValue[index - 1])) {
+                        return c;
+                    }
+                    return c.toLowerCase(); // Diğer tüm harfleri küçük yap
+                });
+
+                // Güncellenmiş değeri inputa set et
+                $(this).val(capitalizedValue);
+            });
+        });
+    </script>
+}
+
+   

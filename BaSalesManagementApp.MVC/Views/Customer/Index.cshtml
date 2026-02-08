@@ -1,0 +1,366 @@
+﻿@using Microsoft.Extensions.Localization
+@using X.PagedList.Mvc.Common
+@using X.PagedList.Mvc.Core
+@using X.PagedList
+@using X.PagedList.Mvc.Core.Common
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<Resource> localizer
+
+@{
+    ViewData["Title"] = localizer["CustomerIndex"];
+}
+
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.5.0/font/bootstrap-icons.min.css">
+    <style>
+        .form-select {
+            width: auto;
+            min-width: 80px;
+        }
+
+        .mb-3 {
+            margin-bottom: 1rem;
+        }
+        
+        .table thead tr{
+            border-bottom: 1px solid #dee2e6;
+        }
+    
+    </style>
+</head>
+
+<div class="content-wrapper">
+    <div class="container-xxl flex-grow-1 container-p-y">
+        <h4 class="py-3 mb-4">
+            <span class="text-muted fw-light">@localizer["Customer"] /</span>
+            @localizer["List"]
+        </h4>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <a asp-action="Create" class="btn btn-primary">@localizer["Create_New"]</a>
+
+            <div class="d-flex">
+                <!-- Show Entries Dropdown Sol Tarafa Alınıyor -->
+                <form method="get" asp-action="Index" class="d-inline-block me-3">
+                    <!--  q ve sortOrder'u koru -->
+                    <input type="hidden" name="sortOrder" value="@ViewBag.CurrentSort" />
+                    <input type="hidden" name="q" value="@ViewBag.CurrentSearch" />
+
+                    <label>@localizer["Show"]</label>
+                    <select name="pageSize" onchange="this.form.submit()" class="form-select d-inline-block w-auto ms-2">
+                        @if (ViewData["CurrentPageSize"]?.ToString() == "5")
+                        {
+                            <option value="5" selected>5</option>
+                        }
+                        else
+                        {
+                            <option value="5">5</option>
+                        }
+
+                        @if (ViewData["CurrentPageSize"]?.ToString() == "10")
+                        {
+                            <option value="10" selected>10</option>
+                        }
+                        else
+                        {
+                            <option value="10">10</option>
+                        }
+
+                        @if (ViewData["CurrentPageSize"]?.ToString() == "20")
+                        {
+                            <option value="20" selected>20</option>
+                        }
+                        else
+                        {
+                            <option value="20">20</option>
+                        }
+
+                        @if (ViewData["CurrentPageSize"]?.ToString() == "50")
+                        {
+                            <option value="50" selected>50</option>
+                        }
+                        else
+                        {
+                            <option value="50">50</option>
+                        }
+                    </select>
+                    <label>@localizer["Entries"]</label>
+                </form>
+
+                <div id="sortOrder" class="dropdown">
+                    <button class="btn btn-primary" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="bi bi-filter" style="font-size:1rem"></i>
+                    </button>
+
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <li><a class="dropdown-item" data-value="alphabetical" href="#">A-Z</a></li>
+                        <li><a class="dropdown-item" data-value="alphabeticaldesc" href="#">Z-A</a></li>
+                        <li><a class="dropdown-item" data-value="date" href="#">@localizer["Newest_First"]</a></li>
+                        <li><a class="dropdown-item" data-value="datedesc" href="#">@localizer["Oldest_First"]</a></li>
+
+                        @if (!User.IsInRole("Manager"))
+                        {
+                            <div class="dropdown-divider"></div>
+                            <form method="get" asp-action="Index" class="d-inline-block w-100">
+                                <!-- q ve sortOrder'u koru -->
+                                <input type="hidden" name="sortOrder" value="@ViewBag.CurrentSort" />
+                                <input type="hidden" name="pageSize" value="@ViewData["CurrentPageSize"]" />
+                                <input type="hidden" name="q" value="@ViewBag.CurrentSearch" />
+
+                                <label>@localizer["FilterByCompany"]</label>
+                                <select name="company_Id" onchange="this.form.submit()" class="form-select" style="width: 100%;">
+                                    <option value="">@localizer["AllCompanies"]</option>
+                                    @if (ViewBag.Companies != null)
+                                    {
+                                        foreach (var cmp in ViewBag.Companies)
+                                        {
+                                            <option value="@cmp.Id"
+                                                    selected="@(cmp.Id.ToString() == Convert.ToString(ViewData["SelectedCompanyId"]) ? "selected" : null)">
+                                                @cmp.Name
+                                            </option>
+                                        }
+                                    }
+                                </select>
+                            </form>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="table-responsive text-nowrap">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>@localizer["ColumnName"].ToString().ToUpper(new System.Globalization.CultureInfo("tr-TR"))</th>
+                            <th>@localizer["CompanyName"].ToString().ToUpper(new System.Globalization.CultureInfo("tr-TR"))</th>
+                            <th>@localizer["CreatedDate"].ToString().ToUpper(new System.Globalization.CultureInfo("tr-TR"))</th>
+                            <th>
+                                <a href="#" id="sortAddress" style="text-decoration: none; color: inherit;">
+                                    @localizer["City"].ToString().ToUpper(new System.Globalization.CultureInfo("tr-TR"))
+                                </a>
+                            </th>
+                            <th class="text-end">@localizer["Actions"]</th>
+                        </tr>
+                    </thead>
+                    <tbody class="table-border-bottom-0">
+                        @foreach (BaSalesManagementApp.MVC.Models.CustomerVMs.CustomerListVM item in Model)
+                        {
+                            <tr>
+                                <td class="fw-medium">@Html.DisplayFor(modelItem => item.Name)</td>
+                                <td class="fw-medium">
+                                    @if (item.CompanyPhoto != null) //Company'nin logosu var ise
+                                    {
+                                        <img src="data:image/jpeg;base64,@Convert.ToBase64String(item.CompanyPhoto)" alt="Company Picture"
+                                             class="rounded-circle profile-picture" style="width: 40px; height: 40px;"
+                                             data-bs-toggle="popover" data-bs-html="true"
+                                             data-bs-content="
+                                                <div class='card' style='width: 150px;'>
+                                                    <img src='data:image/jpeg;base64,@Convert.ToBase64String(item.CompanyPhoto)' class='card-img-top' alt='Company Logo'>
+                                                    <div class='card-body text-center'>
+                                                        <h6 class='card-title'>@item.CompanyName</h6>
+                                                    </div>
+                                                </div>" />
+                                    }
+                                    else //Company'nin logosu yok ise
+                                    {
+                                        <span class="rounded-circle" style="width: 40px; height: 40px; background-color: #e7e7ff; color: #696cff; display: flex; justify-content: center; align-items: center; font-weight:500"
+                                              data-bs-toggle="popover" data-bs-html="true"
+                                              data-bs-content="
+                                                <div class='card' style='width: 150px;'>
+                                                    <div class='card-img-top' style='background-color: #e7e7ff; width: 100%; height: 80px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: #696cff;'>
+                                        @* @item.CompanyName.Substring(0, 2) *@
+                                                    </div>
+                                                    <div class='card-body text-center'>
+                                                        <h6 class='card-title'>@item.CompanyName</h6>
+                                                    </div>
+                                                </div>">@item.CompanyName.Substring(0, 2)</span>
+                                    }
+                                </td>
+                                <td class="fw-medium">@item.CreatedDate.ToString("dd.MM.yyyy")</td>
+                                <td class="fw-medium">@Html.DisplayFor(modelItem => item.CityName)</td>
+                                <td class="text-end">
+                                    <div class="dropdown">
+                                        <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown" style="margin-right: 28px;">
+                                            <i class="bx bx-dots-vertical-rounded"></i>
+                                        </button>
+                                        <div class="dropdown-menu">
+                                            <a asp-action="GetCustomerOrdersHistory" asp-route-customerId="@item.Id" class="dropdown-item">
+                                                <i class="bx bx-history me-1"></i> @localizer["OrderHistory"]
+                                            </a>
+                                            <a asp-action="Details" asp-route-customerId="@item.Id" class="dropdown-item">
+                                                <i class="bx bx-info-circle me-1"></i> @localizer["Details"]
+                                            </a>
+                                            <a asp-action="Update" asp-route-customerId="@item.Id" class="dropdown-item">
+                                                <i class="bx bx-edit-alt me-1"></i>@localizer["Update"]
+                                            </a>
+                                            <a href="javascript:;" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#deleteModal" data-customer-id="@item.Id">
+                                                <i class="bx bx-trash me-1"></i> @localizer["Delete"]
+                                            </a>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div class="d-flex justify-content-center mt-3">
+                @{
+                    var pagedList = Model as X.PagedList.IPagedList<BaSalesManagementApp.MVC.Models.CustomerVMs.CustomerListVM>;
+                    if (pagedList != null)
+                    {
+                        @Html.PagedListPager(pagedList, page => Url.Action("Index", new { page, sortOrder = ViewBag.CurrentSort, pageSize = ViewData["CurrentPageSize"] }), new PagedListRenderOptions
+               {
+                                Display = PagedListDisplayMode.Always,
+                                UlElementClasses = new[] { "pagination", "justify-content-center" },
+                                LiElementClasses = new[] { "page-item" },
+                                PageClasses = new[] { "page-link" },
+                                LinkToPreviousPageFormat = @localizer["Previous"],
+                                LinkToNextPageFormat = @localizer["Next"],
+                                LinkToFirstPageFormat = @localizer["First"],
+                                LinkToLastPageFormat = @localizer["Last"],
+                                ContainerDivClasses = new[] { "d-flex", "justify-content-center" }
+               })
+                            }
+                    }
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">@localizer["DELETE_CONFIRM_TITLE_CUSTOMER"]</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                @localizer["DELETE_CONFIRM_CUSTOMER"]
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@localizer["CANCEL_CUSTOMER"]</button>
+                <a id="confirmDeleteButton" href="#" class="btn btn-danger">@localizer["DELETE_CUSTOMER"]</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var deleteModal = document.getElementById('deleteModal');
+    deleteModal.addEventListener('show.bs.modal', function (event) {
+        var button = event.relatedTarget;
+        var customerId = button.getAttribute('data-customer-id');
+        var confirmDeleteButton = deleteModal.querySelector('#confirmDeleteButton');
+        confirmDeleteButton.href = '/Customer/Delete?customerId=' + customerId;
+    });
+
+    var sortOrderSelect = document.getElementById('sortOrder');
+    var sortOrderLinks = sortOrderSelect.querySelectorAll('.dropdown-item');
+
+    function updateSortOrderFromUrl() {
+        var urlParams = new URLSearchParams(window.location.search);
+        var sortOrder = urlParams.get('sortOrder') || 'alphabetical';
+        sortOrderLinks.forEach(function (link) {
+                    if (link.getAttribute('data-value') === sortOrder) {
+                        link.classList.add('active');
+                    } else {
+                        link.classList.remove('active');
+                    }
+        });
+    }
+
+    function updatePageLinks() {
+        var urlParams = new URLSearchParams(window.location.search);
+        var selectedSortOrder = urlParams.get('sortOrder') || 'alphabetical';
+        var q = urlParams.get('q') || '';
+        var pageSize = urlParams.get('pageSize') || '';
+
+        document.querySelectorAll('.pagination a').forEach(function (link) {
+            var href = link.getAttribute('href');
+            if (!href) return;
+            var url = new URL(href, window.location.origin);
+            var p = new URLSearchParams(url.search);
+            p.set('sortOrder', selectedSortOrder);
+            if (q) p.set('q', q);
+            if (pageSize) p.set('pageSize', pageSize);
+            url.search = p.toString();
+            link.setAttribute('href', url.toString());
+        });
+    }
+
+    function handleSortOrderChange(event) {
+        event.preventDefault();
+        var selectedSortOrder = event.target.getAttribute('data-value');
+        var urlParams = new URLSearchParams(window.location.search);
+        urlParams.set('sortOrder', selectedSortOrder);
+        urlParams.set('page', 1);
+
+        var q = new URLSearchParams(window.location.search).get('q');
+        if (q) urlParams.set('q', q);
+
+        window.location.search = urlParams.toString();
+    }
+
+    sortOrderLinks.forEach(function (link) {
+        link.addEventListener('click', handleSortOrderChange);
+    });
+
+    // Address column sorting
+    var sortAddressLink = document.getElementById('sortAddress');
+    if (sortAddressLink) {
+        sortAddressLink.addEventListener('click', function (event) {
+            event.preventDefault();
+            var urlParams = new URLSearchParams(window.location.search);
+            var currentSort = urlParams.get('sortOrder');
+            var newSort = currentSort === 'city_asc' ? 'city_desc' : 'city_asc';
+            urlParams.set('sortOrder', newSort);
+            urlParams.delete('page');
+            var q = new URLSearchParams(window.location.search).get('q');
+            if (q) urlParams.set('q', q);
+            window.location.search = urlParams.toString();
+        });
+    }
+
+    updateSortOrderFromUrl();
+    updatePageLinks();
+
+    // Initialize popovers
+    var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
+    popoverTriggerList.map(function (el) {
+        return new bootstrap.Popover(el, { trigger: 'hover', placement: 'right' });
+    });
+
+    //  Global "Ara" inputunu sunucuya bağla
+    const searchBox = document.querySelector('input[placeholder="Ara..."]') || document.querySelector('input[type="search"]');
+    if (searchBox) {
+        const params = new URLSearchParams(window.location.search);
+        const currentQ = params.get('q') || '';
+        if (!searchBox.value && currentQ) searchBox.value = currentQ;
+
+        let t;
+        const navigateWithQ = () => {
+            const base = new URL(window.location.href);
+            const p = new URLSearchParams(base.search);
+            const v = searchBox.value.trim();
+            if (v) p.set('q', v); else p.delete('q');
+            p.set('page', 1);
+            base.search = p.toString();
+            window.location.href = base.toString();
+        };
+
+        searchBox.addEventListener('input', function () {
+            clearTimeout(t);
+            t = setTimeout(navigateWithQ, 350);
+        });
+        searchBox.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') { e.preventDefault(); navigateWithQ(); }
+        });
+    }
+});
+</script>
+}

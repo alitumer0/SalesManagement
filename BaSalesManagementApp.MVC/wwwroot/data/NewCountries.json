@@ -1,0 +1,1460 @@
+{
+  "CountryCodes": [
+    {
+      "name": "Afghanistan",
+      "turkish_name": "Afganistan",
+      "flag": "🇦🇫",
+      "code": "AF",
+      "dialcode": "+93"
+    },
+    {
+      "name": "Åland Islands",
+      "turkish_name": "Åland Adaları",
+      "flag": "🇦🇽",
+      "code": "AX",
+      "dialcode": "+358"
+    },
+    {
+      "name": "Albania",
+      "turkish_name": "Arnavutluk",
+      "flag": "🇦🇱",
+      "code": "AL",
+      "dialcode": "+355"
+    },
+    {
+      "name": "Algeria",
+      "turkish_name": "Cezayir",
+      "flag": "🇩🇿",
+      "code": "DZ",
+      "dialcode": "+213"
+    },
+    {
+      "name": "American Samoa",
+      "turkish_name": "Amerikan Samoası",
+      "flag": "🇦🇸",
+      "code": "AS",
+      "dialcode": "+1684"
+    },
+    {
+      "name": "Andorra",
+      "turkish_name": "Andorra",
+      "flag": "🇦🇩",
+      "code": "AD",
+      "dialcode": "+376"
+    },
+    {
+      "name": "Angola",
+      "turkish_name": "Angola",
+      "flag": "🇦🇴",
+      "code": "AO",
+      "dialcode": "+244"
+    },
+    {
+      "name": "Anguilla",
+      "turkish_name": "Anguilla",
+      "flag": "🇦🇮",
+      "code": "AI",
+      "dialcode": "+1264"
+    },
+    {
+      "name": "Antarctica",
+      "turkish_name": "Antarktika",
+      "flag": "🇦🇶",
+      "code": "AQ",
+      "dialcode": "+672"
+    },
+    {
+      "name": "Antigua and Barbuda",
+      "turkish_name": "Antigua ve Barbuda",
+      "flag": "🇦🇬",
+      "code": "AG",
+      "dialcode": "+1268"
+    },
+    {
+      "name": "Argentina",
+      "turkish_name": "Arjantin",
+      "flag": "🇦🇷",
+      "code": "AR",
+      "dialcode": "+54"
+    },
+    {
+      "name": "Armenia",
+      "turkish_name": "Ermenistan",
+      "flag": "🇦🇲",
+      "code": "AM",
+      "dialcode": "+374"
+    },
+    {
+      "name": "Aruba",
+      "turkish_name": "Aruba",
+      "flag": "🇦🇼",
+      "code": "AW",
+      "dialcode": "+297"
+    },
+    {
+      "name": "Australia",
+      "turkish_name": "Avustralya",
+      "flag": "🇦🇺",
+      "code": "AU",
+      "dialcode": "+61"
+    },
+    {
+      "name": "Austria",
+      "turkish_name": "Avusturya",
+      "flag": "🇦🇹",
+      "code": "AT",
+      "dialcode": "+43"
+    },
+    {
+      "name": "Azerbaijan",
+      "turkish_name": "Azerbaycan",
+      "flag": "🇦🇿",
+      "code": "AZ",
+      "dialcode": "+994"
+    },
+    {
+      "name": "Bahamas",
+      "turkish_name": "Bahamalar",
+      "flag": "🇧🇸",
+      "code": "BS",
+      "dialcode": "+1242"
+    },
+    {
+      "name": "Bahrain",
+      "turkish_name": "Bahreyn",
+      "flag": "🇧🇭",
+      "code": "BH",
+      "dialcode": "+973"
+    },
+    {
+      "name": "Bangladesh",
+      "turkish_name": "Bangladeş",
+      "flag": "🇧🇩",
+      "code": "BD",
+      "dialcode": "+880"
+    },
+    {
+      "name": "Barbados",
+      "turkish_name": "Barbados",
+      "flag": "🇧🇧",
+      "code": "BB",
+      "dialcode": "+1246"
+    },
+    {
+      "name": "Belarus",
+      "turkish_name": "Beyaz Rusya",
+      "flag": "🇧🇾",
+      "code": "BY",
+      "dialcode": "+375"
+    },
+    {
+      "name": "Belgium",
+      "turkish_name": "Belçika",
+      "flag": "🇧🇪",
+      "code": "BE",
+      "dialcode": "+32"
+    },
+    {
+      "name": "Belize",
+      "turkish_name": "Belize",
+      "flag": "🇧🇿",
+      "code": "BZ",
+      "dialcode": "+501"
+    },
+    {
+      "name": "Benin",
+      "turkish_name": "Benin",
+      "flag": "🇧🇯",
+      "code": "BJ",
+      "dialcode": "+229"
+    },
+    {
+      "name": "Bermuda",
+      "turkish_name": "Bermuda",
+      "flag": "🇧🇲",
+      "code": "BM",
+      "dialcode": "+1441"
+    },
+    {
+      "name": "Bhutan",
+      "turkish_name": "Butan",
+      "flag": "🇧🇹",
+      "code": "BT",
+      "dialcode": "+975"
+    },
+    {
+      "name": "Bolivia",
+      "turkish_name": "Bolivya",
+      "flag": "🇧🇴",
+      "code": "BO",
+      "dialcode": "+591"
+    },
+    {
+      "name": "Bosnia and Herzegovina",
+      "turkish_name": "Bosna Hersek",
+      "flag": "🇧🇦",
+      "code": "BA",
+      "dialcode": "+387"
+    },
+    {
+      "name": "Botswana",
+      "turkish_name": "Botsvana",
+      "flag": "🇧🇼",
+      "code": "BW",
+      "dialcode": "+267"
+    },
+    {
+      "name": "Brazil",
+      "turkish_name": "Brezilya",
+      "flag": "🇧🇷",
+      "code": "BR",
+      "dialcode": "+55"
+    },
+    {
+      "name": "Brunei",
+      "turkish_name": "Bruney",
+      "flag": "🇧🇳",
+      "code": "BN",
+      "dialcode": "+673"
+    },
+    {
+      "name": "Bulgaria",
+      "turkish_name": "Bulgaristan",
+      "flag": "🇧🇬",
+      "code": "BG",
+      "dialcode": "+359"
+    },
+    {
+      "name": "Burkina Faso",
+      "turkish_name": "Burkina Faso",
+      "flag": "🇧🇫",
+      "code": "BF",
+      "dialcode": "+226"
+    },
+    {
+      "name": "Burundi",
+      "turkish_name": "Burundi",
+      "flag": "🇧🇮",
+      "code": "BI",
+      "dialcode": "+257"
+    },
+    {
+      "name": "Cambodia",
+      "turkish_name": "Kamboçya",
+      "flag": "🇰🇭",
+      "code": "KH",
+      "dialcode": "+855"
+    },
+    {
+      "name": "Cameroon",
+      "turkish_name": "Kamerun",
+      "flag": "🇨🇲",
+      "code": "CM",
+      "dialcode": "+237"
+    },
+    {
+      "name": "Canada",
+      "turkish_name": "Kanada",
+      "flag": "🇨🇦",
+      "code": "CA",
+      "dialcode": "+1"
+    },
+    {
+      "name": "Cape Verde",
+      "turkish_name": "Yeşil Burun Adaları",
+      "flag": "🇨🇻",
+      "code": "CV",
+      "dialcode": "+238"
+    },
+    {
+      "name": "Cayman Islands",
+      "turkish_name": "Cayman Adaları",
+      "flag": "🇰🇾",
+      "code": "KY",
+      "dialcode": "+345"
+    },
+    {
+      "name": "Central African Republic",
+      "turkish_name": "Orta Afrika Cumhuriyeti",
+      "flag": "🇨🇫",
+      "code": "CF",
+      "dialcode": "+236"
+    },
+    {
+      "name": "Chad",
+      "turkish_name": "Çad",
+      "flag": "🇹🇩",
+      "code": "TD",
+      "dialcode": "+235"
+    },
+    {
+      "name": "Chile",
+      "turkish_name": "Şili",
+      "flag": "🇨🇱",
+      "code": "CL",
+      "dialcode": "+56"
+    },
+    {
+      "name": "China",
+      "turkish_name": "Çin",
+      "flag": "🇨🇳",
+      "code": "CN",
+      "dialcode": "+86"
+    },
+    {
+      "name": "Christmas Island",
+      "turkish_name": "Christmas Adası",
+      "flag": "🇨🇽",
+      "code": "CX",
+      "dialcode": "+61"
+    },
+    {
+      "name": "Cocos Islands",
+      "turkish_name": "Cocos Adaları",
+      "flag": "🇨🇨",
+      "code": "CC",
+      "dialcode": "+61"
+    },
+    {
+      "name": "Colombia",
+      "turkish_name": "Kolombiya",
+      "flag": "🇨🇴",
+      "code": "CO",
+      "dialcode": "+57"
+    },
+    {
+      "name": "Comoros",
+      "turkish_name": "Komorlar",
+      "flag": "🇰🇲",
+      "code": "KM",
+      "dialcode": "+269"
+    },
+    {
+      "name": "Congo",
+      "turkish_name": "Kongo",
+      "flag": "🇨🇬",
+      "code": "CG",
+      "dialcode": "+242"
+    },
+    {
+      "name": "Congo (DRC)",
+      "turkish_name": "Kongo Demokratik Cumhuriyeti",
+      "flag": "🇨🇩",
+      "code": "CD",
+      "dialcode": "+243"
+    },
+    {
+      "name": "Cook Islands",
+      "turkish_name": "Cook Adaları",
+      "flag": "🇨🇰",
+      "code": "CK",
+      "dialcode": "+682"
+    },
+    {
+      "name": "Costa Rica",
+      "turkish_name": "Kosta Rika",
+      "flag": "🇨🇷",
+      "code": "CR",
+      "dialcode": "+506"
+    },
+    {
+      "name": "Cote d'Ivoire",
+      "turkish_name": "Fildişi Sahili",
+      "flag": "🇨🇮",
+      "code": "CI",
+      "dialcode": "+225"
+    },
+    {
+      "name": "Croatia",
+      "turkish_name": "Hırvatistan",
+      "flag": "🇭🇷",
+      "code": "HR",
+      "dialcode": "+385"
+    },
+    {
+      "name": "Cuba",
+      "turkish_name": "Küba",
+      "flag": "🇨🇺",
+      "code": "CU",
+      "dialcode": "+53"
+    },
+    {
+      "name": "Cyprus",
+      "turkish_name": "Kıbrıs",
+      "flag": "🇨🇾",
+      "code": "CY",
+      "dialcode": "+357"
+    },
+    {
+      "name": "Czech Republic",
+      "turkish_name": "Çek Cumhuriyeti",
+      "flag": "🇨🇿",
+      "code": "CZ",
+      "dialcode": "+420"
+    },
+    {
+      "name": "Denmark",
+      "turkish_name": "Danimarka",
+      "flag": "🇩🇰",
+      "code": "DK",
+      "dialcode": "+45"
+    },
+    {
+      "name": "Djibouti",
+      "turkish_name": "Cibuti",
+      "flag": "🇩🇯",
+      "code": "DJ",
+      "dialcode": "+253"
+    },
+    {
+      "name": "Dominica",
+      "turkish_name": "Dominika",
+      "flag": "🇩🇲",
+      "code": "DM",
+      "dialcode": "+1767"
+    },
+    {
+      "name": "Dominican Republic",
+      "turkish_name": "Dominik Cumhuriyeti",
+      "flag": "🇩🇴",
+      "code": "DO",
+      "dialcode": "+1"
+    },
+    {
+      "name": "Ecuador",
+      "turkish_name": "Ekvador",
+      "flag": "🇪🇨",
+      "code": "EC",
+      "dialcode": "+593"
+    },
+    {
+      "name": "Egypt",
+      "turkish_name": "Mısır",
+      "flag": "🇪🇬",
+      "code": "EG",
+      "dialcode": "+20"
+    },
+    {
+      "name": "El Salvador",
+      "turkish_name": "El Salvador",
+      "flag": "🇸🇻",
+      "code": "SV",
+      "dialcode": "+503"
+    },
+    {
+      "name": "Equatorial Guinea",
+      "turkish_name": "Ekvator Ginesi",
+      "flag": "🇬🇶",
+      "code": "GQ",
+      "dialcode": "+240"
+    },
+    {
+      "name": "Eritrea",
+      "turkish_name": "Eritre",
+      "flag": "🇪🇷",
+      "code": "ER",
+      "dialcode": "+291"
+    },
+    {
+      "name": "Estonia",
+      "turkish_name": "Estonya",
+      "flag": "🇪🇪",
+      "code": "EE",
+      "dialcode": "+372"
+    },
+    {
+      "name": "Ethiopia",
+      "turkish_name": "Etiyopya",
+      "flag": "🇪🇹",
+      "code": "ET",
+      "dialcode": "+251"
+    },
+    {
+      "name": "Fiji",
+      "turkish_name": "Fiji",
+      "flag": "🇫🇯",
+      "code": "FJ",
+      "dialcode": "+679"
+    },
+    {
+      "name": "Finland",
+      "turkish_name": "Finlandiya",
+      "flag": "🇫🇮",
+      "code": "FI",
+      "dialcode": "+358"
+    },
+    {
+      "name": "France",
+      "turkish_name": "Fransa",
+      "flag": "🇫🇷",
+      "code": "FR",
+      "dialcode": "+33"
+    },
+    {
+      "name": "Gabon",
+      "turkish_name": "Gabon",
+      "flag": "🇬🇦",
+      "code": "GA",
+      "dialcode": "+241"
+    },
+    {
+      "name": "Gambia",
+      "turkish_name": "Gambiya",
+      "flag": "🇬🇲",
+      "code": "GM",
+      "dialcode": "+220"
+    },
+    {
+      "name": "Georgia",
+      "turkish_name": "Gürcistan",
+      "flag": "🇬🇪",
+      "code": "GE",
+      "dialcode": "+995"
+    },
+    {
+      "name": "Germany",
+      "turkish_name": "Almanya",
+      "flag": "🇩🇪",
+      "code": "DE",
+      "dialcode": "+49"
+    },
+    {
+      "name": "Ghana",
+      "turkish_name": "Gana",
+      "flag": "🇬🇭",
+      "code": "GH",
+      "dialcode": "+233"
+    },
+    {
+      "name": "Greece",
+      "turkish_name": "Yunanistan",
+      "flag": "🇬🇷",
+      "code": "GR",
+      "dialcode": "+30"
+    },
+    {
+      "name": "Greenland",
+      "turkish_name": "Grönland",
+      "flag": "🇬🇱",
+      "code": "GL",
+      "dialcode": "+299"
+    },
+    {
+      "name": "Grenada",
+      "turkish_name": "Grenada",
+      "flag": "🇬🇩",
+      "code": "GD",
+      "dialcode": "+1473"
+    },
+    {
+      "name": "Guadeloupe",
+      "turkish_name": "Guadeloupe",
+      "flag": "🇬🇵",
+      "code": "GP",
+      "dialcode": "+590"
+    },
+    {
+      "name": "Guam",
+      "turkish_name": "Guam",
+      "flag": "🇬🇺",
+      "code": "GU",
+      "dialcode": "+1671"
+    },
+    {
+      "name": "Guatemala",
+      "turkish_name": "Guatemala",
+      "flag": "🇬🇹",
+      "code": "GT",
+      "dialcode": "+502"
+    },
+    {
+      "name": "Guinea",
+      "turkish_name": "Gine",
+      "flag": "🇬🇳",
+      "code": "GN",
+      "dialcode": "+224"
+    },
+    {
+      "name": "Guinea-Bissau",
+      "turkish_name": "Gine-Bissau",
+      "flag": "🇬🇼",
+      "code": "GW",
+      "dialcode": "+245"
+    },
+    {
+      "name": "Guyana",
+      "turkish_name": "Guyana",
+      "flag": "🇬🇾",
+      "code": "GY",
+      "dialcode": "+592"
+    },
+    {
+      "name": "Haiti",
+      "turkish_name": "Haiti",
+      "flag": "🇭🇹",
+      "code": "HT",
+      "dialcode": "+509"
+    },
+    {
+      "name": "Honduras",
+      "turkish_name": "Honduras",
+      "flag": "🇭🇳",
+      "code": "HN",
+      "dialcode": "+504"
+    },
+    {
+      "name": "Hong Kong",
+      "turkish_name": "Hong Kong",
+      "flag": "🇭🇰",
+      "code": "HK",
+      "dialcode": "+852"
+    },
+    {
+      "name": "Hungary",
+      "turkish_name": "Macaristan",
+      "flag": "🇭🇺",
+      "code": "HU",
+      "dialcode": "+36"
+    },
+    {
+      "name": "Iceland",
+      "turkish_name": "İzlanda",
+      "flag": "🇮🇸",
+      "code": "IS",
+      "dialcode": "+354"
+    },
+    {
+      "name": "India",
+      "turkish_name": "Hindistan",
+      "flag": "🇮🇳",
+      "code": "IN",
+      "dialcode": "+91"
+    },
+    {
+      "name": "Indonesia",
+      "turkish_name": "Endonezya",
+      "flag": "🇮🇩",
+      "code": "ID",
+      "dialcode": "+62"
+    },
+    {
+      "name": "Iran",
+      "turkish_name": "İran",
+      "flag": "🇮🇷",
+      "code": "IR",
+      "dialcode": "+98"
+    },
+    {
+      "name": "Iraq",
+      "turkish_name": "Irak",
+      "flag": "🇮🇶",
+      "code": "IQ",
+      "dialcode": "+964"
+    },
+    {
+      "name": "Ireland",
+      "turkish_name": "İrlanda",
+      "flag": "🇮🇪",
+      "code": "IE",
+      "dialcode": "+353"
+    },
+    {
+      "name": "Israel",
+      "turkish_name": "İsrail",
+      "flag": "🇮🇱",
+      "code": "IL",
+      "dialcode": "+972"
+    },
+    {
+      "name": "Italy",
+      "turkish_name": "İtalya",
+      "flag": "🇮🇹",
+      "code": "IT",
+      "dialcode": "+39"
+    },
+    {
+      "name": "Jamaica",
+      "turkish_name": "Jamaika",
+      "flag": "🇯🇲",
+      "code": "JM",
+      "dialcode": "+1876"
+    },
+    {
+      "name": "Japan",
+      "turkish_name": "Japonya",
+      "flag": "🇯🇵",
+      "code": "JP",
+      "dialcode": "+81"
+    },
+    {
+      "name": "Jordan",
+      "turkish_name": "Ürdün",
+      "flag": "🇯🇴",
+      "code": "JO",
+      "dialcode": "+962"
+    },
+    {
+      "name": "Kazakhstan",
+      "turkish_name": "Kazakistan",
+      "flag": "🇰🇿",
+      "code": "KZ",
+      "dialcode": "+7"
+    },
+    {
+      "name": "Kenya",
+      "turkish_name": "Kenya",
+      "flag": "🇰🇪",
+      "code": "KE",
+      "dialcode": "+254"
+    },
+    {
+      "name": "Kiribati",
+      "turkish_name": "Kiribati",
+      "flag": "🇰🇮",
+      "code": "KI",
+      "dialcode": "+686"
+    },
+    {
+      "name": "Kuwait",
+      "turkish_name": "Kuveyt",
+      "flag": "🇰🇼",
+      "code": "KW",
+      "dialcode": "+965"
+    },
+    {
+      "name": "Kyrgyzstan",
+      "turkish_name": "Kırgızistan",
+      "flag": "🇰🇬",
+      "code": "KG",
+      "dialcode": "+996"
+    },
+    {
+      "name": "Laos",
+      "turkish_name": "Laos",
+      "flag": "🇱🇦",
+      "code": "LA",
+      "dialcode": "+856"
+    },
+    {
+      "name": "Latvia",
+      "turkish_name": "Letonya",
+      "flag": "🇱🇻",
+      "code": "LV",
+      "dialcode": "+371"
+    },
+    {
+      "name": "Lebanon",
+      "turkish_name": "Lübnan",
+      "flag": "🇱🇧",
+      "code": "LB",
+      "dialcode": "+961"
+    },
+    {
+      "name": "Lesotho",
+      "turkish_name": "Lesoto",
+      "flag": "🇱🇸",
+      "code": "LS",
+      "dialcode": "+266"
+    },
+    {
+      "name": "Liberia",
+      "turkish_name": "Liberya",
+      "flag": "🇱🇷",
+      "code": "LR",
+      "dialcode": "+231"
+    },
+    {
+      "name": "Libya",
+      "turkish_name": "Libya",
+      "flag": "🇱🇾",
+      "code": "LY",
+      "dialcode": "+218"
+    },
+    {
+      "name": "Liechtenstein",
+      "turkish_name": "Lihtenştayn",
+      "flag": "🇱🇮",
+      "code": "LI",
+      "dialcode": "+423"
+    },
+    {
+      "name": "Lithuania",
+      "turkish_name": "Litvanya",
+      "flag": "🇱🇹",
+      "code": "LT",
+      "dialcode": "+370"
+    },
+    {
+      "name": "Luxembourg",
+      "turkish_name": "Lüksemburg",
+      "flag": "🇱🇺",
+      "code": "LU",
+      "dialcode": "+352"
+    },
+    {
+      "name": "Macao",
+      "turkish_name": "Makao",
+      "flag": "🇲🇴",
+      "code": "MO",
+      "dialcode": "+853"
+    },
+    {
+      "name": "Macedonia",
+      "turkish_name": "Makedonya",
+      "flag": "🇲🇰",
+      "code": "MK",
+      "dialcode": "+389"
+    },
+    {
+      "name": "Madagascar",
+      "turkish_name": "Madagaskar",
+      "flag": "🇲🇬",
+      "code": "MG",
+      "dialcode": "+261"
+    },
+    {
+      "name": "Malawi",
+      "turkish_name": "Malavi",
+      "flag": "🇲🇼",
+      "code": "MW",
+      "dialcode": "+265"
+    },
+    {
+      "name": "Malaysia",
+      "turkish_name": "Malezya",
+      "flag": "🇲🇾",
+      "code": "MY",
+      "dialcode": "+60"
+    },
+    {
+      "name": "Maldives",
+      "turkish_name": "Maldivler",
+      "flag": "🇲🇻",
+      "code": "MV",
+      "dialcode": "+960"
+    },
+    {
+      "name": "Mali",
+      "turkish_name": "Mali",
+      "flag": "🇲🇱",
+      "code": "ML",
+      "dialcode": "+223"
+    },
+    {
+      "name": "Malta",
+      "turkish_name": "Malta",
+      "flag": "🇲🇹",
+      "code": "MT",
+      "dialcode": "+356"
+    },
+    {
+      "name": "Marshall Islands",
+      "turkish_name": "Marshall Adaları",
+      "flag": "🇲🇭",
+      "code": "MH",
+      "dialcode": "+692"
+    },
+    {
+      "name": "Martinique",
+      "turkish_name": "Martinik",
+      "flag": "🇲🇶",
+      "code": "MQ",
+      "dialcode": "+596"
+    },
+    {
+      "name": "Mauritania",
+      "turkish_name": "Moritanya",
+      "flag": "🇲🇷",
+      "code": "MR",
+      "dialcode": "+222"
+    },
+    {
+      "name": "Mauritius",
+      "turkish_name": "Mauritius",
+      "flag": "🇲🇺",
+      "code": "MU",
+      "dialcode": "+230"
+    },
+    {
+      "name": "Mexico",
+      "turkish_name": "Meksika",
+      "flag": "🇲🇽",
+      "code": "MX",
+      "dialcode": "+52"
+    },
+    {
+      "name": "Moldova",
+      "turkish_name": "Moldova",
+      "flag": "🇲🇩",
+      "code": "MD",
+      "dialcode": "+373"
+    },
+    {
+      "name": "Monaco",
+      "turkish_name": "Monako",
+      "flag": "🇲🇨",
+      "code": "MC",
+      "dialcode": "+377"
+    },
+    {
+      "name": "Mongolia",
+      "turkish_name": "Moğolistan",
+      "flag": "🇲🇳",
+      "code": "MN",
+      "dialcode": "+976"
+    },
+    {
+      "name": "Montenegro",
+      "turkish_name": "Karadağ",
+      "flag": "🇲🇪",
+      "code": "ME",
+      "dialcode": "+382"
+    },
+    {
+      "name": "Morocco",
+      "turkish_name": "Fas",
+      "flag": "🇲🇦",
+      "code": "MA",
+      "dialcode": "+212"
+    },
+    {
+      "name": "Mozambique",
+      "turkish_name": "Mozambik",
+      "flag": "🇲🇿",
+      "code": "MZ",
+      "dialcode": "+258"
+    },
+    {
+      "name": "Myanmar",
+      "turkish_name": "Myanmar",
+      "flag": "🇲🇲",
+      "code": "MM",
+      "dialcode": "+95"
+    },
+    {
+      "name": "Namibia",
+      "turkish_name": "Namibya",
+      "flag": "🇳🇦",
+      "code": "NA",
+      "dialcode": "+264"
+    },
+    {
+      "name": "Nepal",
+      "turkish_name": "Nepal",
+      "flag": "🇳🇵",
+      "code": "NP",
+      "dialcode": "+977"
+    },
+    {
+      "name": "Netherlands",
+      "turkish_name": "Hollanda",
+      "flag": "🇳🇱",
+      "code": "NL",
+      "dialcode": "+31"
+    },
+    {
+      "name": "New Zealand",
+      "turkish_name": "Yeni Zelanda",
+      "flag": "🇳🇿",
+      "code": "NZ",
+      "dialcode": "+64"
+    },
+    {
+      "name": "Nicaragua",
+      "turkish_name": "Nikaragua",
+      "flag": "🇳🇮",
+      "code": "NI",
+      "dialcode": "+505"
+    },
+    {
+      "name": "Niger",
+      "turkish_name": "Nijer",
+      "flag": "🇳🇪",
+      "code": "NE",
+      "dialcode": "+227"
+    },
+    {
+      "name": "Nigeria",
+      "turkish_name": "Nijerya",
+      "flag": "🇳🇬",
+      "code": "NG",
+      "dialcode": "+234"
+    },
+    {
+      "name": "North Korea",
+      "turkish_name": "Kuzey Kore",
+      "flag": "🇰🇵",
+      "code": "KP",
+      "dialcode": "+850"
+    },
+    {
+      "name": "Norway",
+      "turkish_name": "Norveç",
+      "flag": "🇳🇴",
+      "code": "NO",
+      "dialcode": "+47"
+    },
+    {
+      "name": "Oman",
+      "turkish_name": "Umman",
+      "flag": "🇴🇲",
+      "code": "OM",
+      "dialcode": "+968"
+    },
+    {
+      "name": "Pakistan",
+      "turkish_name": "Pakistan",
+      "flag": "🇵🇰",
+      "code": "PK",
+      "dialcode": "+92"
+    },
+    {
+      "name": "Palau",
+      "turkish_name": "Palau",
+      "flag": "🇵🇼",
+      "code": "PW",
+      "dialcode": "+680"
+    },
+    {
+      "name": "Panama",
+      "turkish_name": "Panama",
+      "flag": "🇵🇦",
+      "code": "PA",
+      "dialcode": "+507"
+    },
+    {
+      "name": "Papua New Guinea",
+      "turkish_name": "Papua Yeni Gine",
+      "flag": "🇵🇬",
+      "code": "PG",
+      "dialcode": "+675"
+    },
+    {
+      "name": "Paraguay",
+      "turkish_name": "Paraguay",
+      "flag": "🇵🇾",
+      "code": "PY",
+      "dialcode": "+595"
+    },
+    {
+      "name": "Peru",
+      "turkish_name": "Peru",
+      "flag": "🇵🇪",
+      "code": "PE",
+      "dialcode": "+51"
+    },
+    {
+      "name": "Philippines",
+      "turkish_name": "Filipinler",
+      "flag": "🇵🇭",
+      "code": "PH",
+      "dialcode": "+63"
+    },
+    {
+      "name": "Poland",
+      "turkish_name": "Polonya",
+      "flag": "🇵🇱",
+      "code": "PL",
+      "dialcode": "+48"
+    },
+    {
+      "name": "Portugal",
+      "turkish_name": "Portekiz",
+      "flag": "🇵🇹",
+      "code": "PT",
+      "dialcode": "+351"
+    },
+    {
+      "name": "Puerto Rico",
+      "turkish_name": "Porto Riko",
+      "flag": "🇵🇷",
+      "code": "PR",
+      "dialcode": "+1"
+    },
+    {
+      "name": "Qatar",
+      "turkish_name": "Katar",
+      "flag": "🇶🇦",
+      "code": "QA",
+      "dialcode": "+974"
+    },
+    {
+      "name": "Romania",
+      "turkish_name": "Romanya",
+      "flag": "🇷🇴",
+      "code": "RO",
+      "dialcode": "+40"
+    },
+    {
+      "name": "Russia",
+      "turkish_name": "Rusya",
+      "flag": "🇷🇺",
+      "code": "RU",
+      "dialcode": "+7"
+    },
+    {
+      "name": "Rwanda",
+      "turkish_name": "Ruanda",
+      "flag": "🇷🇼",
+      "code": "RW",
+      "dialcode": "+250"
+    },
+    {
+      "name": "Saint Kitts and Nevis",
+      "turkish_name": "Saint Kitts ve Nevis",
+      "flag": "🇰🇳",
+      "code": "KN",
+      "dialcode": "+1869"
+    },
+    {
+      "name": "Saint Lucia",
+      "turkish_name": "Saint Lucia",
+      "flag": "🇱🇨",
+      "code": "LC",
+      "dialcode": "+1758"
+    },
+    {
+      "name": "Saint Vincent and the Grenadines",
+      "turkish_name": "Saint Vincent ve Grenadinler",
+      "flag": "🇻🇨",
+      "code": "VC",
+      "dialcode": "+1784"
+    },
+    {
+      "name": "Samoa",
+      "turkish_name": "Samoa",
+      "flag": "🇼🇸",
+      "code": "WS",
+      "dialcode": "+685"
+    },
+    {
+      "name": "San Marino",
+      "turkish_name": "San Marino",
+      "flag": "🇸🇲",
+      "code": "SM",
+      "dialcode": "+378"
+    },
+    {
+      "name": "Sao Tome and Principe",
+      "turkish_name": "São Tomé ve Príncipe",
+      "flag": "🇸🇹",
+      "code": "ST",
+      "dialcode": "+239"
+    },
+    {
+      "name": "Saudi Arabia",
+      "turkish_name": "Suudi Arabistan",
+      "flag": "🇸🇦",
+      "code": "SA",
+      "dialcode": "+966"
+    },
+    {
+      "name": "Senegal",
+      "turkish_name": "Senegal",
+      "flag": "🇸🇳",
+      "code": "SN",
+      "dialcode": "+221"
+    },
+    {
+      "name": "Serbia",
+      "turkish_name": "Sırbistan",
+      "flag": "🇷🇸",
+      "code": "RS",
+      "dialcode": "+381"
+    },
+    {
+      "name": "Seychelles",
+      "turkish_name": "Seyşeller",
+      "flag": "🇸🇨",
+      "code": "SC",
+      "dialcode": "+248"
+    },
+    {
+      "name": "Sierra Leone",
+      "turkish_name": "Sierra Leone",
+      "flag": "🇸🇱",
+      "code": "SL",
+      "dialcode": "+232"
+    },
+    {
+      "name": "Singapore",
+      "turkish_name": "Singapur",
+      "flag": "🇸🇬",
+      "code": "SG",
+      "dialcode": "+65"
+    },
+    {
+      "name": "Slovakia",
+      "turkish_name": "Slovakya",
+      "flag": "🇸🇰",
+      "code": "SK",
+      "dialcode": "+421"
+    },
+    {
+      "name": "Slovenia",
+      "turkish_name": "Slovenya",
+      "flag": "🇸🇮",
+      "code": "SI",
+      "dialcode": "+386"
+    },
+    {
+      "name": "Solomon Islands",
+      "turkish_name": "Solomon Adaları",
+      "flag": "🇸🇧",
+      "code": "SB",
+      "dialcode": "+677"
+    },
+    {
+      "name": "Somalia",
+      "turkish_name": "Somali",
+      "flag": "🇸🇴",
+      "code": "SO",
+      "dialcode": "+252"
+    },
+    {
+      "name": "South Africa",
+      "turkish_name": "Güney Afrika",
+      "flag": "🇿🇦",
+      "code": "ZA",
+      "dialcode": "+27"
+    },
+    {
+      "name": "South Korea",
+      "turkish_name": "Güney Kore",
+      "flag": "🇰🇷",
+      "code": "KR",
+      "dialcode": "+82"
+    },
+    {
+      "name": "Spain",
+      "turkish_name": "İspanya",
+      "flag": "🇪🇸",
+      "code": "ES",
+      "dialcode": "+34"
+    },
+    {
+      "name": "Sri Lanka",
+      "turkish_name": "Sri Lanka",
+      "flag": "🇱🇰",
+      "code": "LK",
+      "dialcode": "+94"
+    },
+    {
+      "name": "Sudan",
+      "turkish_name": "Sudan",
+      "flag": "🇸🇩",
+      "code": "SD",
+      "dialcode": "+249"
+    },
+    {
+      "name": "Suriname",
+      "turkish_name": "Surinam",
+      "flag": "🇸🇷",
+      "code": "SR",
+      "dialcode": "+597"
+    },
+    {
+      "name": "Sweden",
+      "turkish_name": "İsveç",
+      "flag": "🇸🇪",
+      "code": "SE",
+      "dialcode": "+46"
+    },
+    {
+      "name": "Switzerland",
+      "turkish_name": "İsviçre",
+      "flag": "🇨🇭",
+      "code": "CH",
+      "dialcode": "+41"
+    },
+    {
+      "name": "Syria",
+      "turkish_name": "Suriye",
+      "flag": "🇸🇾",
+      "code": "SY",
+      "dialcode": "+963"
+    },
+    {
+      "name": "Taiwan",
+      "turkish_name": "Tayvan",
+      "flag": "🇹🇼",
+      "code": "TW",
+      "dialcode": "+886"
+    },
+    {
+      "name": "Tajikistan",
+      "turkish_name": "Tacikistan",
+      "flag": "🇹🇯",
+      "code": "TJ",
+      "dialcode": "+992"
+    },
+    {
+      "name": "Tanzania",
+      "turkish_name": "Tanzanya",
+      "flag": "🇹🇿",
+      "code": "TZ",
+      "dialcode": "+255"
+    },
+    {
+      "name": "Thailand",
+      "turkish_name": "Tayland",
+      "flag": "🇹🇭",
+      "code": "TH",
+      "dialcode": "+66"
+    },
+    {
+      "name": "Timor-Leste",
+      "turkish_name": "Doğu Timor",
+      "flag": "🇹🇱",
+      "code": "TL",
+      "dialcode": "+670"
+    },
+    {
+      "name": "Togo",
+      "turkish_name": "Togo",
+      "flag": "🇹🇬",
+      "code": "TG",
+      "dialcode": "+228"
+    },
+    {
+      "name": "Tonga",
+      "turkish_name": "Tonga",
+      "flag": "🇹🇴",
+      "code": "TO",
+      "dialcode": "+676"
+    },
+    {
+      "name": "Trinidad and Tobago",
+      "turkish_name": "Trinidad ve Tobago",
+      "flag": "🇹🇹",
+      "code": "TT",
+      "dialcode": "+1868"
+    },
+    {
+      "name": "Tunisia",
+      "turkish_name": "Tunus",
+      "flag": "🇹🇳",
+      "code": "TN",
+      "dialcode": "+216"
+    },
+    {
+      "name": "Turkey",
+      "turkish_name": "Türkiye",
+      "flag": "🇹🇷",
+      "code": "TR",
+      "dialcode": "+90"
+    },
+    {
+      "name": "Turkmenistan",
+      "turkish_name": "Türkmenistan",
+      "flag": "🇹🇲",
+      "code": "TM",
+      "dialcode": "+993"
+    },
+    {
+      "name": "Tuvalu",
+      "turkish_name": "Tuvalu",
+      "flag": "🇹🇻",
+      "code": "TV",
+      "dialcode": "+688"
+    },
+    {
+      "name": "Uganda",
+      "turkish_name": "Uganda",
+      "flag": "🇺🇬",
+      "code": "UG",
+      "dialcode": "+256"
+    },
+    {
+      "name": "Ukraine",
+      "turkish_name": "Ukrayna",
+      "flag": "🇺🇦",
+      "code": "UA",
+      "dialcode": "+380"
+    },
+    {
+      "name": "United Arab Emirates",
+      "turkish_name": "Birleşik Arap Emirlikleri",
+      "flag": "🇦🇪",
+      "code": "AE",
+      "dialcode": "+971"
+    },
+    {
+      "name": "United Kingdom",
+      "turkish_name": "Birleşik Krallık",
+      "flag": "🇬🇧",
+      "code": "GB",
+      "dialcode": "+44"
+    },
+    {
+      "name": "United States",
+      "turkish_name": "Amerika Birleşik Devletleri",
+      "flag": "🇺🇸",
+      "code": "US",
+      "dialcode": "+1"
+    },
+    {
+      "name": "Uruguay",
+      "turkish_name": "Uruguay",
+      "flag": "🇺🇾",
+      "code": "UY",
+      "dialcode": "+598"
+    },
+    {
+      "name": "Uzbekistan",
+      "turkish_name": "Özbekistan",
+      "flag": "🇺🇿",
+      "code": "UZ",
+      "dialcode": "+998"
+    },
+    {
+      "name": "Vanuatu",
+      "turkish_name": "Vanuatu",
+      "flag": "🇻🇺",
+      "code": "VU",
+      "dialcode": "+678"
+    },
+    {
+      "name": "Vatican City",
+      "turkish_name": "Vatikan",
+      "flag": "🇻🇦",
+      "code": "VA",
+      "dialcode": "+379"
+    },
+    {
+      "name": "Venezuela",
+      "turkish_name": "Venezuela",
+      "flag": "🇻🇪",
+      "code": "VE",
+      "dialcode": "+58"
+    },
+    {
+      "name": "Vietnam",
+      "turkish_name": "Vietnam",
+      "flag": "🇻🇳",
+      "code": "VN",
+      "dialcode": "+84"
+    },
+    {
+      "name": "Yemen",
+      "turkish_name": "Yemen",
+      "flag": "🇾🇪",
+      "code": "YE",
+      "dialcode": "+967"
+    },
+    {
+      "name": "Zambia",
+      "turkish_name": "Zambiya",
+      "flag": "🇿🇲",
+      "code": "ZM",
+      "dialcode": "+260"
+    },
+    {
+      "name": "Zimbabwe",
+      "turkish_name": "Zimbabve",
+      "flag": "🇿🇼",
+      "code": "ZW",
+      "dialcode": "+263"
+    }
+  ]
+}

@@ -1,0 +1,129 @@
+﻿@using BaSalesManagementApp.MVC.Models.UserInfoVMs
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<Resource> localizer
+@model UserInfoVM
+
+@{
+    string photoBase64 = Model.PhotoData != null ? Convert.ToBase64String(Model.PhotoData) : null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <!-- CSS dosyasını ekleyin -->
+    <link rel="stylesheet" href="~/assets/Languages/Language.css">
+</head>
+<body>
+    <!-- İçerik -->
+    <li class="nav-item navbar-dropdown dropdown-user dropdown">
+        <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
+            <div class="avatar avatar-online">
+                @if (!string.IsNullOrEmpty(photoBase64))
+                {
+                    <img src="data:image/png;base64,@photoBase64" alt="@localizer["User_Photo"]" class="w-px-40 h-auto rounded-circle" />
+                }
+                else
+                {
+                    <img src="/assets/img/ProfilePhotos/photo.jpg" alt="@localizer["Default_Profile_Photo"]" class="w-px-40 h-auto rounded-circle" />
+                }
+            </div>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end">
+            <li>
+                <div class="dropdown-item disabled" style="cursor: default;">
+                    <div class="d-flex">
+                        <div class="flex-shrink-0 me-3">
+                            <div class="avatar avatar-online">
+                                @if (!string.IsNullOrEmpty(photoBase64))
+                                {
+                                    <img src="data:image/png;base64,@photoBase64" alt="@localizer["User_Photo"]" class="w-px-40 h-auto rounded-circle" />
+                                }
+                                else
+                                {
+                                    <img src="/assets/img/ProfilePhotos/photo.jpg" alt="@localizer["Default_Profile_Photo"]" class="w-px-40 h-auto rounded-circle" />
+                                }
+                            </div>
+                        </div>
+                        <div class="flex-grow-1">
+                            <span class="fw-medium d-block">@Model.FullName</span>
+                            <small class="text-muted">@localizer[Model.Role]</small>
+                        </div>
+                    </div>
+                </div>
+            </li>
+            <li>
+                <div class="dropdown-divider"></div>
+            </li>
+            <li>
+                <a class="dropdown-item" asp-area="" asp-controller="Account" asp-action="MyProfile">
+                    <i class="bx bx-user me-2"></i>
+                    <span class="align-middle">@localizer["My_Profile"]</span>
+                </a>
+            </li>
+            <li>
+                <div class="dropdown-divider"></div>
+            </li>
+            <li>
+                <a class="btn btn-light dropdown-toggle" id="dropdownMenuButton" aria-expanded="false">
+                    <i class="fa-solid fa-globe fa-x me-1" style="margin-right: 80px; color: #a7a5a5;"></i>
+                    <span class="align-middle" style="margin-right: 60px; margin-left:10px; ">@localizer["Languages"]</span>
+                </a>
+                <div id="Languages" class="dropdown-menu ">
+                    <ul>
+                        <li>
+                            <a id="selectLanguage-tr-TR" class="dropdown-item  " href="@Url.Action("ChangeLanguage", "Home", new { culture = "tr-TR" })">
+                                <img src="/assets/img/Language/Turkiye.png" alt="Türkiye Bayrağı" width="20" height="20"> Türkçe
+                            </a>
+                        </li>
+                        <li>
+                            <a id="selectLanguage-en-US" class="dropdown-item  " href="@Url.Action("ChangeLanguage", "Home", new { culture = "en-US" })">
+                                <img src="/assets/img/Language/England.png" alt="İngiltere Bayrağı" width="20" height="20"> English
+                            </a>
+
+                        </li>
+                        @*  <li>
+                        <a  asp-controller="Home" asp-action="ChangeLanguage" asp-route-culture="tr-TR" class="dropdown-item">
+
+                        <img src="/assets/img/Language/Turkiye.png" alt="Türkiye Bayrağı" width="20" height="20"> Türkçe
+                        </a>
+                        </li>
+                        <li>
+                        <a  asp-controller="Home" asp-action="ChangeLanguage" asp-route-culture="en-US" class="dropdown-item">
+                        <img src="/assets/img/Language/England.png" alt="İngiltere Bayrağı" width="20" height="20"> English
+                        </a>
+                        </li> *@
+                    </ul>
+                </div>
+            </li>
+            <li><div class="dropdown-divider"></div></li>
+            <li>
+                <a class="dropdown-item" asp-area="" asp-controller="Account" asp-action="SignOut">
+                    <i class="bx bx-power-off me-2"></i>
+                    <span class="align-middle">@localizer["Log_Out"]</span>
+                </a>
+            </li>
+        </ul>
+    </li>
+
+    <!-- JavaScript dosyasını ekleyin -->
+    <script src="~/assets/Languages/Language.js"></script>
+    <script>
+        //cookie culture yapısı
+        document.getElementById('selectLanguage-tr-TR').addEventListener('click', function (event) {
+            event.preventDefault(); // Linkin varsayılan davranışını engelle
+            var selectedLanguage = this.getAttribute('href').split('=')[1];
+            document.cookie = ".AspNetCore.Culture=c=" + selectedLanguage + "|uic=" + selectedLanguage + "; path=/";
+            location.reload(); // Sayfayı yeniden yükleyerek dil değişimini uygulayın
+        });
+        document.getElementById('selectLanguage-en-US').addEventListener('click', function (event) {
+            event.preventDefault(); // Linkin varsayılan davranışını engelle
+            var selectedLanguage = this.getAttribute('href').split('=')[1];
+            document.cookie = ".AspNetCore.Culture=c=" + selectedLanguage + "|uic=" + selectedLanguage + "; path=/";
+            location.reload(); // Sayfayı yeniden yükleyerek dil değişimini uygulayın
+        });
+    </script>
+</body>
+</html>
+

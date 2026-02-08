@@ -1,0 +1,267 @@
+﻿@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<Resource> localizer
+@model BaSalesManagementApp.MVC.Models.AdminVMs.AdminCreateVM
+
+@{
+    ViewData["Title"] = localizer["CreateAdmin"];
+    string x = "@";
+}
+
+@*  ONR 09042025 20:34 *@
+
+<div class="w-100 flex-grow-1 p-4" style="background-color: #f5f5f5;">
+    <h4 class="mb-4">
+        <span class="text-muted fw-light">@localizer["Admin"] /</span> @localizer["Create"]
+    </h4>
+
+    <form asp-action="Create" asp-controller="Admin"
+          enctype="multipart/form-data"
+          id="adminForm"
+          class="w-100"
+          data-firstname-error="@localizer["First name must be between 2 and 50 characters and cannot contain numbers."]"
+          data-lastname-error="@localizer["Last name must be between 2 and 50 characters and cannot contain numbers."]"
+          data-email-error="@localizer[Messages.ADMIN_INVALID_EMAIL_DOMAIN]"
+          data-photo-error="@localizer[Messages.ADMIN_PHOTO_FORMAT]"
+          data-photo-size-exceeded="@localizer[Messages.ADMIN_PHOTO_SIZE_EXCEEDS_LIMIT]"
+          data-photo-invalid-type="@localizer[Messages.ADMIN_PHOTO_FORMAT]"
+          data-required-field="@localizer["This field is required."]">
+
+        <div class="mb-3">
+            <label asp-for="FirstName" class="form-label">@localizer["FirstName"]</label>
+            <input asp-for="FirstName" class="form-control w-100" />
+            <span id="FirstNameFeedback" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="LastName" class="form-label">@localizer["LastName"]</label>
+            <input asp-for="LastName" class="form-control w-100" />
+            <span id="LastNameFeedback" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Email" class="form-label">@localizer["EmailAdress"]</label>
+            <input asp-for="Email" class="form-control w-100" />
+            <span id="EmailFeedback" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Photo" class="form-label">@localizer["Photo"]</label>
+            <input asp-for="Photo" type="file" class="form-control w-100" />
+            <span id="PhotoFeedback" class="text-danger"></span>
+            <img id="PhotoPreview" src="#" alt="Photo Preview" style="display: none; margin-top: 10px; max-width: 200px;" />
+        </div>
+
+        <div class="d-flex gap-2">
+            <input type="submit" value="@localizer["Create"]" class="btn btn-primary" />
+            <a asp-action="Index" class="btn btn-secondary">@localizer["BackToList"]</a>
+        </div>
+    </form>
+</div>
+@* </div>
+<div class="content-wrapper">
+    <div class="container-xxl flex-grow-1 container-p-y">
+        <h4 class="py-3 mb-4">
+            <span class="text-muted fw-light">@localizer["Admin"] /</span> @localizer["Create"]
+        </h4>
+        <div class="row">
+            <div class="content-wrapper">
+                <div class="col-md-6">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <form asp-action="Create" enctype="multipart/form-data" id="adminForm"
+                                  data-firstname-error="@localizer["First name must be between 2 and 50 characters and cannot contain numbers."]"
+                                  data-lastname-error="@localizer["Last name must be between 2 and 50 characters and cannot contain numbers."]"
+                                  data-email-error="@localizer[Messages.ADMIN_INVALID_EMAIL_DOMAIN]"
+                                  data-photo-error="@localizer[Messages.ADMIN_PHOTO_FORMAT]"
+                                  data-photo-size-exceeded="@localizer[Messages.ADMIN_PHOTO_SIZE_EXCEEDS_LIMIT]"
+                                  data-photo-invalid-type="@localizer[Messages.ADMIN_PHOTO_FORMAT]"
+                                  data-required-field="@localizer["This field is required."]">
+                                <div class="mb-3">
+                                    <label asp-for="FirstName" class="form-label">@localizer["FirstName"]</label>
+                                    <input asp-for="FirstName" class="form-control" id="FirstNameInput" />
+                                    <span id="FirstNameFeedback" class="text-danger"></span>
+                                </div>
+                                <div class="mb-3">
+                                    <label asp-for="LastName" class="form-label">@localizer["LastName"]</label>
+                                    <input asp-for="LastName" class="form-control" id="LastNameInput" />
+                                    <span id="LastNameFeedback" class="text-danger"></span>
+                                </div>
+                                <div class="mb-3">
+                                    <label asp-for="Email" class="form-label">@localizer["EmailAdress"]</label>
+                                    <input asp-for="Email" class="form-control" id="EmailInput" />
+                                    <span id="EmailFeedback" class="text-danger"></span>
+                                </div>
+                                <div class="mb-3">
+                                    <label asp-for="Photo" class="form-label">@localizer["Photo"]</label>
+                                    <div style="position: relative; display: inline-block; width: 100%;">
+                                        <input asp-for="Photo" type="file" class="form-control" accept=".jpg,.jpeg,.png" id="PhotoInput" style="opacity: 0; position: absolute; width: 100%; height: 100%; top: 0; left: 0;" />
+                                        <div class="form-control" style="display: flex; align-items: center; justify-content: flex-start; width: 100%; height: 38px; line-height: 38px; padding: 0;">
+                                            <span id="PhotoLabelChoose" style="padding: 0 10px 0 10px; border-right: 1px solid #ced4da; height: 100%; display: flex; align-items: center; cursor: pointer;">@localizer["ChooseFile"]</span>
+                                            <span id="PhotoLabelNoFile" style="padding-left: 10px; flex: 1; height: 100%; display: flex; align-items: center;">@localizer["NoFileChosen"]</span>
+                                        </div>
+                                    </div>
+                                    <span id="PhotoFeedback" class="text-danger"></span>
+                                    <img id="PhotoPreview" src="#" alt="Photo Preview" style="display: none; margin-top: 10px; max-width: 200px;" />
+                                </div>
+                                <div>
+                                    <input type="submit" value="@localizer["Create"]" class="btn btn-primary" />
+                                    <a asp-action="Index" class="btn btn-secondary">@localizer["BackToList"]</a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+ *@
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.getElementById('adminForm');
+
+            const firstNameError = form.getAttribute('data-firstname-error');
+            const lastNameError = form.getAttribute('data-lastname-error');
+            const emailError = form.getAttribute('data-email-error');
+            const photoError = form.getAttribute('data-photo-error');
+            const photoSizeExceededMessage = form.getAttribute('data-photo-size-exceeded');
+            const photoInvalidFileTypeMessage = form.getAttribute('data-photo-invalid-type');
+            const requiredFieldMessage = form.getAttribute('data-required-field');
+
+            const maxFileSize = 500 * 1024;
+
+
+            // Fotoğraf dosya validasyonu ve metin güncelleme
+            document.getElementById('PhotoInput').addEventListener('change', function () {
+                const photoFile = this.files[0];
+                const photoLabelNoFile = document.getElementById('PhotoLabelNoFile');
+
+                if (photoFile) {
+                    photoLabelNoFile.textContent = photoFile.name; // Dosya adını göster
+                } else {
+                    photoLabelNoFile.textContent = '@localizer["NoFileChosen"]'; // Dosya seçilmedi metni
+                }
+
+                validatePhoto();
+                previewPhoto(photoFile);
+            });
+
+            // Yardımcı fonksiyonlar
+            function setValidationFeedback(elementId, isValid, message) {
+                const feedbackElement = document.getElementById(elementId);
+                if (isValid) {
+                    feedbackElement.innerHTML = '';
+                    feedbackElement.classList.remove('text-danger');
+                    feedbackElement.classList.add('text-success');
+                } else {
+                    feedbackElement.innerHTML = message ? ` ${message}` : '';
+                    feedbackElement.classList.remove('text-success');
+                    feedbackElement.classList.add('text-danger');
+                }
+            }
+
+            function validateName(value) {
+                const nameRegex = /^[^\d]+$/;
+                if (!value || value.trim() === "") {
+                    return false; // Alan boşsa uyarı verilecek
+                }
+                return value.length >= 2 && value.length <= 50 && nameRegex.test(value);
+            }
+
+            function validateEmail(value) {
+                if (!value || value.trim() === "") {
+                    return false; // Alan boşsa uyarı verilecek
+                }
+
+                const domainParts = value.split('@x');
+                if (domainParts.length !== 2) {
+                    return false;
+                }
+
+                const domain = domainParts[1];
+                const domainPartsArray = domain.split('.');
+
+                if (domainPartsArray.length < 2) {
+                    return false;
+                }
+
+                for (const part of domainPartsArray) {
+                    if (part.length < 1 || part.length > 63) {
+                        return false;
+                    }
+                }
+
+                if (domainPartsArray[domainPartsArray.length - 1].length < 2) {
+                    return false;
+                }
+
+                const validDomains = new Set(['gmail.com', 'yahoo.com', 'outlook.com', 'bilgeadam.com', 'bilgeadamboost.com', 'hotmail.com']);
+                if (!validDomains.has(domain)) {
+                    return false;
+                }
+
+                return true;
+            }
+
+            function validateFileFormat(file) {
+                const validFormats = ['image/jpeg', 'image/png'];
+                return file && validFormats.includes(file.type);
+            }
+
+            function validatePhoto() {
+                const photo = document.getElementById('PhotoInput').files[0];
+                if (!photo) {
+                    setValidationFeedback('PhotoFeedback', false, requiredFieldMessage);
+                    return;
+                }
+
+                const fileExtension = photo.name.split('.').pop().toLowerCase();
+                const isFileValid = validateFileFormat(photo);
+
+                if (photo.size > maxFileSize) {
+                    setValidationFeedback('PhotoFeedback', false, photoSizeExceededMessage);
+                } else if (!isFileValid) {
+                    setValidationFeedback('PhotoFeedback', false, photoInvalidFileTypeMessage);
+                } else {
+                    setValidationFeedback('PhotoFeedback', true, '');
+                }
+            }
+
+            // İsim validasyonu
+            document.getElementById('FirstNameInput').addEventListener('keyup', function () {
+                const isValid = validateName(this.value);
+                setValidationFeedback('FirstNameFeedback', isValid, isValid ? '' : (this.value.trim() === "" ? requiredFieldMessage : firstNameError));
+            });
+
+            // Soyisim validasyonu
+            document.getElementById('LastNameInput').addEventListener('keyup', function () {
+                const isValid = validateName(this.value);
+                setValidationFeedback('LastNameFeedback', isValid, isValid ? '' : (this.value.trim() === "" ? requiredFieldMessage : lastNameError));
+            });
+
+            // Email validasyonu
+            document.getElementById('EmailInput').addEventListener('keyup', function () {
+                const isValid = validateEmail(this.value);
+                setValidationFeedback('EmailFeedback', isValid, isValid ? '' : (this.value.trim() === "" ? requiredFieldMessage : emailError));
+            });
+
+            // Fotoğraf önizlemesi
+            function previewPhoto(photoFile) {
+                const photoPreview = document.getElementById('PhotoPreview');
+
+                if (photoFile) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        photoPreview.src = e.target.result;
+                        photoPreview.style.display = 'block';
+                    };
+                    reader.readAsDataURL(photoFile);
+                } else {
+                    photoPreview.style.display = 'none';
+                    photoPreview.src = '#';
+                }
+            }
+        });
+    </script>
+}

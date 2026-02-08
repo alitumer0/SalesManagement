@@ -1,0 +1,253 @@
+﻿@model IPagedList<OrderListVM>
+@using BaSalesManagementApp.Dtos.CustomerDTOs
+@using Microsoft.Extensions.Localization
+@using X.PagedList.Mvc.Common
+@using X.PagedList.Mvc.Core
+@using X.PagedList
+@using X.PagedList.Mvc.Core.Common
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<Resource> localizer
+
+@{
+	ViewData["Title"] = localizer["OrderIndex"];
+}
+
+<head>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.5.0/font/bootstrap-icons.min.css">
+	<style>
+		.form-select {
+			width: auto;
+			min-width: 80px;
+		}
+
+		.table thead tr {
+			border-bottom: 1px solid #dee2e6;
+		}
+	</style>
+</head>
+
+<div class="content-wrapper">
+	<div class="container-xxl flex-grow-1 container-p-y">
+		<h4 class="py-3 mb-4"><span class="text-muted fw-light">@localizer["Order"] /</span> @localizer["List"]</h4>
+		<div class="d-flex justify-content-between align-items-center mb-3">
+			<a asp-action="Create" class="btn btn-primary">@localizer["Create_New"]</a>
+
+			<div class="d-flex">
+				<form method="get" asp-action="Index" class="d-inline-block me-3">
+					<label>@localizer["Show"]</label>
+					<select id="pageSizeSelect" name="pageSize" onchange="this.form.submit()" class="form-select d-inline-block w-auto ms-2">
+						@{
+							var pageSizes = new[] { 5, 10, 20, 50 };
+							var currentPageSize = ViewBag.CurrentPageSize;
+						}
+						@foreach (var size in pageSizes)
+						{
+							<option value="@size" selected="@(ViewBag.CurrentPageSize == size)">@size</option>
+						}
+					</select>
+					<label>@localizer["Entries"]</label>
+					<input type="hidden" name="sortOrder" value="@ViewBag.CurrentSort" />
+				</form>
+
+				<div id="sortOrder" class="dropdown">
+					<button class="btn btn-primary" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+						<i class="bi bi-filter" style="font-size:1rem"></i>
+					</button>
+					<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+						<a class="dropdown-item" data-value="date" href="#">@localizer["Newest_First"]</a>
+						<a class="dropdown-item" data-value="datedesc" href="#">@localizer["Oldest_First"]</a>
+						<a class="dropdown-item" data-value="active" href="#">@localizer["ActiveOrders"]</a>
+						<a class="dropdown-item" data-value="inactive" href="#">@localizer["InactiveOrders"]</a>
+
+						@if (!User.IsInRole("Manager"))
+						{
+							<div class="dropdown-divider"></div>
+							<form method="get" asp-action="Index" class="d-inline-block w-100">
+								<label>@localizer["FilterByCompany"]</label>
+								<select name="company_Id" onchange="this.form.submit()" class="form-select" style="width: 100%;">
+									<option value="">@localizer["AllCompanies"]</option>
+									@if (ViewBag.Companies != null)
+									{
+										foreach (var cmp in ViewBag.Companies)
+										{
+											<option value="@cmp.Id"
+													selected="@(cmp.Id.ToString() == Convert.ToString(ViewData["SelectedCompanyId"]) ? "selected" : null)">
+												@cmp.Name
+											</option>
+										}
+									}
+								</select>
+							</form>
+						}
+
+						@{
+							var selectedCustomerId = ViewBag.SelectedCustomerId as Guid?;
+							var customers = ViewBag.Customers as List<CustomerDTO>;
+						}
+
+						@if (!User.IsInRole("Manager"))
+						{
+							<div class="dropdown-divider"></div>
+							<form method="get" asp-action="Index" class="d-inline-block w-100">
+								<label>@localizer["FilterByCustomer"]</label>
+								<select name="customer_Id" class="form-select" style="width: 100%;" onchange="this.form.submit()">
+									@if (selectedCustomerId == null || selectedCustomerId == Guid.Empty)
+									{
+										<option value="" selected>@localizer["AllCustomers"]</option>
+									}
+									else
+									{
+										<option value="">@localizer["AllCustomers"]</option>
+									}
+									@foreach (var customer in customers)
+									{
+										if (customer.Id == selectedCustomerId)
+										{
+											<option value="@customer.Id" selected>@customer.Name</option>
+										}
+										else
+										{
+											<option value="@customer.Id">@customer.Name</option>
+										}
+									}
+								</select>
+							</form>
+						}
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="card">
+			<div class="table-responsive text-nowrap">
+				<table class="table table-hover">
+					<thead>
+						<tr>
+							<th>@localizer["ColumnDate"].ToString().ToUpper(new System.Globalization.CultureInfo("tr-TR"))</th>
+							<th>@localizer["ColumnCreator"].ToString().ToUpper(new System.Globalization.CultureInfo(System.Threading.Thread.CurrentThread.CurrentCulture.Name))</th>
+							<th>@localizer["CompanyName"].ToString().ToUpper(new System.Globalization.CultureInfo(System.Threading.Thread.CurrentThread.CurrentCulture.Name))</th>
+							<th>@localizer["CustomerName"].ToString().ToUpper(new System.Globalization.CultureInfo(System.Threading.Thread.CurrentThread.CurrentCulture.Name))</th>
+							<th>@localizer["GrandTotalPrice"].ToString().ToUpper(new System.Globalization.CultureInfo(System.Threading.Thread.CurrentThread.CurrentCulture.Name))</th>
+							<th>@localizer["OrderNumber"].ToString().ToUpper(new System.Globalization.CultureInfo(System.Threading.Thread.CurrentThread.CurrentCulture.Name))</th>
+							<th class="text-end">@localizer["Actions"]</th>
+
+							<!-- Ortalanmış Durum Başlığı -->
+							<th class="text-center align-middle">
+								@localizer["ColumnStatus"].ToString().ToUpper(new System.Globalization.CultureInfo(System.Threading.Thread.CurrentThread.CurrentCulture.Name))
+							</th>
+						</tr>
+					</thead>
+					<tbody class="table-border-bottom-0">
+						@foreach (var order in Model)
+						{
+							<tr>
+								<td>@order.OrderDate</td>
+								<td>@order.AdminName</td>
+								<td>@order.CompanyName</td>
+								<td>@order.CustomerName</td>
+								<td>@order.TotalPrice</td>
+								<td>@order.OrderNo</td>
+								<td class="text-end">
+									<div class="dropdown">
+										<button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown" style="margin-right: 28px;">
+											<i class="bx bx-dots-vertical-rounded"></i>
+										</button>
+										<div class="dropdown-menu">
+											<a asp-action="Details" asp-route-orderId="@order.Id" class="dropdown-item"><i class="bx bx-info-circle me-1"></i> @localizer["Details"]</a>
+											<a asp-action="Update" asp-route-orderId="@order.Id" class="dropdown-item"><i class="bx bx-edit-alt me-1"></i> @localizer["Update"]</a>
+											<a href="javascript:;" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#deleteModal" data-order-id="@order.Id">
+												<i class="bx bx-trash me-1"></i> @localizer["Delete"]
+											</a>
+										</div>
+									</div>
+								</td>
+
+								<!-- Ortalanmış Durum Hücresi -->
+								<td class="text-center align-middle">
+									@if (order.IsActive)
+									{
+										<i class="fas fa-check text-primary"></i>
+									}
+									else
+									{
+										<i class="fas fa-times text-danger"></i>
+									}
+								</td>
+							</tr>
+						}
+					</tbody>
+				</table>
+			</div>
+		</div>
+
+		<div class="d-flex justify-content-center mt-3">
+			@Html.PagedListPager(Model, page => Url.Action("Index", new { page, pageSize = ViewBag.CurrentPageSize,sortOrder = ViewBag.CurrentSort,
+			searchQuery = ViewData["CurrentFilter"] }), new PagedListRenderOptions
+{
+	Display = PagedListDisplayMode.Always,
+	UlElementClasses = new[] { "pagination", "justify-content-center" },
+	LiElementClasses = new[] { "page-item" },
+	PageClasses = new[] { "page-link" },
+	LinkToPreviousPageFormat = @localizer["Previous"],
+	LinkToNextPageFormat = @localizer["Next"],
+	LinkToFirstPageFormat = @localizer["First"],
+	LinkToLastPageFormat = @localizer["Last"],
+	ContainerDivClasses = new[] { "d-flex", "justify-content-center" }
+})
+		</div>
+	</div>
+</div>
+
+<!-- Delete Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="deleteModalLabel">@localizer["DELETE_CONFIRM_TITLE_ORDER"]</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				@localizer["DELETE_CONFIRM_ORDER"]
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@localizer["CANCEL_ORDER"]</button>
+				<a id="confirmDeleteButton" href="#" class="btn btn-danger">@localizer["DELETE_ORDER"]</a>
+			</div>
+		</div>
+	</div>
+</div>
+
+@section Scripts {
+	<script>
+		document.addEventListener('DOMContentLoaded', function () {
+			var deleteModal = document.getElementById('deleteModal');
+			var deleteButton = document.getElementById('confirmDeleteButton');
+			var orderIdToDelete = null;
+
+			document.querySelectorAll('.delete-order').forEach(function (button) {
+				button.addEventListener('click', function (e) {
+					e.preventDefault();
+					orderIdToDelete = this.getAttribute('data-id');
+					deleteButton.href = '/Order/Delete/' + orderIdToDelete;
+					deleteModal.style.display = 'block';
+				});
+			});
+
+			document.querySelectorAll('.close, .btn-secondary').forEach(function (button) {
+				button.addEventListener('click', function () {
+					deleteModal.style.display = 'none';
+				});
+			});
+
+			document.querySelectorAll('.dropdown-item[data-value]').forEach(function (item) {
+				item.addEventListener('click', function (e) {
+					e.preventDefault();
+					var sortValue = this.getAttribute('data-value');
+					var currentUrl = new URL(window.location.href);
+					currentUrl.searchParams.set('sortOrder', sortValue);
+					window.location.href = currentUrl.toString();
+				});
+			});
+		});
+	</script>
+}

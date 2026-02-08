@@ -1,0 +1,201 @@
+﻿@model BaSalesManagementApp.MVC.Models.BranchVMs.BranchCreateVM
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<Resource> localizer
+
+@{
+    ViewData["Title"] = localizer["Create"];
+}
+@{
+    var isManager = User.IsInRole("Manager"); // Kullanıcının rolünü kontrol et
+    var selectedCompany = Model.Companies.FirstOrDefault(); // Manager rolündeki kullanıcı için varsayılan şirket
+}
+@* ONR 11042025 12:41 Textbox and Background changed.*@
+    <div class="w-100 flex-grow-1 p-4" style="background-color: #f5f5f5;">
+        <h4 class="mb-4">
+            <span class="text-muted fw-light">@localizer["Branch"] /</span> @localizer["Create"]
+        </h4>
+@*         <div class="row">
+            <div class="content-wrapper">
+                <div class="col-md-6 col-lg-6">
+                    <div class="card mb-4">
+                        <div class="card-body">
+ *@                            <form asp-action="Create">
+                                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                                <div class="mb-3">
+                                    <label asp-for="Name" class="form-label">@localizer["BranchName"]</label>
+                                    <input asp-for="Name" id="BranchName" autocomplete="off" class="form-control"
+                                           data-val="true" data-val-required="@localizer["Please enter the branch name."]"
+                                           data-val-length="@localizer["Branch name must be between 2 and 128 characters."]"
+                                           data-val-length-min="2" data-val-length-max="128" style="text-transform: capitalize;" />
+                                    <span asp-validation-for="Name" id="branchNameError" class="text-danger"></span>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="Address" class="form-label">@localizer["Address"]</label>
+                                    <input asp-for="Address" id="BranchAddress" class="form-control"
+                                           data-val="true" data-val-required="@localizer["Please enter the address."]"
+                                           data-val-length="@localizer["The address must be between 5 and 200 characters."]"
+                                           data-val-length-min="5" data-val-length-max="200" style="text-transform: capitalize;" />
+                                    <span asp-validation-for="Address" id="addressError" class="text-danger"></span>
+                                </div>
+
+                                <div class="mb-3">
+                                    @if (isManager)
+                                    {
+                                        <label asp-for="CompanyId" class="form-label">
+                                            @localizer["ColumnCompany"].ToString().ToUpper(new System.Globalization.CultureInfo("tr-TR"))
+                                        </label>
+                                        <input type="hidden" class="form-control" value="@selectedCompany?.Name" />
+                                        <input type="hidden" asp-for="CompanyId" value="@selectedCompany?.Id" />
+                                    }
+                                    else
+                                    {
+                                        <label asp-for="CompanyId" class="form-label">
+                                            @localizer["ColumnCompany"].ToString().ToUpper(new System.Globalization.CultureInfo("tr-TR"))
+                                        </label>
+                                        <select asp-for="CompanyId" class="form-control" id="companySelect" style="width: 100%;">
+                                            <option value="">@localizer["Select_Company"]</option>
+                                            @foreach (var company in Model.Companies)
+                                            {
+                                                <option value="@company.Id">@company.Name</option>
+                                            }
+                                        </select>
+                                    }
+                                    <span asp-validation-for="CompanyId" id="companySelectError" class="text-danger"></span>
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <input type="submit" value="@localizer["Create"]" class="btn btn-primary" />
+                                    <a asp-action="Index" class="btn btn-secondary">@localizer["BackToList"]</a>
+                                </div>
+
+                                @for (int i = 0; i < Model.Companies.Count(); i++)
+                                {
+                                    <input type="hidden" name="Companies[@i].Id" value="@Model.Companies.ElementAt(i).Id" />
+                                    <input type="hidden" name="Companies[@i].Name" value="@Model.Companies.ElementAt(i).Name" />
+                                }
+                            </form>
+                        </div>
+@*                     </div>
+                </div>
+            </div>
+        </div>
+    </div> *@
+
+
+@section Scripts {
+    @Html.Partial("_ValidationScriptsPartial")
+}
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // Backend'den isManager değişkenini güvenilir bir şekilde aktar
+        var isManager = @Json.Serialize(isManager);
+
+        // Branch Name alanı için anlık validasyon
+        $('#BranchName').on('input keyup', function () {
+            var branchNameValue = $(this).val();
+            var errorMessage = $('#branchNameError');
+            var requiredMessage = $(this).data('val-required');
+            var lengthMessage = $(this).data('val-length');
+
+            if (branchNameValue.length === 0) {
+                errorMessage.text(requiredMessage).show();
+            } else if (branchNameValue.length < 2 || branchNameValue.length > 128) {
+                errorMessage.text(lengthMessage).show();
+            } else {
+                errorMessage.text('').hide();
+            }
+        });
+
+        // Address alanı için anlık validasyon
+        $('#BranchAddress').on('input keyup', function () {
+            var addressValue = $(this).val();
+            var errorMessage = $('#addressError');
+            var requiredMessage = $(this).data('val-required');
+            var lengthMessage = $(this).data('val-length');
+
+            if (addressValue.length === 0) {
+                errorMessage.text(requiredMessage).show();
+            } else if (addressValue.length < 5 || addressValue.length > 200) {
+                errorMessage.text(lengthMessage).show();
+            } else {
+                errorMessage.text('').hide();
+            }
+        });
+
+        //şirket seçimi için select2
+        //Sistemdeki kişi Role === Manager ise:
+        if (ismanager) {
+            $('#companyselect').parent().hide();
+            var companyId = $('#companyselect').data('company-id');
+            $('#companyId').val(companyId);
+        }else {
+                $('#companySelect').select2({
+                    placeholder: "@localizer["Select_Company"]",
+                    allowClear: true,
+                    width: 'resolve',
+                    matcher: function (params, data) {
+                        // Arama terimi yoksa, mevcut seçenekleri göster
+                        if ($.trim(params.term) === '') {
+                            return data;
+                        }
+
+                        // Veri boşsa, eşleşme yok demektir
+                        if (typeof data.text === 'undefined') {
+                            return null;
+                        }
+
+                        // Arama terimini küçük harflere çevir ve baştan eşleşme kontrolü yap
+                        var searchTerm = params.term.toLowerCase();
+                        var optionText = data.text.toLowerCase();
+
+                        // Eğer seçenek, arama terimiyle başlıyorsa, sonucu döndür
+                        if (optionText.indexOf(searchTerm) === 0) {
+                            return data;
+                        }
+
+                        // Aksi takdirde eşleşme yok
+                        return null;
+                    },
+                    sorter: function (data) {
+                        // Alfabetik sıralama
+                        return data.sort(function (a, b) {
+                            return a.text.localeCompare(b.text);
+                        });
+                    },
+                    language: {
+                        noResults: function () {
+                            return '@Html.Raw(localizer["No matching results"])'; // Burada uygun localizer anahtarını kullanın
+                        }
+                    }
+                });
+
+                // Şirket seçimi değiştiğinde hata mesajını kontrol et
+                $('#companySelect').on('change', function () {
+                    var selectedCompany = $(this).val();
+                    var errorMessage = $('#companySelectError');
+
+                    if (!selectedCompany) {
+                        errorMessage.text(@Json.Serialize(localizer[Messages.BRANCH_COMPANY_RELATION].Value)).show();
+                    } else {
+                        errorMessage.text('').hide(); // Şirket seçildiğinde hata mesajını gizle
+                    }
+                });
+
+            // Şirket seçilmeden formun gönderilmesini engellemek için
+            $('form').on('submit', function (e) {
+                var selectedCompany = $('#companySelect').val();
+                var errorMessage = $('#companySelectError');
+
+                if (!selectedCompany) {
+                    e.preventDefault();
+                    errorMessage.text(@Json.Serialize(localizer[Messages.BRANCH_COMPANY_RELATION].Value)).show();
+                } else {
+                    errorMessage.text('').hide();
+                }
+            });
+        }
+    });
+</script>

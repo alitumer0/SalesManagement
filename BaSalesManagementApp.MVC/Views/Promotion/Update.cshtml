@@ -1,0 +1,450 @@
+﻿@model BaSalesManagementApp.MVC.Models.PromotionVMs.PromotionUpdateVM
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<Resource> localizer
+
+@{
+    ViewData["Title"] = localizer["Update"];
+}
+@{
+    var isManager = User.IsInRole("Manager"); // Kullanıcının rolünü kontrol et
+    var selectedCompany = Model.Companies.FirstOrDefault(); // Manager rolündeki kullanıcı için varsayılan şirket
+}
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<div class="content-wrapper">
+    <div class="container-xxl flex-grow-1 container-p-y">
+        <h4 class="py-3 mb-4"><span class="text-muted fw-light">@localizer["Promotion"] /</span> @localizer["Update"]</h4>
+        <div class="row">
+            <div class="content-wrapper">
+                <div class="col-md-6 col-lg-6">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <form id="updatePromotionForm" asp-action="Update">
+                                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                <input type="hidden" asp-for="Id" />
+                                <div class="mb-3">
+                                    @if (isManager)
+                                    {
+                                        <div style="display: none;">
+                                            <select id="CompanyId" class="form-control select2" asp-for="CompanyId" data-placeholder="@localizer["Select_Company"]" style="width: 100%; ">
+                                                <option></option>
+                                                @if (Model != null && Model.Companies != null && Model.Companies.Any())
+                                                {
+                                                    @foreach (var company in Model.Companies)
+                                                    {
+                                                        <option value="@company.Id">@company.Name</option>
+                                                    }
+                                                }
+                                            </select>
+                                            <span id="companyError" class="text-danger"></span>
+                                        </div>
+                                        
+                                    }
+                                    else
+                                    {
+                                        <label asp-for="CompanyId" class="form-label">@localizer["Company2"]</label>
+                                        <select id="CompanyId" class="form-control select2" asp-for="CompanyId" data-placeholder="@localizer["Select_Company"]" style="width: 100%;">
+                                            <option></option>
+                                            @if (Model != null && Model.Companies != null && Model.Companies.Any())
+                                            {
+                                                @foreach (var company in Model.Companies)
+                                                {
+                                                    <option value="@company.Id">@company.Name</option>
+                                                }
+                                            }
+                                        </select>
+                                        <span id="companyError" class="text-danger"></span>
+                                    }
+                                    <span asp-validation-for="CompanyId" id="companySelectError" class="text-danger"></span>
+                                </div>
+                                <div class="mb-3">
+                                    <label asp-for="ProductId" class="form-label">@localizer["Product"]</label>
+                                    <select id="ProductId" class="form-control select2" asp-for="ProductId" data-placeholder="@localizer["Select_a_Product"]" disabled style="width: 100%;">
+                                        <option></option>
+                                        <!-- Ürünler, seçilen şirkete göre dinamik olarak yüklenecek -->
+                                    </select>
+                                    <span id="productError" class="text-danger"></span>
+                                </div>
+                                <div class="mb-3">
+
+                                    <label asp-for="Discount" class="form-label">@localizer["Discount2"] (%)</label>
+                                    <input id="Discount" asp-for="Discount" class="form-control" min="1" max="99" />
+                                    <span id="discountError" class="text-danger"></span>
+                                </div>
+                                <div class="mb-3">
+                                    <label asp-for="Price" class="form-label">@localizer["Price2"]</label>
+                                    <input id="Price" asp-for="Price" class="form-control" readonly style="pointer-events: none; user-select: none;" />
+                                    <span id="priceError" class="text-danger"></span>
+                                </div>
+                                <div class="mb-3">
+                                    <label asp-for="TotalPrice" class="form-label">@localizer["TotalPrice"].Value.ToUpper(new System.Globalization.CultureInfo("tr-TR"))</label>
+                                    <input id="TotalPrice" asp-for="TotalPrice" class="form-control" readonly style="pointer-events: none; user-select: none;"  />
+                                    <span id="totalPriceError" class="text-danger"></span>
+                                </div>
+                                <div class="mb-3">
+                                    <label asp-for="IsActive" class="form-check-label">@localizer["IsActive"]</label>
+                                    <input asp-for="IsActive" class="form-check-input" />
+                                </div>
+                                <div class="mb-3">
+                                    <label asp-for="StartDate" class="form-label">@localizer["StartDate2"]</label>
+                                    <input asp-for="StartDate" type="date" class="form-control" value="@Model.StartDate.ToString("yyyy-MM-dd")" />
+                                    <span id="startDateError" class="text-danger"></span>
+                                </div>
+                                <div class="mb-3">
+                                    <label asp-for="EndDate" class="form-label">@localizer["EndDate2"]</label>
+                                    <input asp-for="EndDate" type="date" class="form-control" value="@Model.EndDate.ToString("yyyy-MM-dd")" />
+                                    <span id="endDateError" class="text-danger"></span>
+                                </div>
+                               
+                                <div>
+                                    <input type="submit" value="@localizer["Update"]" class="btn btn-primary" />
+                                    <a asp-action="Index" class="btn btn-secondary">@localizer["BackToList"]</a>
+                                </div>
+                                @for (int i = 0; i < Model.Companies.Count(); i++)
+                                {
+                                    <input type="hidden" name="Companies[@i].Id" value="@Model.Companies.ElementAt(i).Id" />
+                                    <input type="hidden" name="Companies[@i].Name" value="@Model.Companies.ElementAt(i).Name" />
+                                }
+                                @for (int i = 0; i < Model.Products.Count(); i++)
+                                {
+                                    <input type="hidden" name="Products[@i].Id" value="@Model.Products.ElementAt(i).Id" />
+                                    <input type="hidden" name="Products[@i].Name" value="@Model.Products.ElementAt(i).Name" />
+                                }
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            // Select2 for CompanyId
+            $('#CompanyId').select2({
+                placeholder: '@Html.Raw(localizer["Select_Company"])',
+                allowClear: true,
+                width: 'resolve',
+                matcher: function (params, data) {
+                    // Eğer arama yapmıyorsanız, mevcut öğeleri göster
+                    if ($.trim(params.term) === '') {
+                        return data;
+                    }
+
+                    // "a" ile başlayan öğeleri filtrele
+                    if (data.text.toLowerCase().startsWith(params.term.toLowerCase())) {
+                        return data;
+                    }
+
+                    // Eşleşmiyorsa null döndür
+                    return null;
+                },
+                sorter: function (data) {
+                    // Alfabetik sıralama
+                    return data.sort(function (a, b) {
+                        return a.text.localeCompare(b.text);
+                    });
+                },
+                language: {
+                    noResults: function () {
+                        return '@Html.Raw(localizer["No matching results"])'; // Burada uygun localizer anahtarını kullanın
+                    }
+                }
+            });
+            $('#ProductId').select2({
+                placeholder: '@Html.Raw(localizer["Select_a_Product"])',
+                allowClear: true,
+                width: 'resolve',
+                matcher: function (params, data) {
+                    // Eğer arama yapmıyorsanız, mevcut öğeleri göster
+                    if ($.trim(params.term) === '') {
+                        return data;
+                    }
+
+                    // "a" ile başlayan öğeleri filtrele
+                    if (data.text.toLowerCase().startsWith(params.term.toLowerCase())) {
+                        return data;
+                    }
+
+                    // Eşleşmiyorsa null döndür
+                    return null;
+                },
+                sorter: function (data) {
+                    // Alfabetik sıralama
+                    return data.sort(function (a, b) {
+                        return a.text.localeCompare(b.text);
+                    });
+                },
+                language: {
+                    noResults: function () {
+                        return '@Html.Raw(localizer["No matching results"])'; // Burada uygun localizer anahtarını kullanın
+                    }
+                }
+            });
+
+
+            var selectedCompanyId = $('#CompanyId').val();
+
+            if (selectedCompanyId) {
+                loadProducts(selectedCompanyId);
+            }
+
+            // $('#CompanyId').change(function () {
+            //     var companyId = $(this).val();
+            //     if (companyId) {
+            //         loadProducts(companyId);
+            //     } else {
+            //         $("#companyError").text(companyRequiredMessage);
+            //         resetProductDropdown();
+            //     }
+            // });
+
+
+            $('#CompanyId').change(function () {
+                var companyId = $(this).val();
+                if (companyId) {
+                    loadProducts(companyId);
+                    $("#companyError").text("");  // Geçerli bir şirket seçildiğinde hata mesajını temizle   
+                 } else {        
+                        $("#companyError").text(companyRequiredMessage);  // Şirket seçilmediyse hata gösterresetProductDropdown();     
+                    }
+            });
+
+            function loadProducts(companyId) {
+                $.ajax({
+                    url: '/Promotion/GetProductsByCompanyId',
+                    type: 'GET',
+                    data: { companyId: companyId },
+                    success: function (response) {
+                        var options = '<option value="">@localizer["Select_a_Product"]</option>';
+                        if (response.length > 0) {
+                            $.each(response, function (index, product) {
+                                options += '<option value="' + product.id + '">' + product.name + '</option>';
+                            });
+                            $('#ProductId').html(options).prop('disabled', false);
+                        } else {
+
+                            options += '<option value="">@localizer["NoProductsAvailable"]</option>';
+                            $('#ProductId').html(options).prop('disabled', true);
+                        }
+
+                    },
+                    error: function (error) {
+                        console.log(error);
+                    }
+                });
+            }
+
+            // First AJAX call when page loads
+            if (selectedCompanyId) {
+                $.ajax({
+                    url: '/Promotion/GetProductsByCompanyId',
+                    type: 'GET',
+                    data: { companyId: selectedCompanyId },
+                    success: function (response) {
+                        var options = '<option value="">@localizer["Select_a_Product"]</option>';
+                        if (response.length > 0) {
+                            $.each(response, function (index, product) {
+                                options += '<option value="' + product.id + '">' + product.name + '</option>';
+                            });
+                            $('#ProductId').html(options);
+                            $('#ProductId').val('@Model.ProductId');
+                        } else {
+                            options += '<option value="">@localizer["NoProductsAvailable"]</option>';
+                            $('#ProductId').html(options);
+                        }
+                    },
+                    error: function (error) {
+                        console.log(error);
+                    }
+                });
+            }
+
+
+            //HATA MESAJLARI
+            //Discount alanı
+            var discountRequiredMessage = @Json.Serialize(localizer[Messages.PROMOTION_DISCOUNT_REQUIRED].Value);
+            var discountMinRangeMessage = @Json.Serialize(localizer[Messages.PROMOTION_DISCOUNT_GREATER_THAN_ZERO].Value);
+            var discountMaxRangeMessage = @Json.Serialize(localizer[Messages.PROMOTION_DISCOUNT_LESS_THAN_HUNDRED].Value);
+
+            //Price Alanı
+            var priceRequiredMessage = @Json.Serialize(localizer[Messages.PROMOTION_PRICE_REQUIRED].Value);
+            var priceMinRangeMessage = @Json.Serialize(localizer[Messages.ORDER_TOTALPRICE_VALIDATION].Value);
+
+
+            //TotalPrice Alanı
+            var totalPriceRequiredMessage = @Json.Serialize(localizer[Messages.PROMOTION_TOTAL_PRICE_REQUIRED].Value);
+            var totalPriceMinRangeMessage = @Json.Serialize(localizer[Messages.PROMOTION_TOTAL_PRICE_GREATER_THAN_ZERO].Value);
+            var totalPriceFormatMessage = @Json.Serialize(localizer[Messages.PROMOTION_TOTAL_PRICE_GREATER_THAN_OR_EQUAL_PRICE].Value);
+
+
+            //StartDate Alanı
+            var startDateRequiredMessage = @Json.Serialize(localizer[Messages.PROMOTION_START_DATE_REQUIRED].Value);
+            var startDateInvalidMessage = @Json.Serialize(localizer[Messages.PROMOTION_START_DATE_GREATER_THAN_TODAY].Value);
+            var startDateBeforeEndDateMessage = @Json.Serialize(localizer[Messages.PROMOTION_START_DATE_LESS_THAN_END_DATE].Value);
+
+
+            //EndDate Alanı
+            var endDateRequiredMessage = @Json.Serialize(localizer[Messages.PROMOTION_END_DATE_REQUIRED].Value);
+            var endDateInvalidMessage = @Json.Serialize(localizer[Messages.PROMOTION_END_DATE_GREATER_THAN_START_DATE].Value);
+
+            //Company Alanı
+            var companyRequiredMessage = @Json.Serialize(localizer[Messages.PROMOTION_COMPANY_RELATION].Value);
+
+            //Product Alanı
+            var productRequiredMessage = @Json.Serialize(localizer[Messages.PROMOTION_PRODUCT_RELATION].Value);
+
+            // Discount değiştiğinde toplam fiyatı güncelleyen fonksiyon
+            function updateTotalPrice() {
+                const price = parseFloat($("#Price").val().trim());
+                const discount = parseFloat($("#Discount").val().trim());
+
+                if (!isNaN(price) && !isNaN(discount)) {
+                    // Toplam fiyatı hesapla (indirimli fiyat)
+                    const totalPrice = price - (price * (discount / 100));
+                    $("#TotalPrice").val(totalPrice.toFixed(2)); // TotalPrice alanını güncelle
+                }
+            }
+
+            // Discount alanındaki değişikliklere tepki ver
+            $("#Discount").on('input change', function () {
+                validateDiscount();  // İndirim geçerli mi kontrol et
+                updateTotalPrice();  // Toplam fiyatı güncelle
+            });
+
+            function validateDiscount() {
+                const discount = $("#Discount").val().trim();
+
+                if (discount.length === 0) {
+                    $("#discountError").text(discountRequiredMessage);
+                } else if (discount <= 0) {
+                    $("#discountError").text(discountMinRangeMessage);
+                } else if (discount > 100) {
+                    $("#discountError").text(discountMaxRangeMessage);
+                } else {
+                    $("#discountError").text(""); // Hata yok
+                    updateTotalPrice();  // Discount geçerli olduğunda toplam fiyatı güncelle
+                }
+            }
+
+            function validatePrice() {
+                const price = $("#Price").val().trim();
+
+                if (price.length === 0) {
+                    $("#priceError").text(priceRequiredMessage);
+                } else if (price <= 0) {
+                    $("#priceError").text(priceMinRangeMessage);
+                } else {
+                    $("#priceError").text(""); // Hata yok
+                }
+            }
+
+            function validateTotalPrice() {
+                // const totalPrice = $("#TotalPrice").val().trim();
+                // const price = $("#Price").val().trim();
+
+                const totalPrice = parseFloat($("#TotalPrice").val().trim());
+                const price = parseFloat($("#Price").val().trim());
+
+                if (isNaN(totalPrice)) {
+                    $("#totalPriceError").text(totalPriceRequiredMessage);
+                } else if (totalPrice <= 0) {
+                    $("#totalPriceError").text(totalPriceMinRangeMessage);
+                } else if (totalPrice > price) {
+                    $("#totalPriceError").text(totalPriceFormatMessage);
+                } else {
+                    $("#totalPriceError").text(""); // Hata yok
+                }
+            }
+
+            function validateStartDate() {
+                const startDate = $("#StartDate").val().trim();
+                const endDate = $("#EndDate").val().trim(); // EndDate değerini al
+
+                if (startDate.length === 0) {
+                    $("#startDateError").text(startDateRequiredMessage);
+                } else if (new Date(startDate) < new Date()) {
+                    $("#startDateError").text(startDateInvalidMessage);
+                } else if (endDate.length > 0 && new Date(startDate) >= new Date(endDate)) {
+                    // Eğer EndDate doluysa ve StartDate, EndDate'den sonra veya eşitse
+                    $("#startDateError").text(startDateBeforeEndDateMessage);
+                } else {
+                    $("#startDateError").text(""); // Hata yok
+                }
+            }
+
+            function validateEndDate() {
+                const endDate = $("#EndDate").val().trim();
+                const startDate = $("#StartDate").val().trim();
+
+                if (endDate.length === 0) {
+                    $("#endDateError").text(endDateRequiredMessage);
+                } else if (new Date(endDate) <= new Date(startDate)) {
+                    $("#endDateError").text(endDateInvalidMessage);
+                } else {
+                    $("#endDateError").text(""); // Hata yok
+                }
+            }
+
+            function validateCompany() {
+                const companyId = $("#CompanyId").val();
+                if (companyId === "") {
+                    $("#companyError").text(companyRequiredMessage);
+                }else{
+                    $("#companyError").text("");
+                }
+            }
+
+            function validateProduct(){
+                const productId = $("#ProductId").val();
+                if (productId === "") {
+                    $("#productError").text(productRequiredMessage);
+                }else{
+                    $("#productError").text("");
+                }
+            }
+
+            $("#Discount").on('keyup blur', validateDiscount);
+            $("#Price").on('keyup blur', validatePrice);
+            $("#TotalPrice").on('keyup blur', validateTotalPrice);
+            $("#StartDate").on('keyup blur', validateStartDate);
+            $("#EndDate").on('keyup blur', validateEndDate);
+            $("#CompanyId").on('keyup blur', validateCompany);
+            $("#ProductId").on('change', validateProduct);
+
+            $("#updatePromotionForm").submit(function (event) {
+                validateDiscount();
+                validatePrice();
+                validateTotalPrice();
+                validateStartDate();
+                validateEndDate();
+                validateCompany();
+                validateProduct();
+
+                let isValid = true;
+
+                if ($("#discountError").text() || $("#priceError").text() || $("#totalPriceError").text() || $("#startDateError").text() || $("#endDateError").text() || $("#companyError").text() || $("#productError").text()) {
+                    isValid = false;
+                }
+
+                if (!isValid) {
+                    event.preventDefault();
+                }
+            });
+
+         
+
+        });
+        
+         
+        
+    </script>
+
+ 
+
+}

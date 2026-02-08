@@ -1,0 +1,79 @@
+﻿@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<Resource> localizer
+@using BaSalesManagementApp.Business.Utilities
+
+@model BaSalesManagementApp.MVC.Models.ProductVMs.ProductDetailsVM
+
+@{
+    ViewData["Title"] = localizer["Details"];
+}
+
+<div class="content-wrapper">
+    <div class="container-xxl flex-grow-1 container-p-y">
+        <h4 class="py-3 mb-4">
+            <span class="text-muted fw-light">@localizer["Product"] / </span> @localizer["Details"]
+        </h4>
+        <div class="row">
+
+            <div class="col-lg-6 col-md-8 col-sm-12">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <dl class="row">
+                            <dt class="col-4 mb-4">
+                                @localizer["Name"]
+                            </dt>
+                            <dd class="col-8">
+                                @StringUtilities.CapitalizeEachWord(Model.Name)
+                            </dd>
+                            <dt class="col-4 mb-4">
+                                @localizer["Price"]
+                            </dt>
+                            <dd class="col-8">
+                                @Html.DisplayFor(model => model.Price)
+                            </dd>
+                            <dt class="col-4 mb-4">
+                                @localizer["QRCode"]
+                            </dt>
+                            <dd class="col-8">
+                                @*  @Html.DisplayFor(model => model.QRCode) *@
+                                @{
+                                    var imgSrc = "";
+                                    if (Model.QRCode != null)
+                                    {
+                                        string base64String = Convert.ToBase64String(Model.QRCode);
+                                        imgSrc = $"data:image/png;base64,{base64String}";
+                                    }
+                                }
+                                <img src="@imgSrc" alt="QR Code" />
+                            </dd>
+                            <dt class="col-4 mb-4">
+                                @localizer["CategoryName"]
+                            </dt>
+                            <dd class="col-8">
+                                @Html.DisplayFor(model => model.CategoryName)
+                            </dd>
+
+                            @if (!User.IsInRole("Manager"))
+                            {
+                                <dt class="col-4 mb-4">
+                                @localizer["CompanyName"]
+                                </dt>
+                                <dd class="col-8">
+                                @Html.DisplayFor(model => model.CompanyName)
+                                </dd>
+                            }
+                        </dl>
+                    </div>
+                    <div class="card-footer" style="margin-top:-50px">
+                        @if (!User.IsInRole("Employee"))
+                        {
+                            <a href="@Url.Action("Update", new { productId = Model.Id })" class="btn btn-primary">@localizer["Update"]</a>
+                        }
+                        <a asp-action="Index" class="btn btn-secondary">@localizer["BackToList"]</a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

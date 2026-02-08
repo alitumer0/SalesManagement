@@ -1,0 +1,94 @@
+﻿@model BaSalesManagementApp.MVC.Models.PromotionVMs.PromotionDetailsVM
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<Resource> localizer
+
+@{
+    ViewData["Title"] = localizer["PromotionDetails"];
+}
+
+<div class="content-wrapper">
+    <div class="container-xxl flex-grow-1 container-p-y">
+        <h4 class="py-3 mb-4"><span class="text-muted fw-light">@localizer["Promotion"] /</span> @localizer["Details"]</h4>
+        <div class="row">
+
+            <div class="col-lg-6 col-md-8 col-sm-12">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <dl class="row">
+                            <dt class="col-4 mb-4">
+                                @localizer["Discount"]
+                            </dt>
+                            <dd class="col-8">
+                                <i class="fas fa-percent"></i>
+                                @Html.DisplayFor(model => model.Discount)
+                            </dd>
+                            <dt class="col-4 mb-4">
+                                @localizer["Price"]
+                            </dt>
+                            <dd class="col-8">
+                                @* <i class="fas fa-dollar-sign"></i> *@
+                                @Html.DisplayFor(model => model.Price)
+                            </dd>
+                            <dt class="col-4 mb-4">
+                                @localizer["TotalPrice"]
+                            </dt>
+                            <dd class="col-8">
+                                @* <i class="fas fa-dollar-sign"></i> *@
+                                @Html.DisplayFor(model => model.TotalPrice)
+                            </dd>
+                            <dt class="col-4 mb-4">
+                                @localizer["IsActive"]
+                            </dt>
+                            <dd class="col-8">
+                                @if (Model.IsActive)
+                                {
+                                    <i class="fas fa-check text-primary"></i>
+                                }
+                                else
+                                {
+                                    <i class="fas fa-times text-danger"></i>
+                                }
+                            </dd>
+                            <dt class="col-4 mb-4">
+                                @localizer["StartDate"]
+                            </dt>
+                            <dd class="col-8">
+                                @Model.StartDate.ToString("dd/MM/yyyy")
+                            </dd>
+                            <dt class="col-4 mb-4">
+                                @localizer["EndDate"]
+                            </dt>
+                            <dd class="col-8">
+                                @Model.EndDate.ToString("dd/MM/yyyy")
+                            </dd>
+                            @if (User.IsInRole("Manager"))
+                            {
+                                <input type="hidden" class="form-control" value="@Model.CompanyName" />
+                            }
+                            else
+                            {
+                                <dt class="col-4 mb-4">
+                                    @localizer["CompanyName"]
+                                </dt>
+                                <dd class="col-8">
+                                    @Html.DisplayFor(model => model.CompanyName)
+                                </dd>
+                            }
+                            <dt class="col-4 mb-4">
+                                @localizer["Product_Name"]
+                            </dt>
+                            <dd class="col-8">
+                                @Html.DisplayFor(model => model.ProductName)
+                            </dd>
+                        </dl>
+                    </div>
+                    <div class="card-footer" style="margin-top:-50px">
+                        <a href="@Url.Action("Update", new { promotionId = Model.Id })" class="btn btn-primary">@localizer["Update"]</a>
+                        <a asp-action="Index" class="btn btn-secondary">@localizer["BackToList"]</a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

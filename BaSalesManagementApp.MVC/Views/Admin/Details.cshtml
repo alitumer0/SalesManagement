@@ -1,0 +1,60 @@
+﻿@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<Resource> localizer
+@model BaSalesManagementApp.MVC.Models.AdminVMs.AdminDetailsVM
+
+@{
+    ViewData["Title"] = localizer["Details"];
+}
+<div class="content-wrapper">
+    <div class="container-xxl flex-grow-1 container-p-y">
+        <h4 class="py-3 mb-4">
+        <span class="text-muted fw-light">@localizer["Admin"] /</span> @localizer["Details"]
+        </h4>
+        <div class="row">
+
+            <div class="col-lg-6 col-md-8 col-sm-12">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <dl class="row">
+                            <dt class="col-sm-3 mb-4">@localizer["FirstName"]:</dt>
+                            <dd class="col-sm-9">@Model.FirstName</dd>
+
+                            <dt class="col-sm-3 mb-4">@localizer["LastName"]:</dt>
+                            <dd class="col-sm-9">@Model.LastName</dd>
+
+                            <dt class="col-sm-3 mb-4">@localizer["Email"]:</dt>
+                            <dd class="col-sm-9">@Model.Email</dd>
+
+                            <dt class="col-sm-3 mb-4">@localizer["Profile_Photo"]:</dt>
+                            <dd class="col-sm-9">
+                                @if (Model.PhotoData != null)
+                                {
+                                    <img src="data:image/jpeg;base64,@Convert.ToBase64String(Model.PhotoData)" alt="Profile Picture"
+                                         class="rounded-circle"
+                                         style="width: 50px; height: 50px; transition: transform 0.3s ease-in-out;"
+                                         onmouseover="this.style.transform='scale(4.5)';"
+                                         onmouseout="this.style.transform='scale(1)';" />
+                                }
+                                else
+                                {
+                                    <div class="rounded-circle"
+                                         style="width: 50px; height: 50px; background-color: #007bff; color: white; display: flex; justify-content: center; align-items: center; font-weight: bold; transition: transform 0.3s ease-in-out;"
+                                         onmouseover="this.style.transform='scale(1.5)';"
+                                         onmouseout="this.style.transform='scale(1)';">
+                                        @Model.FirstName.Substring(0, 1)@Model.LastName.Substring(0, 1)
+                                    </div>
+                                }
+                            </dd>
+                        </dl>
+                    </div>
+                    <div class="card-footer" style="margin-top:-50px">
+                        <a href="@Url.Action("Update", new { adminId = Model.Id })" class="btn btn-primary">@localizer["Update"]</a>
+                        <a asp-action="Index" class="btn btn-secondary">@localizer["BackToList"]</a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>

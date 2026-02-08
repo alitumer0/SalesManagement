@@ -1,0 +1,98 @@
+﻿@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<Resource> localizer
+@model BaSalesManagementApp.MVC.Models.CustomerVMs.CustomerDetailsVM
+@{
+    ViewData["Title"] = localizer["CustomerDetails"];
+}
+
+<div class="content-wrapper">
+    <div class="container-xxl flex-grow-1 container-p-y">
+        <h4 style="margin-left: 25px;">
+            <span class="text-muted fw-light">@Html.Raw(localizer["Customer"]) /</span> @Html.Raw(localizer["Details"])
+        </h4>
+
+        <div class="accordion mt-4" id="customerDetailsAccordion">
+
+            <!-- Customer Section -->
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingCustomer">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCustomer" aria-expanded="true" aria-controls="collapseCustomer">
+                        @localizer["Customer"]
+                    </button>
+                </h2>
+                <div id="collapseCustomer" class="accordion-collapse collapse show" aria-labelledby="headingCustomer" data-bs-parent="#customerDetailsAccordion">
+                    <div class="accordion-body">
+                        <dl class="row">
+                            <dt class="col-sm-4 mb-4">@localizer["CustomerName"]</dt>
+                            <dd class="col-sm-8">@Html.DisplayFor(model => model.Name)</dd>
+
+                            <dt class="col-sm-4 mb-4">@localizer["Phone"]</dt>
+                            <dd class="col-sm-8">@Html.DisplayFor(model => model.Phone)</dd>
+
+                            <dt class="col-sm-4 mb-4">@localizer["Email"]</dt>
+                            <dd class="col-sm-8">@Html.DisplayFor(model => model.Email)</dd>
+
+                            @if (!User.IsInRole("Manager"))
+                            {
+                                <dt class="col-sm-4 mb-4">@localizer["Company"]</dt>
+                                <dd class="col-sm-8">@Html.DisplayFor(model => model.CompanyName)</dd>
+                            }
+                        </dl>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Added By Section -->
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingAddedBy">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseAddedBy" aria-expanded="false" aria-controls="collapseAddedBy">
+                        @localizer["Added_By"]
+                    </button>
+                </h2>
+                <div id="collapseAddedBy" class="accordion-collapse collapse" aria-labelledby="headingAddedBy" data-bs-parent="#customerDetailsAccordion">
+                    <div class="accordion-body">
+                        <dl class="row">
+                            <dt class="col-sm-4 mb-4">@localizer["FirstName"]</dt>
+                            <dd class="col-sm-8">@Html.DisplayFor(model => model.Admin.FirstName)</dd>
+
+                            <dt class="col-sm-4 mb-4">@localizer["LastName"]</dt>
+                            <dd class="col-sm-8">@Html.DisplayFor(model => model.Admin.LastName)</dd>
+
+                            <dt class="col-sm-4 mb-4">@localizer["Email"]</dt>
+                            <dd class="col-sm-8">@Html.DisplayFor(model => model.Admin.Email)</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Address Section -->
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingAddress">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseAddress" aria-expanded="false" aria-controls="collapseAddress">
+                        @localizer["Address"]
+                    </button>
+                </h2>
+                <div id="collapseAddress" class="accordion-collapse collapse" aria-labelledby="headingAddress" data-bs-parent="#customerDetailsAccordion">
+                    <div class="accordion-body">
+                        <dl class="row">
+                            <dt class="col-sm-4 mb-4">@localizer["CountryName"]</dt>
+                            <dd class="col-sm-8">@Html.DisplayFor(model => model.CountryName)</dd>
+
+                            <dt class="col-sm-4 mb-4">@localizer["CityName"]</dt>
+                            <dd class="col-sm-8">@Html.DisplayFor(model => model.CityName)</dd>
+
+                            <dt class="col-sm-4 mb-4">@localizer["Address"]</dt>
+                            <dd class="col-sm-8">@Html.DisplayFor(model => model.Address)</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="card-footer mt-4">
+            <a href="@Url.Action("Update", new { customerId = Model.Id })" class="btn btn-primary" style="margin-left: 30px;">@localizer["Update"]</a>
+            <a asp-action="Index" class="btn btn-secondary">@localizer["BackToList"]</a>
+        </div>
+    </div>
+</div>

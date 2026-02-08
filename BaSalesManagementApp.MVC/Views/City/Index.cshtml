@@ -1,0 +1,230 @@
+﻿@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<Resource> localizer
+@model IPagedList<CityListVM>
+@using BaSalesManagementApp.MVC.Models.CityVMs
+@using X.PagedList.Mvc.Common
+@using X.PagedList.Mvc.Core
+@using X.PagedList
+@using X.PagedList.Mvc.Core.Common
+
+@{
+    ViewData["Title"] = @localizer["Index"];
+}
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.5.0/font/bootstrap-icons.min.css">
+
+  <style>
+
+        .table thead tr {
+            border-bottom: 1px solid #dee2e6;
+        }
+
+  </style>
+
+</head>
+<div class="content-wrapper">
+    <div class="container-xxl flex-grow-1 container-p-y">
+        <h4 class="py-3 mb-4"><span class="text-muted fw-light">@localizer["City"] /</span> @localizer["List"]</h4>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <a asp-action="Create" class="btn btn-primary">@localizer["Create_New"]</a>
+            <div class="d-flex">
+                <!-- Show Entries Dropdown -->
+                <form method="get" asp-action="Index" class="d-inline-block me-3">
+                    <input type="hidden" name="sortOrder" value="@ViewBag.CurrentSort" /> <!-- pageSize değişince sortOrder kaybolmasın -->
+                    <input type="hidden" name="page" value="1" /> <!-- pageSize değişince 1. sayfaya git -->
+                    <label>@localizer["Show"]</label>
+                    <select name="pageSize" onchange="this.form.submit()" class="form-select d-inline-block w-auto ms-2">
+                        @if (ViewData["CurrentPageSize"]?.ToString() == "5")
+                        {
+                            <option value="5" selected>5</option>
+                        }
+                        else
+                        {
+                            <option value="5">5</option>
+                        }
+
+                        @if (ViewData["CurrentPageSize"]?.ToString() == "10")
+                        {
+                            <option value="10" selected>10</option>
+                        }
+                        else
+                        {
+                            <option value="10">10</option>
+                        }
+
+                        @if (ViewData["CurrentPageSize"]?.ToString() == "20")
+                        {
+                            <option value="20" selected>20</option>
+                        }
+                        else
+                        {
+                            <option value="20">20</option>
+                        }
+
+                        @if (ViewData["CurrentPageSize"]?.ToString() == "50")
+                        {
+                            <option value="50" selected>50</option>
+                        }
+                        else
+                        {
+                            <option value="50">50</option>
+                        }
+                    </select>
+                    <label>@localizer["Entries"]</label>
+                </form>
+                <div id="sortOrder" class="dropdown">
+                    <button class="btn btn-primary" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="bi bi-filter" style="font-size:1rem"></i>
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <li><a class="dropdown-item" data-value="alphabetical" href="#">A-Z</a></li>
+                        <li><a class="dropdown-item" data-value="alphabeticaldesc" href="#">Z-A</a></li>
+                        <li><a class="dropdown-item" data-value="az-country" href="#">A-Z (@localizer["Country"])</a></li>
+                        <li><a class="dropdown-item" data-value="za-country" href="#">Z-A (@localizer["Country"])</a></li>
+                        <li><a class="dropdown-item" data-value="date" href="#">@localizer["Newest_First"]</a></li>
+                        <li><a class="dropdown-item" data-value="datedesc" href="#">@localizer["Oldest_First"]</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="table-responsive text-nowrap">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>@localizer["City"].ToString().ToUpper(new System.Globalization.CultureInfo(System.Threading.Thread.CurrentThread.CurrentCulture.Name))</th>
+                            <th>@localizer["ColumnCountry"]</th>
+                            <th>@localizer["CreatedDate"].ToString().ToUpper(new System.Globalization.CultureInfo("tr-TR"))</th>
+                            <th class="text-end">@localizer["Actions"]</th>
+
+
+                          
+                        </tr>
+                    </thead>
+                    <tbody class="table-border-bottom-0">
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td class="fw-medium">@Html.DisplayFor(modelItem => item.Name)</td>
+                                <td class="fw-medium">@Html.DisplayFor(modelItem => item.CountryName)</td>
+                                <td class="fw-medium">@item.CreatedDate.ToString("dd.MM.yyyy")</td>
+                                <td class="text-end">
+                                    <div class="dropdown">
+                                        <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown" style="margin-right: 28px;">
+                                            <i class="bx bx-dots-vertical-rounded"></i>
+                                        </button>
+                                        <div class="dropdown-menu">
+                                            <a asp-action="Details" asp-route-cityId="@item.Id" class="dropdown-item">
+                                                <i class="bx bx-info-circle me-1"></i> @localizer["Details"]
+                                            </a>
+                                            <a asp-action="Update" asp-route-cityId="@item.Id" class="dropdown-item">
+                                                <i class="bx bx-edit-alt me-1"></i> @localizer["Update"]
+                                            </a>
+                                            <a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal-@item.Id">
+                                                <i class="bx bx-trash me-1"></i>@localizer["Delete"]
+                                            </a>
+                                        </div>
+                                    </div>
+
+                                    <!-- Confirm Delete Modal -->
+                                    <div class="modal fade" id="confirmDeleteModal-@item.Id" tabindex="-1" aria-labelledby="confirmDeleteModalLabel-@item.Id" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="confirmDeleteModalLabel-@item.Id">@localizer["DELETE_CONFIRM_TITLE_CITY"]</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body text-start">
+                                                    @localizer["DELETE_CONFIRM_CITY"]
+                                                </div>
+                                                <div class="modal-footer justify-content-start">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@localizer["CANCEL_CITY"]</button>
+                                                    <a asp-action="Delete" asp-route-cityId="@item.Id" class="btn btn-danger">@localizer["DELETE_CITY"]</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <!-- Pagination -->
+            <div class="d-flex justify-content-center mt-3">
+                @Html.PagedListPager(Model, page => Url.Action("Index", new
+                    {
+                        page,
+                        sortOrder = ViewBag.CurrentSort,
+                        pageSize = ViewData["CurrentPageSize"],
+                        searchQuery = ViewBag.CurrentSearch     // <<< EKLEDİĞİMİZ SATIR
+                    }), new PagedListRenderOptions
+           {
+               Display = PagedListDisplayMode.Always,
+               UlElementClasses = new[] { "pagination", "justify-content-center" },
+               LiElementClasses = new[] { "page-item" },
+               PageClasses = new[] { "page-link" },
+               LinkToPreviousPageFormat = @localizer["Previous"],
+               LinkToNextPageFormat = @localizer["Next"],
+               LinkToFirstPageFormat = @localizer["First"],
+               LinkToLastPageFormat = @localizer["Last"],
+               ContainerDivClasses = new[] { "d-flex", "justify-content-center" }
+           })
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        var deleteModals = document.querySelectorAll('.modal');
+        deleteModals.forEach(modal => {
+            modal.addEventListener('shown.bs.modal', function () {
+                modal.querySelector('button[type="button"]').focus();
+            });
+        });
+        var sortOrderSelect = document.getElementById('sortOrder');
+        var sortOrderLinks = sortOrderSelect.querySelectorAll('.dropdown-item');
+
+        function updateSortOrderFromUrl() {
+            var urlParams = new URLSearchParams(window.location.search);
+            var sortOrder = urlParams.get('sortOrder') || 'alphabetical';
+            sortOrderLinks.forEach(function (link) {
+                if (link.getAttribute('data-value') === sortOrder) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            });
+        }
+
+        function updatePageLinks() {
+            var selectedSortOrder = document.querySelector('.dropdown-item.active').getAttribute('data-value');
+            document.querySelectorAll('.pagination a').forEach(function (link) {
+                var href = link.getAttribute('href');
+                var url = new URL(href, window.location.href);
+                var urlParams = new URLSearchParams(url.search);
+
+                urlParams.set('sortOrder', selectedSortOrder);
+                url.search = urlParams.toString();
+                link.setAttribute('href', url.toString());
+            });
+        }
+
+        function handleSortOrderChange(event) {
+            event.preventDefault(); // default engellemek için eklendi
+            var selectedSortOrder = event.target.getAttribute('data-value');
+            var urlParams = new URLSearchParams(window.location.search);
+            urlParams.set('sortOrder', selectedSortOrder);
+            urlParams.set('page', 1);
+            window.location.search = urlParams.toString();
+        }
+
+        sortOrderLinks.forEach(function (link) {
+            link.addEventListener('click', handleSortOrderChange);
+        });
+
+        updateSortOrderFromUrl();
+        //updatePageLinks(); // serverden zaten doğru geliyor. client dom manip ile değiştirmek performans kaybı. xss için savunmasız halde
+    </script>
+}

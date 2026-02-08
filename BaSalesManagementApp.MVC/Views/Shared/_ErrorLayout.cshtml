@@ -1,0 +1,49 @@
+﻿
+
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+
+
+
+    <title>@ViewBag.Title </title>
+
+    <link href="https://fonts.googleapis.com/css?family=Encode+Sans+Semi+Condensed:100,200,300,400" rel="stylesheet">
+
+    <!-- Bootstrap core CSS -->
+            
+    <link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+    <!-- Custom styles for this template -->
+
+ 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/js/all.min.js"
+            crossorigin="anonymous"></script>
+    <link href="~/ErrorPage/css/error-page-bg-animation.css" rel="stylesheet">
+
+</head>
+
+<body class="loading" >
+
+    <div id="layoutError">
+        <div id="layoutError_content">
+            <main>
+                <div class="container">
+                    <div class="row justify-content-center">
+                        @RenderBody()
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Bootstrap core JavaScript -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+    <script src="~/js/bootstrap.js" asp-append-version="true"></script>
+   
+    @await RenderSectionAsync("Scripts", false)
+</body>
+
+</html>

@@ -1,0 +1,141 @@
+﻿@using BaSalesManagementApp.MVC.Models.CompanyVMs
+@model CompanyOrderVM
+@inject IStringLocalizer<Resource> localizer
+
+@{
+    ViewData["Title"] = "Company Orders";
+}
+
+@if (Model?.Orders == null || !Model.Orders.Any())
+{
+    <div class="alert alert-warning mt-5 col-md-4 mx-auto">
+        <strong>@localizer["Warning!"]</strong> @localizer["No orders found for this company"].
+    </div>
+}
+else
+{
+    <h3 class="text-center my-4">@localizer["Daily Order Summary"]</h3>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>@localizer["OrderDate"].Value.ToUpper(new System.Globalization.CultureInfo("tr-TR"))</th>
+                <th>@localizer["TotalOrders"].Value.ToUpper(new System.Globalization.CultureInfo("tr-TR"))</th>
+                <th>@localizer["TotalDailyPrice"]</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                // Siparişleri tarihe göre sıralama
+                var dailySummary = Model.Orders
+                .OrderByDescending(order => order.OrderDate) // Tarihe göre sıralama
+                .GroupBy(order => order.OrderDate.Date)
+                .Select(group => new
+                {
+                    OrderDate = group.Key,
+                    TotalOrders = group.Count(),
+                    TotalDailyPrice = group.Sum(order => order.TotalPrice)
+                });
+
+                foreach (var summary in dailySummary)
+                {
+                    <tr>
+                        <td>@summary.OrderDate.ToString("dd.MM.yyyy")</td>
+                        <td>@summary.TotalOrders</td>
+                        <td>@summary.TotalDailyPrice.ToString("C", new System.Globalization.CultureInfo("tr-TR"))</td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+
+    <h3 class="text-center my-4">@localizer["OrderDetails"]</h3>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>@localizer["OrderDate"].ToString().ToUpper(new System.Globalization.CultureInfo(System.Threading.Thread.CurrentThread.CurrentCulture.Name))</th>
+                <th>@localizer["TotalPrice"].ToString().ToUpper(new System.Globalization.CultureInfo(System.Threading.Thread.CurrentThread.CurrentCulture.Name))</th>
+                <th>@localizer["Is_Active"]</th>
+                <th>@localizer["Details"]</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var order in Model.Orders.OrderByDescending(o => o.OrderDate)) // Tarihe göre sıralama
+            {
+                <tr>
+                    <td>@order.OrderDate.ToString("dd.MM.yyyy")</td>
+                    <td>@order.TotalPrice.ToString("C", new System.Globalization.CultureInfo("tr-TR"))</td>
+                    <td>@(order.IsActive ? localizer["Active"] : localizer["Inactive"])</td>
+                    <td>
+                        <button class="btn btn-info toggle-details" data-target="#details-@order.Id">
+                            @localizer["Details"]
+                        </button>
+                    </td>
+                </tr>
+                <tr id="details-@order.Id" class="details-row" style="display: none;">
+                    <td colspan="4">
+                        <h5>@localizer["OrderDetails"]</h5>
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>@localizer["Product Name"]</th>
+                                    <th>@localizer["Quantity"]</th>
+                                    <th>@localizer["Unit Price"].ToString().ToUpper(new System.Globalization.CultureInfo(System.Threading.Thread.CurrentThread.CurrentCulture.Name))</th>
+                                    <th>@localizer["Discount"].Value.ToUpper(new System.Globalization.CultureInfo("tr-TR"))</th>
+                                    <th>@localizer["Discounted Total Price"]</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var detail in order.OrderDetails)
+                                {
+                                    <tr>
+                                        <td>@detail.ProductName</td>
+                                        <td>@detail.Quantity</td>
+                                        <td>@detail.UnitPrice.ToString("C", new System.Globalization.CultureInfo("tr-TR"))</td>
+                                        <td>
+                                            @(detail.Discount > 0 ? $"{detail.Discount}%" : localizer["NoDiscount"])
+
+                                        </td>
+                                        <td>
+                                            @((detail.UnitPrice * detail.Quantity * (1 - detail.Discount / 100))
+                                                .ToString("C", new System.Globalization.CultureInfo("tr-TR")))
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<div class="d-flex justify-content-start align-items-center mt-3 ms-3 mb-lg-auto">
+    <a asp-action="Index" class="btn btn-secondary px-4 py-2">@localizer["BackToList"]</a>
+</div>
+
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Tüm butonlara click event'i ekleniyor
+            document.querySelectorAll(".toggle-details").forEach(function (button) {
+                button.addEventListener("click", function () {
+                    var targetId = this.getAttribute("data-target"); // Hedef satırın ID'si
+                    var targetRow = document.querySelector(targetId);
+
+                    if (targetRow) {
+                        // Açık mı kapalı mı kontrol ediliyor
+                        if (targetRow.style.display === "none") {
+                            targetRow.style.display = "table-row";
+                            this.textContent = "@localizer["Hide"]";
+                        } else {
+                            targetRow.style.display = "none";
+                            this.textContent = "@localizer["Details"]";
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+}

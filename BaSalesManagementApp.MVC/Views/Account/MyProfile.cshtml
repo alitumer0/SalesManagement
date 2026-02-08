@@ -1,0 +1,96 @@
+﻿@model MyProfileVM
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<Resource> localizer
+
+@{
+    ViewData["Title"] = localizer["My_Profile"];
+}
+
+<div class="container my-4">
+    <div class="card shadow-sm">
+        <div class="card-header">
+            <h5 class="mb-0">@localizer["Edit_Profile"]</h5>
+        </div>
+
+        <div class="card-body">
+            <form id="profileForm" asp-action="MyProfile" asp-controller="Account" method="post" enctype="multipart/form-data">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="Id" />
+                <input type="hidden" id="removePhotoInput" name="RemovePhoto" value="false" />
+
+                <!-- Profil Fotoğrafı -->
+                <div class="d-flex align-items-center mb-4">
+                    <div class="position-relative" style="width: 100px; height: 100px;">
+                        @if (Model.PhotoData != null)
+                        {
+                            <img id="profileImage"
+                                 src="data:image/jpeg;base64,@Convert.ToBase64String(Model.PhotoData)"
+                                 alt="@localizer["Profile_Photo"]"
+                                 class="rounded-circle w-100 h-100"
+                                 style="object-fit: cover;" />
+                        }
+                        else
+                        {
+                            <img id="profileImage"
+                                 src="/assets/img/ProfilePhotos/photo.jpg"
+                                 alt="@localizer["Default_Profile_Photo"]"
+                                 class="rounded-circle w-100 h-100"
+                                 style="object-fit: cover;" />
+                        }
+
+                        <label for="photoInput"
+                               class="btn btn-sm btn-light border position-absolute"
+                               style="bottom: -8px; right: -8px;">
+                            <i class="bi bi-pencil-fill"></i>
+                        </label>
+
+                        <button type="button"
+                                class="btn btn-sm btn-outline-danger position-absolute"
+                                style="top: -8px; right: -8px;"
+                                onclick="removePhoto()">
+                            <i class="bi bi-trash"></i>
+                        </button>
+
+                        <input type="file" id="photoInput" name="Photo" class="d-none" accept="image/*" />
+                    </div>
+                </div>
+
+                <!-- Ad -->
+                <div class="form-group mb-3">
+                    <label asp-for="FirstName">@localizer["FirstName"]</label>
+                    <input asp-for="FirstName" class="form-control" />
+                    <span asp-validation-for="FirstName" class="text-danger"></span>
+                </div>
+
+                <!-- Soyad -->
+                <div class="form-group mb-3">
+                    <label asp-for="LastName">@localizer["LastName"]</label>
+                    <input asp-for="LastName" class="form-control" />
+                    <span asp-validation-for="LastName" class="text-danger"></span>
+                </div>
+
+                <!-- Email -->
+                <div class="form-group mb-4">
+                    <label asp-for="Email">@localizer["Email"]</label>
+                    <input asp-for="Email" class="form-control" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+
+                <!-- Butonlar -->
+                <div class="d-flex gap-2">
+                    <a class="btn btn-warning" asp-controller="Account" asp-action="ChangeMyPassword">
+                        @localizer["ChangeMyPassword"]
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        @localizer["Save"]
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <!-- Profil sayfasına özel JS -->
+    <script src="/assets/myProfile/myprofile.js"></script>
+}

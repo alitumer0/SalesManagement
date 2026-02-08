@@ -1,0 +1,9 @@
+﻿@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<Resource> localizer
+
+@{
+    ViewData["Title"] = localizer["PrivacyPolicy"];
+}
+<h1>@ViewData["Title"]</h1>
+
+<p>@localizer["Use_this_page_to_detail_your_site's_privacy_policy."]</p>

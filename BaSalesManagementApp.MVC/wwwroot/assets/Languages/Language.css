@@ -1,0 +1,119 @@
+﻿/* wwwroot/assets/Languages/Language.css */
+/*.dropdown-menu {
+    position: absolute;
+    right: 0;*/ /* Sağ hizalama */
+/*z-index: 1050;*/ /* Bootstrap’ın varsayılan z-index değerinden yüksek */
+/*background-color: #fff;*/ /* Arka plan rengi */
+/*border: 1px solid #ddd;*/ /* Kenar rengi */
+/*padding: 10px;*/ /* Padding */
+/*display: none;*/ /* Başlangıçta menüyü gizle */
+/*}
+
+    .dropdown-menu.show {
+        display: block;*/ /* Menü açık olduğunda göster */
+/*}
+
+    .dropdown-menu ul {
+        list-style: none;*/ /* Liste işaretleyicilerini kaldırır */
+/*padding: 0;*/ /* Varsayılan padding'i kaldırır */
+/*margin: 0;*/ /* Varsayılan margin'i kaldırır */
+/*}
+
+    .dropdown-menu li {
+        margin-bottom: 5px;*/ /* Menü öğeleri arasındaki boşluk */
+/*}
+
+    .dropdown-menu a {
+        display: block;*/ /* Bağlantıların tam genişlikte olmasını sağlar */
+/*padding: 10px;*/ /* Bağlantı içindeki boşluk */
+/*text-decoration: none;*/ /* Bağlantı alt çizgisini kaldırır */
+/*color: #000;*/ /* Yazı rengini ayarlar */
+/*}
+
+        .dropdown-menu a:hover {
+            background-color: #f8f9fa;*/ /* Hover durumunda arka plan rengi değişir */
+/*}
+
+.avatar {
+    display: flex;
+    align-items: center;
+}
+
+    .avatar img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 50%;
+    }
+
+.nav-link {
+    display: flex;
+    align-items: center;
+}*/
+/* wwwroot/assets/Languages/Language.css */
+.dropdown-menu {
+    position: absolute;
+    right: 0; /* Sağ hizalama */
+    z-index: 1050; /* Bootstrap’ın varsayılan z-index değerinden yüksek */
+    background-color: #fff; /* Arka plan rengi */
+    border: 1px solid #ddd; /* Kenar rengi */
+    padding: 10px; /* Padding */
+    display: none; /* Başlangıçta menüyü gizle */
+}
+
+    .dropdown-menu.show {
+        display: block; /* Menü açık olduğunda göster */
+    }
+
+    .dropdown-menu ul {
+        list-style: none; /* Liste işaretleyicilerini kaldırır */
+        padding: 0; /* Varsayılan padding'i kaldırır */
+        margin: 0; /* Varsayılan margin'i kaldırır */
+    }
+
+    .dropdown-menu li {
+        margin-bottom: 5px; /* Menü öğeleri arasındaki boşluk */
+    }
+
+    .dropdown-menu a {
+        display: block; /* Bağlantıların tam genişlikte olmasını sağlar */
+        padding: 10px; /* Bağlantı içindeki boşluk */
+        text-decoration: none; /* Bağlantı alt çizgisini kaldırır */
+        color: #000; /* Yazı rengini ayarlar */
+    }
+
+        .dropdown-menu a:hover {
+            background-color: #f8f9fa; /* Hover durumunda arka plan rengi değişir */
+        }
+
+.avatar {
+    display: flex;
+    align-items: center;
+}
+
+    .avatar img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 50%;
+    }
+
+.nav-link {
+    display: flex;
+    align-items: center;
+}
+
+/* Yeni HTML yapısına uygun stiller */
+#Languages .dropdown-item {
+    display: flex;
+    align-items: center;
+    padding: 10px; /* Bağlantı içindeki boşluk */
+    text-decoration: none; /* Bağlantı alt çizgisini kaldırır */
+    color: #000; /* Yazı rengini ayarlar */
+}
+
+    #Languages .dropdown-item img {
+        margin-right: 10px; /* Bayrak resmi ve metin arasında boşluk */
+    }
+
+    #Languages .dropdown-item:hover {
+        background-color: #f8f9fa; /* Hover durumunda arka plan rengi değişir */
+    }

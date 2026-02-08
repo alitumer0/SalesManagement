@@ -1,0 +1,861 @@
+﻿@using Microsoft.Extensions.Localization
+@using BaSalesManagementApp.Dtos.CurrencyDTOs
+@inject IStringLocalizer<Resource> localizer
+@inject ICurrencyService currencyService
+
+@{
+	// Sayfa render edilirken en güncel kuru alıyoruz
+	var currencyResult = await currencyService.GetLatestCurrencyRateAsync();
+	decimal dollar = currencyResult.IsSuccess ? currencyResult.Data.DollarRate : 0m;
+	decimal euro   = currencyResult.IsSuccess ? currencyResult.Data.EuroRate   : 0m;
+}
+
+<!DOCTYPE html>
+<html lang="en"
+class="light-style layout-menu-fixed layout-compact"
+dir="ltr"
+data-theme="theme-default"
+data-assets-path="../assets/"
+data-template="vertical-menu-template-free">
+<head>
+
+	<meta charset="utf-8" />
+	<meta name="viewport"
+	content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+
+	<title>@localizer["Dashboard"] - @localizer["Analytics"] | Sneat - Bootstrap 5 HTML @localizer["Admin"] @localizer["Template"] @localizer["Pro"]</title>
+	<meta name="description" content="" />
+
+	<script src="~/assets/vendor/libs/jquery/jquery.js"></script>
+
+	<!-- Favicon -->
+	<link rel="icon" type="image/x-icon" href="~/assets/img/favicon/favicon.ico" />
+
+	<!-- BootStrap-Icons-->
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+	<!-- Select2 Kütüphanesi-->
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+
+	<!-- Fonts -->
+	<link rel="preconnect" href="https://fonts.googleapis.com" />
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+	<link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap"
+	rel="stylesheet" />
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+	<link rel="stylesheet" href="~/assets/vendor/fonts/boxicons.css" />
+
+	<!-- Core CSS -->
+	<link rel="stylesheet" href="~/assets/vendor/css/core.css" class="template-customizer-core-css" />
+	<link rel="stylesheet" href="~/assets/vendor/css/theme-default.css" class="template-customizer-theme-css" />
+	<link rel="stylesheet" href="~/assets/css/demo.css" />
+	<link rel="stylesheet" href="~/assets/css/Loading.css" />
+	<!-- Font Awesome -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+	<!-- Core CSS -->
+	<link rel="stylesheet" href="~/assets/vendor/css/core.css" class="template-customizer-core-css" />
+	<link rel="stylesheet" href="~/assets/vendor/css/theme-default.css" class="template-customizer-theme-css" />
+	<link rel="stylesheet" href="~/assets/css/demo.css" />
+
+	<!-- Vendors CSS -->
+	<link rel="stylesheet" href="~/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css" />
+	<link rel="stylesheet" href="~/assets/vendor/libs/apex-charts/apex-charts.css" />
+
+	<!-- Page CSS -->
+	<!-- Helpers -->
+	<script src="~/assets/vendor/js/helpers.js"></script>
+	<!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
+	<!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
+	<script>
+		var currentLang = '@CultureInfo.CurrentCulture.TwoLetterISOLanguageName'; // "tr" veya "en"
+	</script>
+
+	<script src="~/assets/js/config.js"></script>
+	<style>
+
+		/* --- Navbar içi döviz kurları --- */
+		.currency-rates {
+		font-weight: 600;
+		color: #566a7f;
+		display: flex;
+		align-items: center;
+		margin-right: 1rem;
+		margin-top: 0.25rem;    
+		margin-left: -0.5rem;   
+		}
+		.currency-rates i {
+		color: #696cff;
+		font-size: 1rem;
+		}
+		.currency-rates .rate-value {
+		min-width: 5ch;
+		text-align: right;
+		}
+
+		.layout-navbar {
+		background-color: #f5f5f9 !important;
+		box-shadow: none !important;
+		border-bottom: 1px solid #e7e7e8;
+		/* Animasyonları devre dışı bırakma */
+		transition: none !important;
+		animation: none !important;
+		}
+
+		/* Header'ın tüm alt elemanlarındaki animasyonları devre dışı bırakma */
+		.layout-navbar * {
+		transition: none !important;
+		animation: none !important;
+		}
+
+		/* Arama kutusu etrafındaki çizgileri kaldırma */
+		.layout-navbar .form-control {
+		background-color: #f5f5f9 !important;
+		border: none !important;
+		box-shadow: none !important;
+		color: #566a7f !important;
+		transition: none !important;
+		animation: none !important;
+		}
+
+		#scrollToTop {
+		position: fixed;
+		bottom: 20px;
+		right: 20px;
+		display: none;
+		background: linear-gradient(135deg, #6a11cb, #2575fc);
+		color: white;
+		border: none;
+		border-radius: 50px;
+		padding: 12px 20px;
+		font-size: 16px;
+		font-weight: bold;
+		cursor: pointer;
+		z-index: 1000;
+		box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+		transition: all 0.3s ease;
+		}
+
+		#scrollToTop span {
+		font-size: 18px;
+		margin-right: 5px;
+		}
+
+		#scrollToTop:hover {
+		transform: scale(1.1);
+		background: linear-gradient(135deg, #2575fc, #6a11cb);
+		box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+		}
+
+		@@keyframes bounce {
+		0%, 20%, 50%, 80%, 100% {
+		transform: translateY(0);
+		}
+		40% {
+		transform: translateY(-10px);
+		}
+		60% {
+		transform: translateY(-5px);
+		}
+		}
+
+		#scrollToTop.bouncing {
+		animation: bounce 1.5s infinite;
+		}
+
+		/* Menü öğeleri için stil */
+		.menu-itemm {
+		border-bottom: 1px solid #ddd;
+		border-radius: 20px;
+		margin: 5px 10px 0 10px;
+		list-style-type: none; /* Yuvarlak noktaları kaldır */
+		padding-left: 0; /* Sol boşluğu kaldır */
+		}
+
+		/* Menü ikonları */
+		.menu-icon {
+		margin-right: 10px;
+		}
+
+		/* Ok simgesi için geçiş efekti */
+		.arrow {
+		transition: transform 0.3s ease;
+		margin-left: auto;
+		}
+
+		.menu-linkk {
+		transition: background-color 0.5s ease, border-radius 0.5s ease, color 0.5s ease; /* Geçiş süresi 0.5 saniyeye çıkarıldı */
+		font-size: 15px; /* Menü yazı boyutunu artırın */
+		font-weight: 600; /* Yazı kalınlığını artırın */
+		padding: 10px 15px; /* Ana menü padding */
+		display: flex;
+		align-items: center;
+		text-decoration: none;
+		color: #566a7f;
+		border-radius: 20px;
+		}
+
+		/* Menü bağlantısında hover efekti */
+		.menu-linkk:hover {
+		color: #696cff; /* Hover durumunda metin rengi */
+		border-radius: 20px;
+		}
+
+		/* Menü öğesi aktifken açılma efekti */
+		.menu-itemm .submenu {
+		transition: max-height 0.5s ease; /* Menü açılma efekti için geçiş süresi 0.5 saniyeye çıkarıldı */
+		overflow: hidden; /* İçeriğin taşmasını engelle */
+		max-height: 0; /* Başlangıçta kapalı tutmak için maksimum yüksekliği 0 yap */
+		}
+		/* Menü öğesi aktifken alt menüyü açma */
+		.menu-itemm.active .submenu {
+		max-height: 500px; /* Açıldığında maksimum yüksekliği artır */
+		}
+		/* Alt menü öğeleri */
+		.submenu-item {
+		display: flex;
+		align-items: center;
+		font-size: 14px; /* Alt menü yazı boyutu */
+		color: #405D72;
+		text-decoration: none;
+		margin: 0px 0px 5px 40px;
+		width: 180px; /* Sabit genişlik */
+		height: 35px; /* Sabit yükseklik */
+		transition: background-color 0.5s ease, color 0.5s ease; /* Geçiş süresi 0.5 saniyeye çıkarıldı */
+		}
+
+
+		/* Menü öğeleri arası boşluk */
+		.menu-itemm > a {
+		cursor: pointer;
+		}
+
+		/* Alt menüler */
+		.submenu {
+		list-style-type: none; /* Yuvarlak noktaları kaldır */
+		padding-left: 0; /* Sol boşluğu kaldır */
+		}
+
+
+		/* Hover ve aktif durum için stil değişiklikleri */
+		.submenu-item:hover, .submenu-item.active-menu-itemm {
+		background-color: #f0f0f0; /* Hover ve aktif durum için arka plan rengi */
+		color: #696cff;
+		border-radius: 10px;
+		}
+		/* Menü açıldığında metin rengini değiştir */
+		.menu-itemm.active > .menu-linkk {
+		color: #696cff; /* Açık mavi renk örneği */
+
+		}
+
+
+
+		/* Menü öğesi aktifken ok simgesini döndürme */
+		.menu-itemm.active .arrow {
+		transform: rotate(90deg);
+		}
+
+
+		.sidebar {
+		height: 100vh; /* Tam ekran yüksekliği */
+		overflow-y: auto; /* Dikey kaydırma çubuğu */
+		padding-bottom: 20px; /* Alt kısımda boşluk */
+		}
+
+		/* İnce kaydırma çubuğu */
+		.sidebar::-webkit-scrollbar {
+		width: 4px; /* Kaydırma çubuğu genişliği */
+		}
+
+		.sidebar::-webkit-scrollbar-thumb {
+		background-color: rgba(0, 0, 0, 0.1); /* Kaydırma çubuğu rengi, neredeyse şeffaf */
+		border-radius: 10px; /* Kenarları yuvarlatır */
+		}
+
+		.sidebar::-webkit-scrollbar-thumb:hover {
+		background-color: rgba(0, 0, 0, 0.2); /* Hover durumunda rengi biraz koyulaştırır */
+		}
+
+		.sidebar::-webkit-scrollbar-track {
+		background: transparent; /* Arka planı tamamen şeffaf */
+		}
+
+
+		.brand-info .app-brand-text {
+		font-size: 2em; /* Yazı boyutu */
+		font-weight: bold; /* Kalın yazı */
+
+		text-transform: capitalize;
+		}
+
+		.brand-info .app-brand-text:hover {
+		color: #696cff; /* Hover durumunda metin rengi */
+		border-radius: 20px;
+		}
+
+	</style>
+
+</head>
+
+<body onload="loadFinish()">
+	<div class="loadbox">
+		<div class="loader"></div>
+	</div>
+
+	<button id="scrollToTop" onclick="scrollToTop()"> ⬆️ @localizer["ScrollToTop"] </button <button id="scrollToTop" onclick="scrollToTop()">
+		<span> ⬆️  </span> ⬆️ @localizer["ScrollToTop"] 
+	</button>
+
+	<!-- Layout wrapper -->
+	<div class="layout-wrapper layout-content-navbar">
+		<div class="layout-container">
+			<!-- Menu -->
+
+			<aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
+    <div class="app-brand demo">
+        <a class="app-brand-link" asp-controller="Home" asp-action="Index">
+            <span class="app-brand-logo demo">
+				<svg width="25"
+							viewBox="0 0 25 42"
+							version="1.1"
+							xmlns="http://www.w3.org/2000/svg"
+							xmlns:xlink="http://www.w3.org/1999/xlink">
+								<defs>
+									<path d="M13.7918663,0.358365126 L3.39788168,7.44174259 C0.566865006,9.69408886 -0.379795268,12.4788597 0.557900856,15.7960551 C0.68998853,16.2305145 1.09562888,17.7872135 3.12357076,19.2293357 C3.8146334,19.7207684 5.32369333,20.3834223 7.65075054,21.2172976 L7.59773219,21.2525164 L2.63468769,24.5493413 C0.445452254,26.3002124 0.0884951797,28.5083815 1.56381646,31.1738486 C2.83770406,32.8170431 5.20850219,33.2640127 7.09180128,32.5391577 C8.347334,32.0559211 11.4559176,30.0011079 16.4175519,26.3747182 C18.0338572,24.4997857 18.6973423,22.4544883 18.4080071,20.2388261 C17.963753,17.5346866 16.1776345,15.5799961 13.0496516,14.3747546 L10.9194936,13.4715819 L18.6192054,7.984237 L13.7918663,0.358365126 Z"
+									id="path-1"></path>
+									<path d="M5.47320593,6.00457225 C4.05321814,8.216144 4.36334763,10.0722806 6.40359441,11.5729822 C8.61520715,12.571656 10.0999176,13.2171421 10.8577257,13.5094407 L15.5088241,14.433041 L18.6192054,7.984237 C15.5364148,3.11535317 13.9273018,0.573395879 13.7918663,0.358365126 C13.5790555,0.511491653 10.8061687,2.3935607 5.47320593,6.00457225 Z"
+									id="path-3"></path>
+									<path d="M7.50063644,21.2294429 L12.3234468,23.3159332 C14.1688022,24.7579751 14.397098,26.4880487 13.008334,28.506154 C11.6195701,30.5242593 10.3099883,31.790241 9.07958868,32.3040991 C5.78142938,33.4346997 4.13234973,34 4.13234973,34 C4.13234973,34 2.75489982,33.0538207 2.37032616e-14,31.1614621 C-0.55822714,27.8186216 -0.55822714,26.0572515 -4.05231404e-15,25.8773518 C0.83734071,25.6075023 2.77988457,22.8248993 3.3049379,22.52991 C3.65497346,22.3332504 5.05353963,21.8997614 7.50063644,21.2294429 Z"
+									id="path-4"></path>
+									<path d="M20.6,7.13333333 L25.6,13.8 C26.2627417,14.6836556 26.0836556,15.9372583 25.2,16.6 C24.8538077,16.8596443 24.4327404,17 24,17 L14,17 C12.8954305,17 12,16.1045695 12,15 C12,14.5672596 12.1403557,14.1461923 12.4,13.8 L17.4,7.13333333 C18.0627417,6.24967773 19.3163444,6.07059163 20.2,6.73333333 C20.3516113,6.84704183 20.4862915,6.981722 20.6,7.13333333 Z"
+									id="path-5"></path>
+								</defs>
+								<g id="g-app-brand" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+									<g id="Brand-Logo" transform="translate(-27.000000, -15.000000)">
+										<g id="Icon" transform="translate(27.000000, 15.000000)">
+											<g id="Mask" transform="translate(0.000000, 8.000000)">
+												<mask id="mask-2" fill="white">
+													<use xlink:href="#path-1"></use>
+												</mask>
+												<use fill="#696cff" xlink:href="#path-1"></use>
+												<g id="Path-3" mask="url(#mask-2)">
+													<use fill="#696cff" xlink:href="#path-3"></use>
+													<use fill-opacity="0.2" fill="#FFFFFF" xlink:href="#path-3"></use>
+												</g>
+												<g id="Path-4" mask="url(#mask-2)">
+													<use fill="#696cff" xlink:href="#path-4"></use>
+													<use fill-opacity="0.2" fill="#FFFFFF" xlink:href="#path-4"></use>
+												</g>
+											</g>
+											<g id="Triangle"
+											transform="translate(19.000000, 11.000000) rotate(-300.000000) translate(-19.000000, -11.000000) ">
+												<use fill="#696cff" xlink:href="#path-5"></use>
+												<use fill-opacity="0.2" fill="#FFFFFF" xlink:href="#path-5"></use>
+											</g>
+										</g>
+									</g>
+								</g>
+							</svg>
+            </span>
+            <div class="brand-info">
+                <span class="app-brand-text demo menu-text ms-2">
+                    @localizer["Sales"] <br> @localizer["Management"]
+                </span>
+            </div>
+        </a>
+		@*     <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto d-block d-xl-none">
+                    <i class="bx bx-chevron-left bx-sm align-middle"></i>
+                </a> *@
+    </div>
+
+    <div class="menu-inner-shadow"></div>
+	@* <hr class="brand-line">
+<ul class="menu-inner py-1"> @
+                <!-- Dashboards -->
+                @ <li class="menu-item active open">
+                    <a href="javascript:void(0);" class="menu-link menu-toggle">
+                        <i class="menu-icon tf-icons bx bx-home-circle"></i>
+                        <div id="dashboard-title" data-i18n="Dashboards">@_localization.Getkey("Dashboards").Value</div>
+                    </a>
+                </li>
+                <li class="menu-header small text-uppercase">
+                    <span class="menu-header-text">@_localization.Getkey("PAGES").Value</span>
+                </li> *@
+    <!-- Apps -->
+    <ul class="menu-inner py-1">
+		<div class="sidebar">
+        <li class="menu-itemm menu-itemm-layout">
+    <a href="#" class="menu-linkk menu-linkk-layout">
+        <i class="menu-icon fas fa-users-cog"></i>
+        <div>@localizer["Managementt"]</div>
+        <i class="arrow fas fa-chevron-right"></i>
+    </a>
+    <ul class="submenu submenu-layout collapse">
+				@* Çalışanın yöneticiler butonunu görmesi engellendi *@
+				@if (!User.IsInRole("Employee"))
+				{	
+					<li>
+						<a asp-controller="Admin" asp-action="Index" class="submenu-item submenu-item-layout">
+							<i class="menu-icon fas fa-user-shield"></i>
+							<div>@localizer["Admins"]</div>
+						</a>
+					</li>
+				}
+				
+				@* Çalışanın çalışan butonunu görmesi sağlandı *@
+				<li>
+		         <a asp-controller="Employee" asp-action="Index" class="submenu-item submenu-item-layout">
+			           <i class="menu-icon fas fa-user-tie"></i>
+			           <div>@localizer["Employee"]</div>
+			       </a>
+			    </li>
+				
+				@* Çalışanın şirket butonunu görmesi engellendi *@
+			   @if (!User.IsInRole("Employee"))
+			   {
+					<li>
+							<a asp-controller="Company" asp-action="Index" class="submenu-item submenu-item-layout">
+							<i class="menu-icon fas fa-building"></i>
+							<div>@localizer["Company"]</div>
+						</a>
+					</li>
+		       }
+
+			  @* Çalışanın şube butonunu görmesi engellendi *@
+			  @if(!User.IsInRole("Employee")){
+				    <li>
+					  <a asp-controller="Branch" asp-action="Index" class="submenu-item submenu-item-layout">
+						  <i class="menu-icon fas fa-code-branch"></i>
+						  <div>@localizer["Branch"]</div>
+					  </a>
+					</li>
+				}
+		    
+
+			  @* Çalışanın rozet butonunu görmesi sağlandı *@
+		      <li>				  
+		           <a asp-controller="Badge" asp-action="Index" class="submenu-item submenu-item-layout">
+		               <i class="menu-icon fa-solid fa-medal"></i>
+		               <div>@localizer["Badge"]</div>
+		           </a>
+		      </li>
+			  
+		  </ul>
+		</li>
+
+
+        <li class="menu-itemm menu-itemm-layout">
+            <a href="#" class="menu-linkk menu-linkk-layout">
+                <i class="menu-icon fas fa-box-open"></i>
+                <div>@localizer["Product"]</div>
+                <i class="arrow fas fa-chevron-right"></i>
+            </a>
+            <ul class="submenu submenu-layout collapse">
+                @if (!User.IsInRole("Employee"))
+                {
+                    <li>
+                        <a asp-controller="Category" asp-action="Index" class="submenu-item submenu-item-layout">
+                            <i class="menu-icon fas fa-sitemap"></i>
+                            <div>@localizer["Category"]</div>
+                        </a>
+                    </li>
+
+				}
+                    <li>
+                        <a asp-controller="Product" asp-action="Index" class="submenu-item submenu-item-layout">
+                            <i class="menu-icon fas fa-box"></i>
+                            <div>@localizer["Product"]</div>
+                        </a>
+                    </li>
+					@if (!User.IsInRole("Employee"))
+                {
+                    <li>
+                        <a asp-controller="ProductType" asp-action="Index" class="submenu-item submenu-item-layout">
+                            <i class="menu-icon fas fa-tags"></i>
+                            <div>@localizer["ProductType"]</div>
+                        </a>
+                    </li>
+                }
+
+				@* @if (!User.IsInRole("Employee"))
+                { *@
+                <li>
+                    <a asp-controller="Stock" asp-action="Index" class="submenu-item submenu-item-layout">
+                        <i class="menu-icon fas fa-archive"></i>
+                        <div>@localizer["Stock"]</div>
+                    </a>
+                </li>
+				@* } *@
+                @if (!User.IsInRole("Employee"))
+                {
+                    <li>
+                        <a asp-controller="StockTypeSize" asp-action="Index" class="submenu-item submenu-item-layout">
+                            <i class="menu-icon fas fa-ruler"></i>
+                            <div>@localizer["StockTypeSize"]</div>
+                        </a>
+                    </li>
+                    <li>
+                        <a asp-controller="Warehouse" asp-action="Index" class="submenu-item submenu-item-layout">
+                            <i class="menu-icon fas fa-warehouse"></i>
+                            <div>@localizer["Warehouse"]</div>
+                        </a>
+                    </li>
+                }
+            </ul>
+        </li>
+
+        <li class="menu-itemm menu-itemm-layout">
+            <a href="#" class="menu-linkk menu-linkk-layout">
+                <i class="menu-icon fas fa-bullseye"></i>
+                <div>@localizer["Sales_and_Marketing"]</div>
+                <i class="arrow fas fa-chevron-right"></i>
+            </a>
+            <ul class="submenu submenu-layout collapse">
+                <li>
+                    <a asp-controller="Order" asp-action="Index" class="submenu-item submenu-item-layout">
+                        <i class="menu-icon fas fa-receipt"></i>
+                        <div>@localizer["Order"]</div>
+                    </a>
+                </li>
+                <li>
+                    <a asp-controller="Promotion" asp-action="Index" class="submenu-item submenu-item-layout">
+                        <i class="menu-icon fas fa-bullhorn"></i>
+                        <div>@localizer["Promotion"]</div>
+                    </a>
+                </li>
+                <li>
+                    <a asp-controller="Currency" asp-action="Index" class="submenu-item submenu-item-layout">
+                        <i class="menu-icon fas fa-dollar-sign"></i>
+                        <div>@localizer["Currency_Rates"]</div>
+                    </a>
+                </li>
+                <li>
+                    <a asp-controller="PaymentType" asp-action="Index" class="submenu-item submenu-item-layout">
+                        <i class="menu-icon fas fa-cash-register"></i>
+                        <div>@localizer["PaymentType"]</div>
+                    </a>
+                </li>
+            </ul>
+        </li>
+
+        <li class="menu-itemm menu-itemm-layout">
+            <a href="#" class="menu-linkk menu-linkk-layout">
+                <i class="menu-icon fas fa-map-marker-alt"></i>
+                <div>@localizer["Customer_and_Location"]</div>
+                <i class="arrow fas fa-chevron-right"></i>
+            </a>
+            <ul class="submenu submenu-layout collapse">
+                <li>
+                    <a asp-controller="Customer" asp-action="Index" class="submenu-item submenu-item-layout">
+                        <i class="menu-icon fas fa-user"></i>
+                        <div>@localizer["Customer"]</div>
+                    </a>
+                </li>
+                <li>
+                    <a asp-controller="Country" asp-action="Index" class="submenu-item submenu-item-layout">
+                        <i class="menu-icon fas fa-globe"></i>
+                        <div>@localizer["Country"]</div>
+                    </a>
+                </li>
+                <li>
+                    <a asp-controller="City" asp-action="Index" class="submenu-item submenu-item-layout">
+                        <i class="menu-icon fas fa-city"></i>
+                        <div>@localizer["City"]</div>
+                    </a>
+                </li>
+            </ul>
+        </li>
+		</div>
+    </ul>
+</aside>
+
+            <!-- / Menu -->
+            <!-- Layout container -->
+            <div class="layout-page">
+                <!-- Navbar -->
+
+				<nav class="layout-navbar container-xxl navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme"
+					 id="layout-navbar">
+					<div class="layout-menu-toggle navbar-nav align-items-xl-center me-3 me-xl-0 d-xl-none">
+						<a class="nav-item nav-link px-0 me-xl-4" href="javascript:void(0)">
+							<i class="bx bx-menu bx-sm"></i>
+						</a>
+					</div>
+
+					<div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
+						<!-- Search -->
+					@if (!(ViewData["DisableGlobalSearch"] as bool? ?? false))
+						{
+						  <div class="navbar-nav align-items-center">
+							<div class="nav-item d-flex align-items-center">
+							  <i class="bx bx-search fs-4 lh-0"></i>
+							  <form id="searchForm" method="get" asp-controller="@(ViewContext.RouteData.Values["controller"])"
+									asp-action="@(ViewContext.RouteData.Values["action"])" class="d-flex">
+								<input type="text"
+									   id="searchQueryInput"
+									   name="searchQuery"
+									   class="form-control border-0 shadow-none ps-1 ps-sm-2"
+									   placeholder="@localizer["Search..."].Value"
+									   aria-label="@localizer["Search..."].Value"
+									   value="@ViewData["CurrentSearchQuery"]"
+									   autocomplete="off" />
+								<input type="hidden" id="selectedItem" name="selectedItem" />
+								<input type="hidden" name="culture" value="@System.Globalization.CultureInfo.CurrentUICulture.Name" />
+							  </form>
+							</div>
+						  </div>
+						}
+
+						<!-- /Search -->
+
+						<ul class="navbar-nav flex-row align-items-center ms-auto">
+							<!-- Place this tag where you want the button to render. -->
+							     <!-- === Döviz Kurları === -->
+                            <li class="nav-item">
+                                <div id="currencyRates" class="currency-rates">
+									<i class="bi bi-currency-dollar me-1"></i>
+									<span id="dollarVal" class="rate-value">@dollar.ToString("F4")</span>
+									<i class="bi bi-currency-euro ms-3 me-1"></i>
+									<span id="euroVal"   class="rate-value">
+										@euro.ToString("F4")</span>
+								</div>
+                            </li>
+							<!--Languages-->
+
+							<li>
+								<a id="selectLanguage-tr" class="dropdown-item me-1" href="@Url.Action("ChangeLanguage", "Home", new { culture = "tr-TR" })">
+									<img src="/assets/img/Language/Turkiye.png" alt="Türkiye Bayrağı" width="20" height="20">
+								</a>
+							</li>
+							<li>
+								<a id="selectLanguage-en" class="dropdown-item me-1" href="@Url.Action("ChangeLanguage", "Home", new { culture = "en-US" })">
+									<img src="/assets/img/Language/England.png" alt="İngiltere Bayrağı" width="20" height="20">
+								</a>
+
+							</li>
+
+
+
+							@* <li>
+								<a asp-controller="Home" asp-action="ChangeLanguage" asp-route-culture="tr-TR" class="dropdown-item me-1">
+									<img src="/assets/img/Language/Turkiye.png" alt="Türkiye Bayrağı" width="20" height="20">
+								</a>
+							</li>
+
+							<li>
+								<a asp-controller="Home" asp-action="ChangeLanguage" asp-route-culture="en-US" class="dropdown-item me-1">
+									<img src="/assets/img/Language/England.png" alt="İngiltere Bayrağı" width="20" height="20">
+
+								</a>
+							</li> *@
+							<!-- User -->
+							<li class="nav-item navbar-dropdown dropdown-user dropdown">
+								@await Component.InvokeAsync("UserCard")
+							</li>
+							<!--/ User -->
+						</ul>
+					</div>
+				</nav>
+
+				<!-- / Navbar -->
+				<!-- Content wrapper -->
+				<div class="content-wrapper">
+					<!-- Content -->
+					@RenderBody()
+					<!-- / Content -->
+					<!-- Footer -->
+					<footer id="footer" class="content-footer footer bg-footer-theme">
+						<div class="container-xxl d-flex flex-wrap justify-content-between py-2 flex-md-row flex-column">
+							<div class="mb-2 mb-md-0">
+								©
+								<script>
+									document.write(new Date().getFullYear());
+								</script>
+								,@localizer["made_with"].Value  &#9741;
+								<a href="https://www.bilgeadam.com/" target="_blank" class="footer-link fw-medium">@localizer["BilgeAdamTechnology"].Value</a>
+							</div>
+							<div class="d-none d-lg-inline-block">
+								
+								<a href="https://akademi.bilgeadam.com/"
+								   target="_blank"
+								   class="footer-link">@localizer["BilgeAdamAcademy"].Value</a>
+							</div>
+						</div>
+					</footer>
+					<!-- / Footer -->
+
+					<div class="content-backdrop fade"></div>
+				</div>
+				<!-- Content wrapper -->
+			</div>
+			<!-- / Layout page -->
+		</div>
+
+        <!-- Overlay -->
+        <div class="layout-overlay layout-menu-toggle"></div>
+    </div>
+
+    
+
+      <!-- Core JS -->
+    <!-- build:js assets/vendor/js/core.js -->
+    <script src="~/assets/vendor/libs/popper/popper.js"></script>
+    <script src="~/assets/vendor/js/bootstrap.js"></script>
+    <script src="~/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
+    <script src="~/assets/vendor/js/menu.js"></script>
+    
+
+    <!-- endbuild -->
+    <!-- Vendors JS -->
+    <script src="~/assets/vendor/libs/apex-charts/apexcharts.js"></script>
+
+	<!-- Main JS -->
+	<script src="~/assets/js/main.js"></script>
+
+	<!-- Page JS -->
+	<script src="~/assets/js/dashboards-analytics.js"></script>
+	<!-- Loading JS -->
+	<script src="~/assets/js/Loading.js"></script>
+
+	<script>
+		$(document).ready(function () {
+			
+			$('.menu-itemm-layout').each(function () {
+				var menuId = $(this).index();
+				var menuState = sessionStorage.getItem('menu-' + menuId);
+
+				
+				if (menuState === 'open') {
+					$(this).addClass('active');
+					$(this).find('.submenu-layout').show();  
+				} else {
+					$(this).removeClass('active');
+					$(this).find('.submenu-layout').hide();  
+				}
+			});
+
+			
+			$('.menu-linkk-layout').click(function (e) {
+				e.preventDefault();  
+
+				var parent = $(this).parent('.menu-itemm-layout');
+				var menuId = parent.index();
+
+				
+				if (parent.hasClass('active')) {
+					parent.removeClass('active');
+					parent.find('.submenu-layout').slideUp();  
+					sessionStorage.setItem('menu-' + menuId, 'closed');
+				} else {
+					
+					$('.menu-itemm-layout.active').each(function () {
+						$(this).removeClass('active');
+						$(this).find('.submenu-layout').slideUp();  
+						var otherMenuId = $(this).index();
+						sessionStorage.setItem('menu-' + otherMenuId, 'closed');
+					});
+
+					
+					parent.addClass('active');
+					parent.find('.submenu-layout').slideDown();  
+					sessionStorage.setItem('menu-' + menuId, 'open');
+				}
+			});
+
+	
+
+			
+			$('.submenu-item-layout').click(function () {
+				var parent = $(this).closest('.menu-itemm-layout');
+				var menuId = parent.index();
+
+				sessionStorage.setItem('menu-' + menuId, 'open');
+				parent.addClass('active');
+				parent.find('.submenu-layout').show(); 
+			});
+
+			
+			$('.dropdown-item').click(function () {
+				sessionStorage.clear();
+			});
+		});
+	</script>
+
+	<script>
+		document.addEventListener('DOMContentLoaded', function () {
+			var submenuItems = document.querySelectorAll('.submenu-item-layout');
+
+			 const button = document.getElementById("scrollToTop");
+
+            window.onscroll = function () {
+                if (document.documentElement.scrollTop > 100 || document.body.scrollTop > 100) {
+                    button.style.display = "block";
+                    button.classList.add("bouncing");
+                } else {
+                    button.style.display = "none";
+                    button.classList.remove("bouncing");
+                }
+            };
+
+            button.addEventListener("click", function () {
+                window.scrollTo({ top: 0, behavior: "smooth" });
+            });
+
+
+				// SessionStorage'dan önceki aktif öğeyi yükleyin
+			var activeItemHref = sessionStorage.getItem('activeMenuItem');
+			if (activeItemHref) {
+				submenuItems.forEach(function (item) {
+					if (item.href === activeItemHref) {
+						item.classList.add('active-menu-itemm');
+					}
+				});
+			}
+			
+
+			submenuItems.forEach(function (item) {
+				item.addEventListener('click', function () {
+					// Tıklanan öğeyi sessionStorage'da sakla
+					sessionStorage.setItem('activeMenuItem', item.href);
+
+					// Tüm submenu-item'ların aktif durumunu kaldır
+					submenuItems.forEach(function (item) {
+						item.classList.remove('active-menu-itemm');
+					});
+
+					// Tıklanan öğeye aktif sınıfını ekle
+					item.classList.add('active-menu-itemm');
+				});
+			});
+		});
+		
+		//cookie culture yapısı
+		document.getElementById('selectLanguage-tr').addEventListener('click', function (event) {
+			event.preventDefault(); // Linkin varsayılan davranışını engelle
+			var selectedLanguage = this.getAttribute('href').split('=')[1];
+			document.cookie = ".AspNetCore.Culture=c=" + selectedLanguage + "|uic=" + selectedLanguage + "; path=/";
+			location.reload(); // Sayfayı yeniden yükleyerek dil değişimini uygulayın
+		});
+		document.getElementById('selectLanguage-en').addEventListener('click', function (event) {
+			event.preventDefault(); // Linkin varsayılan davranışını engelle
+			var selectedLanguage = this.getAttribute('href').split('=')[1];
+			document.cookie = ".AspNetCore.Culture=c=" + selectedLanguage + "|uic=" + selectedLanguage + "; path=/";
+			location.reload(); // Sayfayı yeniden yükleyerek dil değişimini uygulayın
+		});
+	</script>
+	<script>
+		$(document).ajaxStart(function () {
+			showLoadingAnimation();  
+		});
+
+		$(document).ajaxStop(function () {
+			hideLoadingAnimation();  
+		});
+	</script>
+
+	@await RenderSectionAsync("Scripts", required: false)
+	@await Component.InvokeAsync("Notyf")
+</body>
+</html>
+

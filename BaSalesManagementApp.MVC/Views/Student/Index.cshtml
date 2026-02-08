@@ -1,0 +1,56 @@
+﻿@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<Resource> localizer
+@model IEnumerable<BaSalesManagementApp.MVC.Models.StudentVMs.StudentListVM>
+
+@{
+    ViewData["Title"] = localizer["Index"];
+}
+
+<h1>@localizer["Index"]</h1>
+
+
+p>
+<a asp-action="Create">@localizer["Create_New"]</a>
+</p>
+<p>
+    @TempData["Message"]
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @localizer["Id"]
+            </th>
+            <th>
+                @localizer["Name"]
+            </th>
+            <th>
+                @localizer["Age"]
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Id)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Age)
+                </td>
+                <td>
+                    @Html.ActionLink(@localizer["Edit"], "Edit", new { /* id=item.PrimaryKey */ }) |
+                    @Html.ActionLink(@localizer["Details"], "Details", new { /* id=item.PrimaryKey */ }) |
+                    @Html.ActionLink(@localizer["Delete"], "Delete", new { studentId = item.Id })
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@await Component.InvokeAsync("Multiselect", new { options = ViewBag.StudentOptions, elementId = "student-multiselect" })

@@ -1,0 +1,27 @@
+.valid {
+    color: var(--bs-success) !important;
+}
+
+.invalid {
+    color: var(--bs-danger) !important;
+}
+
+.weak {
+    color: var(--bs-danger);
+    font-weight: bold;
+}
+
+.moderate {
+    color: var(--bs-warning);
+    font-weight: bold;
+}
+
+.strong {
+    color: var(--bs-primary);
+    font-weight: bold;
+}
+
+.very-strong {
+    color: var(--bs-success);
+    font-weight: bold;
+}

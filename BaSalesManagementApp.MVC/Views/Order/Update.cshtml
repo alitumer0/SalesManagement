@@ -1,0 +1,546 @@
+﻿@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<Resource> localizer
+@model OrderUpdateVM
+
+@{
+    ViewData["Title"] = localizer["Update"];
+}
+
+
+
+<style>
+    @@keyframes fadeIn {
+        0% {
+            opacity: 0;
+        }
+
+        100% {
+            opacity: 1;
+        }
+    }
+
+    .product-card {
+        animation: fadeIn 0.5s ease-in-out;
+    }
+
+    .form-label {
+        display: block; /* Başlığı bloğa çevirerek alt satıra geçirir */
+        text-align: center; /* Metni ortalar */
+        margin-bottom: 5px; /* Alt boşluk ekler */
+    }
+
+    .unitPriceInput, .priceInput, .quantityInput {
+        display: block; /* Blok görünüm */
+        border: none; /* Kenarlığı kaldırır */
+        background: none; /* Arka plan rengini kaldırır */
+        outline: none; /* Odaklanma kenarlığını kaldırır */
+        text-align: center; /* Metni ortalar */
+        font-size: 14px; /* Yazı boyutunu ayarlar */
+        color: #333; /* Yazı rengini ayarlar */
+        padding: 0;
+    }
+</style>
+
+
+<div class="content-wrapper">
+    <div class="container-xxl flex-grow-1 container-p-y">
+        <h4 class="py-3 mb-4">
+            <span class="text-muted fw-light">@localizer["Order"] /</span>
+            @localizer["Update"]
+        </h4>
+        <div class="row">
+            <div class="content-wrapper">
+                <div class="col-md-6 col-lg-6">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <form asp-action="Update" id="orderForm">
+                                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                                <div id="productContainer">
+                                    @for (int i = 0; i < Model.OrderDetails.Count; i++)
+                                    {
+                                        <div class="product-card card-body shadow rounded mb-3" data-index="@i">
+                                            <div class="mb-3">
+                                                <label class="form-label">@localizer["Product"]</label>
+                                                <select class="form-control productSelect" name="OrderDetails[@i].ProductId" id="productSelect_@i" style="width: 100%;">
+                                                    <option value="@Model.OrderDetails[i].ProductId">@Model.OrderDetails[i].ProductName</option>
+                                                    @foreach (var product in Model.Products)
+                                                    {
+                                                        <option value="@product.Id">@product.Name</option>
+                                                    }
+                                                </select>
+                                                <span id="productIdFeedback_@i" class="text-danger"></span>
+                                            </div>
+
+                                            <div class="row mb-3">
+                                                <div class="col-md-3">
+                                                    <label for="quantityInput_@i" class="form-label">
+                                                        @localizer["Quantity"].ToString().ToUpper(new System.Globalization.CultureInfo(System.Threading.Thread.CurrentThread.CurrentCulture.Name))
+                                                    </label>
+
+                                                    <label id="quantityLabel_@i" class="form-label">
+                                                        @Model.OrderDetails[i].Quantity
+                                                    </label>
+
+                                                    <input id="quantityInput_@i" name="OrderDetails[@i].Quantity" type="number" step="1" class="form-control quantityInput" min="0" value="@Model.OrderDetails[i].Quantity" />
+                                                    <span id="quantityFeedback_@i" class="text-danger"></span>
+                                                </div>
+
+                                                <div class="col-md-3">
+                                                    <label for="unitPriceInput_@i" class="form-label">
+                                                        @localizer["UnitPrice"].ToString().ToUpper(new System.Globalization.CultureInfo(System.Threading.Thread.CurrentThread.CurrentCulture.Name))
+                                                    </label>
+                                                    <input id="unitPriceInput_@i" name="OrderDetails[@i].UnitPrice" class="form-control unitPriceInput" value="@Model.OrderDetails[i].UnitPrice" readonly />
+                                                    <span id="unitPriceFeedback_@i" class="text-danger"></span>
+                                                </div>
+
+                                                <div class="col-md-3">
+                                                    <label for="discountInput_@i" class="form-label">
+                                                        @localizer["Discount"].ToString().ToUpper(new System.Globalization.CultureInfo(System.Threading.Thread.CurrentThread.CurrentCulture.Name)) (%)
+                                                    </label>
+                                                    <input id="discountInput_@i" name="OrderDetails[@i].Discount" type="number" class="form-control discountInput" min="0" max="99" value="@Model.OrderDetails[i].Discount" />
+                                                    <span id="discountFeedback_@i" class="text-danger"></span>
+                                                </div>
+
+                                                <div class="col-md-3">
+                                                    <label for="priceInput_@i" class="form-label">@localizer["Price"].ToString().ToUpper(new System.Globalization.CultureInfo(System.Threading.Thread.CurrentThread.CurrentCulture.Name))</label>
+                                                    <input id="priceInput_@i" name="OrderDetails[@i].TotalPrice" class="form-control priceInput" value="@Model.OrderDetails[i].TotalPrice" readonly />
+                                                    <span id="priceFeedback_@i" class="text-danger"></span>
+                                                </div>
+
+                                                <input type="hidden" name="OrderDetails[@i].ProductName" class="productNameInput" />
+                                            </div>
+
+                                            <input asp-for="OrderDetails[i].Id" type="hidden" value="@Model.OrderDetails[i].Id" />
+                                            <input asp-for="OrderDetails[i].OrderId" type="hidden" value="@Model.Id" />
+
+                                            <div class="d-flex justify-content-end">
+                                                <button type="button" class="btn btn-danger remove-product">
+                                                    @localizer["DeleteProduct"].ToString()
+                                                </button>
+                                            </div>
+
+                                        </div>
+                                    }
+
+                                </div>
+
+
+                                <button type="button" id="addProduct" class="btn btn-primary mb-3">@localizer["AddNewProduct"]</button>
+
+                                <div class="mb-3">
+                                    <label asp-for="TotalPrice" class="form-label">
+                                        @localizer["TotalPrice"].ToString().ToUpper(new System.Globalization.CultureInfo(System.Threading.Thread.CurrentThread.CurrentCulture.Name))
+                                    </label>
+                                    <input asp-for="TotalPrice" id="TotalPrice" class="form-control TotalPrice" readonly />
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="IsActive" class="form-check-label">
+                                        @localizer["IsActive"]
+                                    </label>
+                                    <input asp-for="IsActive" class="form-check-input" />
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="OrderDate" class="form-label">
+                                        @localizer["OrderDate"].ToString().ToUpper(new System.Globalization.CultureInfo(System.Threading.Thread.CurrentThread.CurrentCulture.Name))
+                                    </label>
+                                    <input asp-for="OrderDate" class="form-control" type="datetime-local" value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")" id="orderDateInput" />
+                                    <span id="orderDateFeedback" class="text-danger"></span>
+                                </div>
+
+                                <input asp-for="Id" type="hidden" value="@Model.Id" />
+                                <input asp-for="OrderNo" type="hidden" value="@Model.OrderNo" />
+                                <input asp-for="AdminId" type="hidden" value="@Model.AdminId" />
+
+                                <div>
+                                    <input id="createButton" type="submit" value="@localizer["Update"]" class="btn btn-primary" />
+                                    <a asp-action="Index" class="btn btn-secondary">@localizer["BackToList"]</a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Select2 için başlatma
+            $('.productSelect').select2({
+                placeholder: "@Html.Raw(localizer["Select_a_Product"])",
+                allowClear: true,
+                width: 'resolve', // width: 'resolve' ekleyerek genişlik sorununu çözdük.
+                matcher: function (params, data) {
+                    // Arama terimi yoksa, mevcut seçenekleri göster
+                    if ($.trim(params.term) === '') {
+                        return data;
+                    }
+
+                    // Veri boşsa, eşleşme yok demektir
+                    if (typeof data.text === 'undefined') {
+                        return null;
+                    }
+
+                    // Arama terimini küçük harflere çevir ve baştan eşleşme kontrolü yap
+                    var searchTerm = params.term.toLowerCase();
+                    var optionText = data.text.toLowerCase();
+
+                    // Eğer seçenek, arama terimiyle başlıyorsa, sonucu döndür
+                    if (optionText.indexOf(searchTerm) === 0) {
+                        return data;
+                    }
+
+                    // Aksi takdirde eşleşme yok
+                    return null;
+                },
+                sorter: function (data) {
+                    // Alfabetik sıralama
+                    return data.sort(function (a, b) {
+                        return a.text.localeCompare(b.text);
+                    });
+                }
+            });
+
+            // Ürün kartı ekleme işlemi
+            $('#addProduct').on('click', function () {
+                var index = $('#productContainer .product-card').length;
+
+                var newProductCard =
+                    `<div class="product-card card-body shadow rounded mb-3" data-index="${index}">
+                                            <div class="mb-3">
+                                                <label class="form-label">@localizer["Product"]</label>
+                                                <select class="form-control productSelect" name="OrderDetails[${index}].ProductId" id="productSelect_${index}" style="width: 100%;">
+                                                    <option value="">@localizer["Select_a_Product"]</option>
+        @foreach (var product in Model.Products)
+        {
+                                                                    <option value="@product.Id">@product.Name</option>
+        }
+                                                </select>
+                                                <span id="productIdFeedback_${index}" class="text-danger"></span>
+                                            </div>
+
+                                            <div class="row mb-3">
+                                                <div class="col-md-3">
+                                                    <label for="quantityInput_${index}" class="form-label">@localizer["Quantity"].ToString().ToUpper(new System.Globalization.CultureInfo(System.Threading.Thread.CurrentThread.CurrentCulture.Name))</label>
+                                                    <input id="quantityInput_${index}" name="OrderDetails[${index}].Quantity" type="number" step="1" class="form-control quantityInput" min="0" />
+                                                    <span id="quantityFeedback_${index}" class="text-danger"></span>
+                                                </div>
+
+                                                <div class="col-md-3">
+                                                    <label for="unitPriceInput_${index}" class="form-label">Unit Price</label>
+                                                    <input id="unitPriceInput_${index}" name="OrderDetails[${index}].UnitPrice" class="form-control unitPriceInput" readonly />
+                                                    <span id="unitPriceFeedback_${index}" class="text-danger"></span>
+                                                </div>
+
+                                                <div class="col-md-3">
+                                                    <label for="discountInput_${index}" class="form-label">@localizer["Discount"].ToString().ToUpper(new System.Globalization.CultureInfo(System.Threading.Thread.CurrentThread.CurrentCulture.Name)) (%)</label>
+                                                    <input id="discountInput_${index}" name="OrderDetails[${index}].Discount" type="number" step="1" class="form-control discountInput" min="0" max="99" />
+                                                    <span id="discountFeedback_${index}" class="text-danger"></span>
+                                                </div>
+
+                                                <div class="col-md-3">
+                                                    <label for="priceInput_${index}" class="form-label">@localizer["Price"].ToString().ToUpper(new System.Globalization.CultureInfo(System.Threading.Thread.CurrentThread.CurrentCulture.Name))</label>
+                                                    <input id="priceInput_${index}" name="OrderDetails[${index}].TotalPrice" class="form-control priceInput" readonly />
+                                                    <span id="priceFeedback_${index}" class="text-danger"></span>
+                                                </div>
+
+                                                <input type="hidden" name="OrderDetails[${index}].ProductName" class="productNameInput" />
+                                            </div>
+
+                                            <div class="d-flex justify-content-end">
+                                                <button type="button" class="btn btn-danger remove-product">@localizer["DeleteProduct"].ToString()</button>
+                                            </div>
+                                        </div>`;
+
+                $('#productContainer').append(newProductCard);
+                $('.product-card').last().hide().fadeIn(500);
+
+                // Yeni kart için validasyon dinleyicilerini ekle
+                addValidationListeners(index);
+            });
+
+            // Ürün kartını siler
+            $(document).on('click', '.remove-product', function () {
+                var productCard = $(this).closest('.product-card');
+
+                // Kartın içindeki inputların 'name' ve 'id' değerlerini boşaltarak POST'ta gönderilmesini engeller
+                productCard.find('input, select').each(function () {
+                    $(this).attr('name', '');
+                    $(this).attr('id', '');
+                });
+
+                // Kartı yavaşça siler ve sonra DOM'dan kaldırır
+                productCard.fadeOut(500, function () {
+                    $(this).remove();
+                    // Fiyatı güncelle
+                    calculateTotalPrice();
+
+                    // Kart silindikten sonra index'leri güncelle
+                    updateProductIndexes();
+                });
+            });
+
+            // Ürün indexlerini yeniden düzenler
+            function updateProductIndexes() {
+                $('#productContainer .product-card').each(function (index) {
+                    $(this).attr('data-index', index);
+                    $(this).find('input, select').each(function () {
+                        var oldName = $(this).attr('name');
+                        if (oldName) {
+                            var newName = oldName.replace(/\[\d+\]/, '[' + index + ']');
+                            $(this).attr('name', newName);
+                        }
+
+                        var oldId = $(this).attr('id');
+                        if (oldId) {
+                            var newId = oldId.replace(/_\d+/, '_' + index);
+                            $(this).attr('id', newId);
+                        }
+                    });
+                });
+            }
+
+            // Product listesini JSON formatında frontend'de kullanılabilir hale getirir
+            var products = @Html.Raw(Json.Serialize(Model.Products));
+
+            // Product seçildiğinde, o karttaki priceInput'u günceller
+            $(document).on('change', '.productSelect', function () {
+                var productId = $(this).val(); // Seçilen ürün ID'si
+                var productCard = $(this).closest('.product-card'); // İçinde bulunduğu kartı bulur
+
+                if (productId) {
+                    var selectedProduct = products.find(product => product.id == productId); // Ürünü bulur
+                    if (selectedProduct) {
+                        var productName = selectedProduct.name; // Ürün adını al
+                        productCard.find('.productNameInput').val(productName); // Hidden input içinde ProductName'i güncelle
+
+                        var price = selectedProduct.price;
+                        productCard.find('.unitPriceInput').val(price.toFixed(2));
+
+                        var quantity = parseFloat(productCard.find('.quantityInput').val()) || 0;
+                        var discount = parseFloat(productCard.find('.discountInput').val()) || 0;
+                        var finalPrice = (quantity * price) * ((100 - discount) / 100);
+                        productCard.find('.priceInput').val(finalPrice.toFixed(2)); // Bu karttaki priceInput'u günceller
+                    } else {
+                        productCard.find('.priceInput').val(''); // Ürün bulunamazsa temizler
+                        productCard.find('.unitPriceInput').val('');
+                    }
+                } else {
+                    productCard.find('.priceInput').val(''); // Ürün seçilmezse temizler
+                    productCard.find('.unitPriceInput').val('');
+                }
+
+                calculateTotalPrice();
+            });
+
+            // quantity veya discount alanı değiştiğinde o karttaki priceInput'u günceller
+            $(document).on('input', '.quantityInput, .discountInput', function () {
+                var productCard = $(this).closest('.product-card');
+                var productId = productCard.find('.productSelect').val();
+
+                if (productId) {
+                    var selectedProduct = products.find(product => product.id == productId);
+                    if (selectedProduct) {
+                        var price = selectedProduct.price;
+                        productCard.find('.unitPriceInput').val(price.toFixed(2));
+
+                        var quantity = parseFloat(productCard.find('.quantityInput').val()) || 0;
+                        var discount = parseFloat(productCard.find('.discountInput').val()) || 0;
+                        var finalPrice = (quantity * price) * ((100 - discount) / 100);
+                        productCard.find('.priceInput').val(finalPrice.toFixed(2));
+                    } else {
+                        productCard.find('.priceInput').val('');
+                        productCard.find('.unitPriceInput').val('');
+                    }
+                } else {
+                    productCard.find('.priceInput').val('');
+                    productCard.find('.unitPriceInput').val('');
+                }
+
+                calculateTotalPrice();
+            });
+
+            // Tüm kartlardaki priceInput'ların toplamını hesaplar
+            function calculateTotalPrice() {
+                var totalPrice = 0;
+
+                // Her ürün kartındaki priceInput değerlerini toplar
+                $('.product-card').each(function () {
+                    // Dinamik olarak priceInput'un ID'sini bul
+                    var index = $(this).data('index'); // data-index değerini al
+                    var priceValue = parseFloat($(this).find(`#priceInput_${index}`).val()) || 0; // Fiyatı al
+                    totalPrice += priceValue; // Topla
+                });
+
+                // Toplam fiyatı TotalPrice alanına yazdırır
+                $('#TotalPrice').val(totalPrice.toFixed(2));
+            }
+
+            ///////////////////////
+            // VALİDASYON İŞLEMLERİ
+
+            addValidationListeners(0);
+            function addValidationListeners(index) {
+                // Ürün seçimi validasyonu
+                document.getElementById(`productSelect_${index}`).addEventListener('change', function () {
+                    validateProduct(index);
+                });
+                document.getElementById(`productSelect_${index}`).addEventListener('keyup', function () {
+                    validateProduct(index);
+                });
+
+                // Miktar validasyonu
+                document.getElementById(`quantityInput_${index}`).addEventListener('keyup', function () {
+                    validateQuantity(index);
+                });
+                document.getElementById(`quantityInput_${index}`).addEventListener('change', function () {
+                    validateQuantity(index);
+                });
+
+                // İndirim validasyonu
+                document.getElementById(`discountInput_${index}`).addEventListener('keyup', function () {
+                    validateDiscount(index);
+                });
+                document.getElementById(`discountInput_${index}`).addEventListener('change', function () {
+                    validateDiscount(index);
+                });
+            }
+
+            const orderForm = document.getElementById('orderForm');
+
+            // Validasyon mesajları
+            const requiredFieldMessage = "@localizer[Messages.ORDER_EMPTY_VALIDATION]";
+            const quantityError = "@localizer[Messages.ORDER_QUANTITY_VALIDATION]";
+            const quantityIntegerError = "@localizer[Messages.ORDER_WHOLE_NUMBER_VALIDATION]";
+            const discountPrecisionError = "@localizer[Messages.ORDER_PRECISION_VALIDATION]";
+            const discountRateError = "@localizer[Messages.ORDER_DISCOUNT_VALIDATION]";
+            const orderDateError = "@localizer[Messages.ORDER_DATE_VALIDATION]";
+
+            // Feedback
+            function setValidationFeedback(elementId, isValid, message) {
+                const feedbackElement = document.getElementById(elementId);
+                if (isValid) {
+                    feedbackElement.innerHTML = '';
+                    feedbackElement.classList.remove('text-danger');
+                    feedbackElement.classList.add('text-success');
+                } else {
+                    feedbackElement.innerHTML = message || '';
+                    feedbackElement.classList.remove('text-success');
+                    feedbackElement.classList.add('text-danger');
+                }
+            }
+
+            // Ürün seçimi validasyonu
+            function validateProduct(index) {
+                const productSelection = $(`#productSelect_${index}`);
+                let productId = productSelection.val();
+                if (!productId) {
+                    setValidationFeedback(`productIdFeedback_${index}`, false, requiredFieldMessage);
+                    return false;
+                } else {
+                    setValidationFeedback(`productIdFeedback_${index}`, true);
+                    return true;
+                }
+            }
+
+            // Tarih validasyonu
+            function validateDate() {
+                const orderDateInput = document.getElementById('orderDateInput');
+                const orderDateValue = new Date(orderDateInput.value);
+                const today = new Date();
+                today.setHours(0, 0, 0, 0); // Bugün için saat, dakika, saniye sıfırlanır
+
+                if (orderDateValue < today) { // Tarih bugünden küçük mü kontrol edilir
+                    setValidationFeedback('orderDateFeedback', false, orderDateError);
+                    return false;
+                } else {
+                    setValidationFeedback('orderDateFeedback', true);
+                    return true;
+                }
+            }
+            document.getElementById('orderDateInput').addEventListener('change', validateDate);
+            document.getElementById('orderDateInput').addEventListener('keyup', validateDate);
+
+            // Miktar validasyonu
+            function validateQuantity(index) {
+                const quantityInput = $(`#quantityInput_${index}`);
+                const quantityValue = parseFloat(quantityInput.val());
+                if (isNaN(quantityValue)) {
+                    setValidationFeedback(`quantityFeedback_${index}`, false, requiredFieldMessage);
+                    return false;
+                } else if (quantityValue <= 0 || quantityValue > 999999) {
+                    setValidationFeedback(`quantityFeedback_${index}`, false, quantityError);
+                    return false;
+                } else if (!Number.isInteger(quantityValue)) {
+                    setValidationFeedback(`quantityFeedback_${index}`, false, quantityIntegerError);
+                    return false;
+                } else {
+                    setValidationFeedback(`quantityFeedback_${index}`, true);
+                    return true;
+                }
+            }
+
+            // İndirim oranı validasyonu
+            function validateDiscount(index) {
+                const discountInput = $(`#discountInput_${index}`);
+                const discountRateValue = parseFloat(discountInput.val());
+                if (isNaN(discountRateValue) || discountRateValue < 0 || discountRateValue > 100) {
+                    setValidationFeedback(`discountFeedback_${index}`, false, discountRateError);
+                    return false;
+                } else if (discountInput.val().includes('.') && (discountInput.val().split('.')[1].length > 2)) {
+                    setValidationFeedback(`discountFeedback_${index}`, false, discountPrecisionError);
+                    return false;
+                } else {
+                    setValidationFeedback(`discountFeedback_${index}`, true);
+                    return true;
+                }
+            }
+
+            // Form gönderiminden önce validasyonu kontrol et
+            orderForm.addEventListener('submit', function (event) {
+                let isValid = true;
+
+                // Ürün seçimi validasyonu
+                $('#productContainer .product-card').each(function (index) {
+                    if (!validateProduct(index)) {
+                        isValid = false;
+                    }
+                });
+
+                // Sipariş tarihi validasyonu
+                if (!validateDate()) {
+                    isValid = false;
+                }
+
+                // Miktar ve indirim validasyonu
+                $('#productContainer .product-card').each(function (index) {
+                    if (!validateQuantity(index)) {
+                        isValid = false;
+                    }
+                    if (!validateDiscount(index)) {
+                        isValid = false;
+                    }
+                });
+
+                // Eğer herhangi bir alan geçerli değilse, formu gönderme
+                if (!isValid) {
+                    event.preventDefault();
+                    return false; // İşlemi sonlandırır
+                } else {
+                    document.getElementById('createButton').setAttribute('disabled', 'true');
+                }
+            });
+        });
+    </script>
+
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+

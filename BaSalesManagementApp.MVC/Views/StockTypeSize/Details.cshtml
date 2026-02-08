@@ -1,0 +1,91 @@
+﻿@model StockTypeSizeDetailVM
+
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<Resource> localizer
+
+@{
+    ViewData["Title"] = localizer["Details"];
+}
+@*  ONR 08042025 14:25 *@
+<div class="content-wrapper">
+    <div class="container-xxl flex-grow-1 container-p-y">
+        <h4 class="py-3 mb-4">
+            <span class="text-muted fw-light">@localizer["StockTypeSize"] /</span>
+            @localizer["Details"]
+        </h4>
+
+        <div class="row">
+            <div class="col-lg-6 col-md-8 col-sm-12">
+                <div class="card shadow-sm">
+                    <div class="card-body pb-2">
+                        <dl class="row mb-0">
+                            <dt class="col-4 mb-4">@localizer["Size"]</dt>
+                            <dd class="col-8">@Html.DisplayFor(model => model.Size)</dd>
+
+                            <dt class="col-4 mb-4">@localizer["Description"]</dt>
+                            <dd class="col-8">@Html.DisplayFor(model => model.Description)</dd>
+
+                            <dt class="col-4 mb-4">@localizer["ProductType"]</dt>
+                            <dd class="col-8">@Html.DisplayFor(model => model.StockTypeName)</dd>
+                        </dl>
+                    </div>
+
+                    <div class="card-footer mt-0 pt-2 text-lg-start">
+                        <a asp-action="Update" asp-route-stockTypeSizeId="@Model.Id" class="btn btn-primary me-2">
+                            @localizer["Update"]
+                        </a>
+                        <a asp-action="Index" class="btn btn-secondary">
+                            @localizer["BackToList"]
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@* <div class="content-wrapper">
+    <div class="container-xxl flex-grow-1 container-p-y">
+        <h4 class="py-3 mb-4">
+            <span class="text-muted fw-light">@localizer["StockTypeSize"] /</span>
+            @localizer["Details"]
+        </h4>
+        <div class="row">
+            <div class="col-lg-6 col-md-8 col-sm-12">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <dl class="row">
+                            <dt class="col-4 mb-4">
+                                @localizer["Size"]
+                            </dt>
+                            <dd class="col-8">
+                                @Html.DisplayFor(model => model.Size)
+                            </dd>
+                            <dt class="col-4 mb-4">
+                                @localizer["Description"]
+                            </dt>
+                            <dd class="col-8">
+                                @Html.DisplayFor(model => model.Description)
+                            </dd>
+                            <dt class="col-4 mb-4">
+                                @localizer["ProductType"]
+                            </dt>
+                            <dd class="col-8">
+                                @Html.DisplayFor(model => model.StockTypeName)
+                            </dd>
+
+                        </dl>
+                    </div>
+                    <div class="card-footer">
+                        <a asp-action="Update" asp-route-stockTypeSizeId="@Model.Id" class="btn btn-primary">
+                            @localizer["Update"]
+                        </a>
+                        <a asp-action="Index" class="btn btn-secondary">
+                            @localizer["BackToList"]
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+ *@

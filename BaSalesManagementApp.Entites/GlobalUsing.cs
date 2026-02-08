@@ -1,0 +1,1 @@
+﻿global using BaSalesManagementApp.Core.Entities.Base;

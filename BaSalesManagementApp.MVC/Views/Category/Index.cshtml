@@ -1,0 +1,564 @@
+﻿@model IPagedList<BaSalesManagementApp.MVC.Models.CategoryVMs.CategoryListVM>
+@using X.PagedList
+@using X.PagedList.Mvc.Core
+@using X.PagedList.Mvc.Common
+@using X.PagedList.Mvc.Core.Common
+@inject Microsoft.Extensions.Localization.IStringLocalizer<Resource> localizer
+
+@{
+    ViewData["Title"] = localizer["CategoryIndex"];
+    var currentPageSize = ViewData["CurrentPageSize"] is int ps ? ps : 10;
+    var currentSort = Convert.ToString(ViewData["CurrentSortOrder"] ?? "alphabetical");
+    var searchQuery     = Convert.ToString(ViewData["CurrentSearchQuery"] ?? "");
+    var currentCompany  = ViewData["CurrentCompanyId"];
+}
+<div class="content-wrapper">
+  <div class="container-xxl flex-grow-1 container-p-y">
+
+    <!-- Başlık -->
+    <h4 class="py-3 mb-4">
+      <span class="text-muted fw-light">@localizer["Category"] / </span>@localizer["List"]
+    </h4>
+
+    <!--  TOOLBAR: solda "Yeni Oluştur", sağda Göster/Girişi/Filtre -->
+    <div class="d-flex align-items-center justify-content-between mb-3">
+      <!-- Sol -->
+      <a asp-action="Create" class="btn btn-primary">@localizer["Create_New"]</a>
+
+      <!-- Sağ -->
+      <div class="d-flex align-items-center gap-2">
+        <label class="me-1" for="entriesPerPage">@localizer["Show"]</label>
+
+        <select id="entriesPerPage" class="form-select" style="width:auto;">
+          <option value="5"  selected="@(currentPageSize == 5  ? "selected" : null)">5</option>
+          <option value="10" selected="@(currentPageSize == 10 ? "selected" : null)">10</option>
+          <option value="20" selected="@(currentPageSize == 20 ? "selected" : null)">20</option>
+          <option value="50" selected="@(currentPageSize == 50 ? "selected" : null)">50</option>
+        </select>
+
+        <span class="ms-1">@localizer["Entries"]</span>
+
+        <div id="sortOrder" class="dropdown ms-2">
+          <button class="btn btn-primary" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="bi bi-filter" style="font-size:1rem"></i>
+          </button>
+          <div class="dropdown-menu dropdown-menu-end">
+            <a class="dropdown-item" data-value="alphabetical"     href="#">A-Z</a>
+            <a class="dropdown-item" data-value="alphabeticaldesc" href="#">Z-A</a>
+            <a class="dropdown-item" data-value="date"             href="#">@localizer["Newest_First"]</a>
+            <a class="dropdown-item" data-value="datedesc"         href="#">@localizer["Oldest_First"]</a>
+            <hr class="dropdown-divider" />
+            <div class="px-3 pb-2">
+              <form method="get" asp-action="Index" class="d-inline-block w-100">
+                <input type="hidden" name="pageSize"    value="@currentPageSize" />
+                <input type="hidden" name="sortOrder"   value="@currentSort" />
+                <input type="hidden" name="searchQuery" value="@searchQuery" />
+                <label class="form-label fw-bold text-muted small mb-1">
+                  @localizer["FilterByCompany"]
+                </label>
+                <select name="companyId" class="form-select" asp-items="ViewBag.Companies" onchange="this.form.submit()">
+                  <option value="">@localizer["AllCompanies"]</option>
+                </select>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+
+    <div class="card">
+      <div class="table-responsive text-nowrap">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>@localizer["ColumnName"].ToString().ToUpper(new System.Globalization.CultureInfo("tr-TR"))</th>
+              <th class="text-end">@localizer["Actions"]</th>
+            </tr>
+          </thead>
+          <tbody class="table-border-bottom-0">
+            @foreach (var item in Model)
+            {
+              <tr>
+                <td class="fw-medium">@item.Name</td>
+                <td class="text-end">
+                  <div class="dropdown">
+                    <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown" style="margin-right:28px;">
+                      <i class="bx bx-dots-vertical-rounded"></i>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-end">
+                      <a asp-action="Details" asp-route-categoryId="@item.Id" class="dropdown-item">
+                        <i class="bx bx-info-circle me-1"></i> @localizer["Details"]
+                      </a>
+                      <a asp-action="Update" asp-route-categoryId="@item.Id" class="dropdown-item">
+                        <i class="bx bx-edit-alt me-1"></i> @localizer["Update"]
+                      </a>
+                      <a href="javascript:;" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#deleteModal" data-category-id="@item.Id">
+                        <i class="bx bx-trash me-1"></i> @localizer["Delete"]
+                      </a>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <div class="d-flex justify-content-center mt-3">
+        @Html.PagedListPager(
+          Model,
+          page => Url.Action("Index", new {
+            page,
+            pageSize  = Model.PageSize,
+            sortOrder = currentSort,
+            searchQuery = searchQuery,
+            companyId = currentCompany
+          }),
+          new PagedListRenderOptions {
+            Display = PagedListDisplayMode.Always,
+            UlElementClasses = new[] { "pagination", "justify-content-center" },
+            LiElementClasses = new[] { "page-item" },
+            PageClasses = new[] { "page-link" },
+            LinkToPreviousPageFormat = @localizer["Previous"],
+            LinkToNextPageFormat = @localizer["Next"],
+            LinkToFirstPageFormat = @localizer["First"],
+            LinkToLastPageFormat = @localizer["Last"],
+            ContainerDivClasses = new[] { "d-flex", "justify-content-center" }
+          })
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteModalLabel">@localizer["DELETE_CONFIRM_TITLE_CATEGORY"]</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">@localizer["DELETE_CONFIRM_CATEGORY"]</div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@localizer["CANCEL_CATEGORY"]</button>
+        <a id="confirmDeleteButton" href="#" class="btn btn-danger">@localizer["DELETE_CATEGORY"]</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+@section Scripts {
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+  // Tek noktadan arama değerini al
+  function getSearchQuery() {
+    const input = document.getElementById('searchQueryInput'); // Layout'taki input
+    if (input && input.value && input.value.trim().length > 0) {
+      return input.value.trim();
+    }
+    const fromUrl = new URLSearchParams(window.location.search).get('searchQuery');
+    return (fromUrl || '').trim();
+  }
+
+  // Silme modalı
+  const deleteModal = document.getElementById('deleteModal');
+  deleteModal.addEventListener('show.bs.modal', function (event) {
+    const id = event.relatedTarget.getAttribute('data-category-id');
+    deleteModal.querySelector('#confirmDeleteButton').href = '/Category/Delete?categoryId=' + id;
+  });
+
+  // Sıralama aktiflik
+  const sortOrderLinks = document.querySelectorAll('#sortOrder .dropdown-item');
+  function markActiveSort() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const sort = urlParams.get('sortOrder') || 'alphabetical';
+    sortOrderLinks.forEach(l => l.classList.toggle('active', l.getAttribute('data-value') === sort));
+  }
+
+  //  Sıralama değişince (mevcut filtreler korunur)
+  function handleSortOrderChange(e) {
+    e.preventDefault();
+    const selected = e.currentTarget.getAttribute('data-value');
+    const p = new URLSearchParams(window.location.search);
+    p.set('sortOrder', selected);
+    p.set('page', 1);
+
+    const q = getSearchQuery();
+    if (q) p.set('searchQuery', q); else p.delete('searchQuery');
+
+    const company = '@(currentCompany ?? "")';
+    if (company) p.set('companyId', company);
+
+    p.set('pageSize', '@currentPageSize');
+    window.location.search = p.toString();
+  }
+  sortOrderLinks.forEach(l => l.addEventListener('click', handleSortOrderChange));
+
+  //  Sayfa başına kayıt adedi değişince
+  const entriesPerPage = document.getElementById('entriesPerPage');
+  entriesPerPage.addEventListener('change', function () {
+    const p = new URLSearchParams(window.location.search);
+    p.set('pageSize', this.value);
+    p.set('page', 1);
+
+    const q = getSearchQuery();
+    if (q) p.set('searchQuery', q); else p.delete('searchQuery');
+
+    const company = '@(currentCompany ?? "")';
+    if (company) p.set('companyId', company);
+
+    p.set('sortOrder', '@currentSort');
+    window.location.search = p.toString();
+  });
+
+  //  Pager linklerine mevcut filtreleri işle
+  function updatePagerLinks() {
+    document.querySelectorAll('.pagination a').forEach(a => {
+      const url = new URL(a.getAttribute('href'), window.location.href);
+      const params = new URLSearchParams(url.search);
+
+      params.set('pageSize', '@currentPageSize');
+      params.set('sortOrder', '@currentSort');
+
+      const q = getSearchQuery();
+      if (q) params.set('searchQuery', q); else params.delete('searchQuery');
+
+      const company = '@(currentCompany ?? "")';
+      if (company) params.set('companyId', company);
+
+      url.search = params.toString();
+      a.setAttribute('href', url.toString());
+    });
+  }
+
+  // Enter ile ara: sadece Enter'a basılınca page=1 yap
+const layoutSearch = document.getElementById('searchQueryInput');
+if (layoutSearch) {
+  layoutSearch.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') {
+      const form = this.closest('form');
+      const pageHidden = form?.querySelector('input[name="page"]');
+      if (pageHidden) pageHidden.value = '1';
+      // default submit'e izin veriyoruz (preventDefault yok)
+    }
+  });
+}
+  // // (Opsiyonel) Layout inputunda canlı arama (debounce)
+  // const layoutSearch = document.getElementById('searchQueryInput');
+  // if (layoutSearch) {
+  //   let t;
+  //   layoutSearch.addEventListener('input', function () {
+  //     clearTimeout(t);
+  //     t = setTimeout(function () {
+  //       const val = (layoutSearch.value || '').trim();
+  //       const params = new URLSearchParams({
+  //         pageSize: '@currentPageSize',
+  //         sortOrder: '@currentSort',
+  //         page: '1'
+  //       });
+  //       const company = '@(currentCompany ?? "")';
+  //       if (company) params.set('companyId', company);
+  //       if (val.length > 0) params.set('searchQuery', val);
+  //       else params.delete('searchQuery');
+  //       window.location = '/Category/Index?' + params.toString();
+  //     }, 350);
+  //   });
+  // }
+
+  markActiveSort();
+  updatePagerLinks();
+});
+</script>
+}
+
+@* @model IPagedList<BaSalesManagementApp.MVC.Models.CategoryVMs.CategoryListVM>
+@using X.PagedList
+@using X.PagedList.Mvc.Core
+@using X.PagedList.Mvc.Common
+@using X.PagedList.Mvc.Core.Common
+@inject Microsoft.Extensions.Localization.IStringLocalizer<Resource> localizer
+
+@{
+    ViewData["Title"] = localizer["CategoryIndex"];
+    var currentPageSize = ViewData["CurrentPageSize"] is int ps ? ps : 10;
+    var currentSort = Convert.ToString(ViewData["CurrentSortOrder"] ?? "alphabetical");
+    var currentQuery = Convert.ToString(ViewData["CurrentQuery"] ?? "");
+    var currentCompany = ViewData["CurrentCompanyId"];
+}
+
+<div class="content-wrapper">
+    <div class="container-xxl flex-grow-1 container-p-y">
+
+        <!-- ÜST ARAMA BAR (KATEGORİ) -->
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <form id="categorySearchForm" method="get" asp-action="Index" class="d-flex align-items-center gap-2">
+                <input type="hidden" name="pageSize" value="@currentPageSize" />
+                <input type="hidden" name="sortOrder" value="@currentSort" />
+                <input type="hidden" name="companyId" value="@(currentCompany ?? "")" />
+
+                <input id="categorySearchInput"
+                       type="search"
+                       name="q"
+                       value="@currentQuery"
+                       class="form-control"
+                       style="max-width:240px"
+                       autocomplete="off"
+                       placeholder='@localizer["SearchPlaceholder"]' />
+
+                <button type="submit" class="btn btn-outline-secondary">
+                    <i class="bi bi-search"></i>
+                </button>
+
+                @if (!string.IsNullOrWhiteSpace(currentQuery))
+                {
+                    <a class="btn btn-outline-light border"
+                       asp-action="Index"
+                       asp-route-pageSize="@currentPageSize"
+                       asp-route-sortOrder="@currentSort"
+                       asp-route-companyId="@(currentCompany ?? "")">
+                        @localizer["Clear"]
+                    </a>
+                }
+            </form>
+
+            <!-- Create butonu üst barda sağda -->
+            <a asp-action="Create" class="btn btn-primary">@localizer["Create_New"]</a>
+        </div>
+
+        <!-- Başlık, üst barın ALTINDA -->
+        <h4 class="py-3 mb-4">
+            <span class="text-muted fw-light">@localizer["Category"] / </span>@localizer["List"]
+        </h4>
+
+        <!-- Entries / Sort / Company Filter satırı (Create kaldırıldı) -->
+        <div class="d-flex align-items-center gap-2 mb-3">
+
+            <!-- GÖSTER / ENTRIES -->
+            <label class="ms-3 me-1" for="entriesPerPage">@localizer["Show"]</label>
+            <select id="entriesPerPage" class="form-select me-2" style="width:auto;">
+                <option value="5" selected="@(currentPageSize == 5 ? "selected" : null)">5</option>
+                <option value="10" selected="@(currentPageSize == 10 ? "selected" : null)">10</option>
+                <option value="20" selected="@(currentPageSize == 20 ? "selected" : null)">20</option>
+                <option value="50" selected="@(currentPageSize == 50 ? "selected" : null)">50</option>
+            </select>
+            <label>@localizer["Entries"]</label>
+
+            <!-- SIRALAMA + Şirket Filtresi -->
+            <div id="sortOrder" class="dropdown ms-3">
+                <button class="btn btn-primary" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-filter" style="font-size:1rem"></i>
+                </button>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" data-value="alphabetical" href="#">A-Z</a>
+                    <a class="dropdown-item" data-value="alphabeticaldesc" href="#">Z-A</a>
+                    <a class="dropdown-item" data-value="date" href="#">@localizer["Newest_First"]</a>
+                    <a class="dropdown-item" data-value="datedesc" href="#">@localizer["Oldest_First"]</a>
+                    <hr class="dropdown-divider" />
+                    <div class="px-3 pb-2">
+                        <form method="get" asp-action="Index" class="d-inline-block w-100">
+                            <input type="hidden" name="pageSize" value="@currentPageSize" />
+                            <input type="hidden" name="sortOrder" value="@currentSort" />
+                            <input type="hidden" name="q" value="@currentQuery" />
+                            <label class="form-label fw-bold text-muted small mb-1">
+                                @localizer["FilterByCompany"]
+                            </label>
+                            <select name="companyId" class="form-select" asp-items="ViewBag.Companies" onchange="this.form.submit()">
+                                <option value="">@localizer["AllCompanies"]</option>
+                            </select>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+
+        <div class="card">
+            <div class="table-responsive text-nowrap">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>@localizer["ColumnName"].ToString().ToUpper(new System.Globalization.CultureInfo("tr-TR"))</th>
+                            <th class="text-end">@localizer["Actions"]</th>
+                        </tr>
+                    </thead>
+                    <tbody class="table-border-bottom-0">
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td class="fw-medium">@item.Name</td>
+                                <td class="text-end">
+                                    <div class="dropdown">
+                                        <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown" style="margin-right:28px;">
+                                            <i class="bx bx-dots-vertical-rounded"></i>
+                                        </button>
+                                        <div class="dropdown-menu">
+                                            <a asp-action="Details" asp-route-categoryId="@item.Id" class="dropdown-item">
+                                                <i class="bx bx-info-circle me-1"></i> @localizer["Details"]
+                                            </a>
+                                            <a asp-action="Update" asp-route-categoryId="@item.Id" class="dropdown-item">
+                                                <i class="bx bx-edit-alt me-1"></i> @localizer["Update"]
+                                            </a>
+                                            <a href="javascript:;" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#deleteModal" data-category-id="@item.Id">
+                                                <i class="bx bx-trash me-1"></i> @localizer["Delete"]
+                                            </a>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="d-flex justify-content-center mt-3">
+                @Html.PagedListPager(
+                         Model,
+                         page => Url.Action("Index", new
+                         {
+                             page,
+                             pageSize = Model.PageSize,
+                             sortOrder = currentSort,
+                             q = currentQuery,
+                             companyId = currentCompany
+                         }),
+                         new PagedListRenderOptions
+                {
+                    Display = PagedListDisplayMode.Always,
+                    UlElementClasses = new[] { "pagination", "justify-content-center" },
+                    LiElementClasses = new[] { "page-item" },
+                    PageClasses = new[] { "page-link" },
+                    LinkToPreviousPageFormat = @localizer["Previous"],
+                    LinkToNextPageFormat = @localizer["Next"],
+                    LinkToFirstPageFormat = @localizer["First"],
+                    LinkToLastPageFormat = @localizer["Last"],
+                    ContainerDivClasses = new[] { "d-flex", "justify-content-center" }
+                })
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">@localizer["DELETE_CONFIRM_TITLE_CATEGORY"]</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">@localizer["DELETE_CONFIRM_CATEGORY"]</div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@localizer["CANCEL_CATEGORY"]</button>
+                <a id="confirmDeleteButton" href="#" class="btn btn-danger">@localizer["DELETE_CATEGORY"]</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+          // Silme modalı
+          const deleteModal = document.getElementById('deleteModal');
+          deleteModal.addEventListener('show.bs.modal', function (event) {
+            const id = event.relatedTarget.getAttribute('data-category-id');
+            deleteModal.querySelector('#confirmDeleteButton').href = '/Category/Delete?categoryId=' + id;
+          });
+
+          // Sıralama aktiflik durumu
+          const sortOrderLinks = document.querySelectorAll('#sortOrder .dropdown-item');
+          function markActiveSort() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const sort = urlParams.get('sortOrder') || 'alphabetical';
+            sortOrderLinks.forEach(l => l.classList.toggle('active', l.getAttribute('data-value') === sort));
+          }
+
+          // Sıralama değişince query, company ve pageSize korunur
+          function handleSortOrderChange(e) {
+            const selected = e.target.getAttribute('data-value');
+            const p = new URLSearchParams(window.location.search);
+            p.set('sortOrder', selected);
+            p.set('page', 1);
+            const q = document.getElementById('categorySearchInput')?.value || '';
+            if (q) p.set('q', q); else p.delete('q');
+            const company = '@(currentCompany ?? "")';
+            if (company) p.set('companyId', company);
+            p.set('pageSize', '@currentPageSize');
+            window.location.search = p.toString();
+          }
+          sortOrderLinks.forEach(l => l.addEventListener('click', handleSortOrderChange));
+
+          // Gösterim adedi değişince
+          const entriesPerPage = document.getElementById('entriesPerPage');
+          entriesPerPage.addEventListener('change', function () {
+            const p = new URLSearchParams(window.location.search);
+            p.set('pageSize', this.value);
+            p.set('page', 1);
+            const q = document.getElementById('categorySearchInput')?.value || '';
+            if (q) p.set('q', q); else p.delete('q');
+            const company = '@(currentCompany ?? "")';
+            if (company) p.set('companyId', company);
+            p.set('sortOrder', '@currentSort');
+            window.location.search = p.toString();
+          });
+
+          // Pager linklerine mevcut filtreleri işle
+          function updatePagerLinks() {
+            document.querySelectorAll('.pagination a').forEach(a => {
+              const url = new URL(a.getAttribute('href'), window.location.href);
+              const params = new URLSearchParams(url.search);
+              params.set('pageSize', '@currentPageSize');
+              params.set('sortOrder', '@currentSort');
+              const q = document.getElementById('categorySearchInput')?.value || '@currentQuery';
+              if (q) params.set('q', q); else params.delete('q');
+              const company = '@(currentCompany ?? "")';
+              if (company) params.set('companyId', company);
+              url.search = params.toString();
+              a.setAttribute('href', url.toString());
+            });
+          }
+
+          // Arama kutusunda debounce (opsiyonel)
+        const searchInput = document.getElementById('categorySearchInput');
+
+        if (searchInput) {
+          searchInput.addEventListener('input', function (ev) {
+            ev.stopPropagation();
+            const val = (this.value || '').trim();
+
+            // Boşsa: q'yu temizleyip tam listeye dön
+            if (val.length === 0) {
+              const params = new URLSearchParams({
+                pageSize: '@currentPageSize',
+                sortOrder: '@currentSort',
+                page: '1'
+              });
+              const company = '@(currentCompany ?? "")';
+              if (company) params.set('companyId', company);
+              window.location = '/Category/Index?' + params.toString();
+              return;
+            }
+
+            // Anlık filtreleme (tek harften itibaren)
+            const params = new URLSearchParams({
+              pageSize: '@currentPageSize',
+              sortOrder: '@currentSort',
+              q: val,
+              page: '1'
+            });
+            const company = '@(currentCompany ?? "")';
+            if (company) params.set('companyId', company);
+            window.location = '/Category/Index?' + params.toString();
+          });
+          }
+
+          markActiveSort();
+          updatePagerLinks();
+        });
+    </script>
+}
+ *@
